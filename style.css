@@ -42,10 +42,9 @@
 }
 
 /* Mobile Optimization */
+/* Mobile optimization */
 @media (max-width: 600px) {
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  .cell {
+    font-size: 12px;
   }
 }
