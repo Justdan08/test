@@ -1,3 +1,10 @@
+// Check if gridSize and words are defined
+if (typeof gridSize === "undefined" || typeof words === "undefined") {
+  console.error("Missing gridSize or words. Define them in the HTML!");
+}
+
+// Initialize the game when the page loads
+document.addEventListener("DOMContentLoaded", initializeGame);
 // Initialize the game
 initializeGame();
 
