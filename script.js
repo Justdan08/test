@@ -9,32 +9,35 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 initializeGame();
 
 function initializeGame() {
-  // Generate grid based on gridSize
+  // Clear existing grid and word list
   const wordsearch = document.getElementById("wordsearch");
-  wordsearch.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  const wordsContainer = document.getElementById("words");
+  wordsearch.innerHTML = "";
+  wordsContainer.innerHTML = "<div>Words to find:</div>";
 
-  // Create cells
+  // Create the grid cells
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
-      const cell = createCell(i, j);
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row = i;
+      cell.dataset.col = j;
+      cell.textContent = ""; // Start empty
       wordsearch.appendChild(cell);
     }
   }
 
-  // Place words and fill grid
+  // Place words and fill random letters
   words.forEach(word => placeWord(word));
   fillRandomLetters();
 
   // Display words to find
-  const wordsContainer = document.getElementById("words");
   words.forEach(word => {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
     wordsContainer.appendChild(wordElement);
   });
 
-  // Add touch support
+  // Add event listeners for touch/mouse
   addTouchSupport();
 }
-
-// Keep the rest of your existing code (placeWord, canPlaceWord, etc.) unchanged.
