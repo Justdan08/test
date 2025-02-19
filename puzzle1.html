@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tech Word Search</title>
+  <title>Tech Puzzle</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- Define puzzle-specific settings -->
-  <script>
-    const gridSize = 15;
-    const words = ["JAVASCRIPT", "HTML", "CSS", "REACT", "NODEJS", "API", "DATABASE"];
-  </script>
   <h1>Tech Word Search</h1>
   <div id="wordsearch"></div>
   <div id="word-list">
@@ -21,9 +16,15 @@
   <button id="reset-button">Reset Game</button>
   <div class="nav-links">
     <a href="index.html">Back to Menu</a>
-    <a href="puzzle2.html">Next Puzzle</a>
   </div>
-  
+
+  <!-- Define puzzle settings HERE -->
+  <script>
+    const gridSize = 15;
+    const words = ["JAVASCRIPT", "HTML", "CSS", "REACT", "NODEJS", "API", "DATABASE"];
+  </script>
+
+  <!-- Load script.js AFTER defining gridSize/words -->
   <script src="script.js"></script>
 </body>
 </html>
