@@ -18,6 +18,8 @@ document.getElementById("reset-button").addEventListener("click", resetGame);
 // Core Functions
 // ========================
 
+// ... (keep the existing code for gridSize, words, etc.)
+
 function initializeGame() {
   // Clear existing grid and word list
   const wordsearch = document.getElementById("wordsearch");
@@ -25,8 +27,7 @@ function initializeGame() {
   wordsearch.innerHTML = "";
   wordsContainer.innerHTML = "<div>Words to find:</div>";
 
-  // Create the grid
-  wordsearch.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  // Create the grid cells
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       const cell = createCell(i, j);
@@ -44,6 +45,12 @@ function initializeGame() {
     wordElement.textContent = word;
     wordsContainer.appendChild(wordElement);
   });
+
+  // Reattach touch events to new cells
+  addTouchSupport(); // Critical for mobile!
+}
+
+// ... (keep the rest of your code, including addTouchSupport and touch handlers)
 
   // Add touch support
   addTouchSupport();
