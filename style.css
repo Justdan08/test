@@ -8,6 +8,7 @@
   display: grid;
   gap: 2px;
   margin: 20px auto;
+  max-width: 95%;
 }
 
 /* For a 15x15 grid */
