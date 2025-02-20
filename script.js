@@ -248,35 +248,6 @@ function resetGridColors() {
     cell.style.backgroundColor = "";
   });
 }
-// ========================
-// Touch Support
-// ========================
-
-function addTouchSupport() {
-  document.querySelectorAll(".cell").forEach(cell => {
-    cell.addEventListener("touchstart", handleTouchStart, { passive: false });
-    cell.addEventListener("touchmove", handleTouchMove, { passive: false });
-    cell.addEventListener("touchend", handleTouchEnd, { passive: false });
-  });
-}
-
-function handleTouchStart(e) {
-  if (!e.target.classList.contains("cell")) return;
-  e.preventDefault();
-  startDrag(e.target);
-}
-
-function handleTouchMove(e) {
-  const touch = e.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (!target || !target.classList.contains("cell")) return;
-  e.preventDefault();
-  dragOver(target);
-}
-
-function handleTouchEnd() {
-  endDrag();
-}
 
 // ========================
 // Reset Functionality
