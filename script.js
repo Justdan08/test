@@ -7,7 +7,8 @@ if (typeof gridSize === "undefined" || typeof words === "undefined") {
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
-let dragDirection = null; // Variable to store the direction of the drag
+let startRow, startCol;
+let dragDirection = null; // Stores the committed direction (null until decided)
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -62,65 +63,48 @@ function createCell(row, col) {
   return cell;
 }
 
+// ========================
+// Word Placement
+// ========================
+
 function placeWord(word) {
   const directions = ["horizontal", "vertical", "diagonal"];
-  const direction = directions[Math.floor(Math.random() * 3)]; // 1/3 chance for each direction
+  const direction = directions[Math.floor(Math.random() * directions.length)]; // 1/3rd probability for each direction
   let row, col;
 
   if (direction === "horizontal") {
     row = Math.floor(Math.random() * gridSize);
     col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
-    }
-  } 
-  
-  else if (direction === "vertical") {
+  } else if (direction === "vertical") {
     col = Math.floor(Math.random() * gridSize);
     row = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
-    }
-  } 
-  
-  else if (direction === "diagonal") {
+  } else {
     row = Math.floor(Math.random() * (gridSize - word.length));
     col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
+  }
+
+  if (canPlaceWord(word, row, col, direction)) {
+    for (let i = 0; i < word.length; i++) {
+      let cell;
+      if (direction === "horizontal") cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+      else if (direction === "vertical") cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+      else cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+
+      cell.textContent = word[i];
     }
+  } else {
+    placeWord(word); // Retry placement
   }
 }
 
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
     let cell;
-    if (direction === "horizontal") {
-      cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-    } else if (direction === "vertical") {
-      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-    } else if (direction === "diagonal") {
-      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-    }
+    if (direction === "horizontal") cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+    else if (direction === "vertical") cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+    else cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
 
-    if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) {
-      return false;
-    }
+    if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) return false;
   }
   return true;
 }
@@ -141,39 +125,73 @@ function fillRandomLetters() {
 function startDrag(cell) {
   isDragging = true;
   selectedCells = [cell];
+  startRow = parseInt(cell.dataset.row);
+  startCol = parseInt(cell.dataset.col);
+  dragDirection = null; // Reset direction at the start of each drag
   cell.classList.add("selected");
-  dragDirection = null; // Reset the direction each time a new drag starts
 }
 
 function dragOver(cell) {
-  if (isDragging && !selectedCells.includes(cell)) {
-    const lastCell = selectedCells[selectedCells.length - 1];
-    const rowDiff = Math.abs(cell.dataset.row - lastCell.dataset.row);
-    const colDiff = Math.abs(cell.dataset.col - lastCell.dataset.col);
+  if (!isDragging || selectedCells.includes(cell)) return;
 
-    // Determine the direction based on the first valid move
-    if (!dragDirection) {
-      if (rowDiff === 0) {
-        dragDirection = 'horizontal'; // Horizontal drag
-      } else if (colDiff === 0) {
-        dragDirection = 'vertical'; // Vertical drag
-      } else if (rowDiff === colDiff) {
-        dragDirection = 'diagonal'; // Diagonal drag
-      }
+  const row = parseInt(cell.dataset.row);
+  const col = parseInt(cell.dataset.col);
+
+  if (!dragDirection) {
+    // Determine the direction based on the second cell selected
+    if (row === startRow) dragDirection = "horizontal";
+    else if (col === startCol) dragDirection = "vertical";
+    else if (Math.abs(row - startRow) === Math.abs(col - startCol)) dragDirection = "diagonal";
+    else return; // Ignore invalid moves
+  }
+
+  if (isValidDrag(row, col)) {
+    fillMissingCells(row, col);
+    selectedCells.push(cell);
+    cell.classList.add("selected");
+  }
+}
+
+function isValidDrag(row, col) {
+  if (!dragDirection) return false;
+
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const lastRow = parseInt(lastCell.dataset.row);
+  const lastCol = parseInt(lastCell.dataset.col);
+
+  switch (dragDirection) {
+    case "horizontal":
+      return row === startRow && Math.abs(col - lastCol) === 1;
+    case "vertical":
+      return col === startCol && Math.abs(row - lastRow) === 1;
+    case "diagonal":
+      return Math.abs(row - lastRow) === 1 && Math.abs(col - lastCol) === 1;
+    default:
+      return false;
+  }
+}
+
+// Automatically selects missing cells when realigning with the line
+function fillMissingCells(row, col) {
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const lastRow = parseInt(lastCell.dataset.row);
+  const lastCol = parseInt(lastCell.dataset.col);
+
+  let stepRow = lastRow;
+  let stepCol = lastCol;
+
+  while (stepRow !== row || stepCol !== col) {
+    if (dragDirection === "horizontal") {
+      stepCol += stepCol < col ? 1 : -1;
+    } else if (dragDirection === "vertical") {
+      stepRow += stepRow < row ? 1 : -1;
+    } else if (dragDirection === "diagonal") {
+      stepRow += stepRow < row ? 1 : -1;
+      stepCol += stepCol < col ? 1 : -1;
     }
 
-    // Only accept moves that match the chosen direction
-    let isValidMove = false;
-
-    if (dragDirection === 'horizontal' && rowDiff === 0 && colDiff === 1) {
-      isValidMove = true;
-    } else if (dragDirection === 'vertical' && colDiff === 0 && rowDiff === 1) {
-      isValidMove = true;
-    } else if (dragDirection === 'diagonal' && rowDiff === colDiff) {
-      isValidMove = true;
-    }
-
-    if (isValidMove) {
+    const cell = document.querySelector(`.cell[data-row="${stepRow}"][data-col="${stepCol}"]`);
+    if (cell && !selectedCells.includes(cell)) {
       selectedCells.push(cell);
       cell.classList.add("selected");
     }
@@ -185,66 +203,14 @@ function endDrag() {
   checkForWord();
 }
 
-function checkForWord() {
-  const selectedWord = selectedCells.map(cell => cell.textContent).join("");
-  if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
-    foundWords.push(selectedWord);
-    selectedCells.forEach(cell => cell.classList.add("found"));
-    selectedCells = [];
-
-    // Mark word as found
-    document.querySelectorAll("#words div").forEach(el => {
-      if (el.textContent === selectedWord) el.classList.add("found");
-    });
-
-    if (foundWords.length === words.length) alert("Good Job Big Dog!");
-  } else {
-    selectedCells.forEach(cell => cell.classList.remove("selected"));
-    selectedCells = [];
-  }
-}
-
-// ========================
-// Mobile Support
-// ========================
-
-function addTouchSupport() {
-  const cells = document.querySelectorAll(".cell");
-  cells.forEach(cell => {
-    cell.removeEventListener("touchstart", handleTouchStart);
-    cell.removeEventListener("touchmove", handleTouchMove);
-    cell.removeEventListener("touchend", handleTouchEnd);
-
-    cell.addEventListener("touchstart", handleTouchStart);
-    cell.addEventListener("touchmove", handleTouchMove);
-    cell.addEventListener("touchend", handleTouchEnd);
-  });
-}
-
-function handleTouchStart(e) {
-  e.preventDefault();
-  startDrag(e.target);
-}
-
-function handleTouchMove(e) {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (target?.classList.contains("cell")) dragOver(target);
-}
-
-function handleTouchEnd() {
-  endDrag();
-}
-
 // ========================
 // Reset Functionality
 // ========================
 
 function resetGame() {
   const wordsearch = document.getElementById("wordsearch");
-  wordsearch.innerHTML = ""; // Only clear the grid
+  wordsearch.innerHTML = "";
   selectedCells = [];
   foundWords = [];
-  initializeGame(); // Let initializeGame handle the word list
+  initializeGame();
 }
