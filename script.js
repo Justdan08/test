@@ -153,17 +153,27 @@ function endDrag() {
 
 function checkForWord() {
   const selectedWord = selectedCells.map(cell => cell.textContent).join("");
-  if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+  const reversedWord = selectedCells.reverse().map(cell => cell.textContent).join("");
+
+  if (
+    (words.includes(selectedWord) || words.includes(reversedWord)) &&
+    !foundWords.includes(selectedWord) &&
+    !foundWords.includes(reversedWord)
+  ) {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
     selectedCells = [];
 
     // Mark word as found
     document.querySelectorAll("#words div").forEach(el => {
-      if (el.textContent === selectedWord) el.classList.add("found");
+      if (el.textContent === selectedWord || el.textContent === reversedWord) {
+        el.classList.add("found");
+      }
     });
 
-    if (foundWords.length === words.length) alert("Good Job Big Dog!");
+    if (foundWords.length === words.length) {
+      alert("Good Job Big Dog!");
+    }
   } else {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
