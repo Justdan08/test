@@ -62,31 +62,47 @@ function createCell(row, col) {
 }
 
 function placeWord(word) {
-  const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+  const directions = ["horizontal", "vertical", "diagonal-down", "diagonal-up"];
+  const direction = directions[Math.floor(Math.random() * directions.length)];
   let row, col;
 
   if (direction === "horizontal") {
     row = Math.floor(Math.random() * gridSize);
     col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
-    }
-  } else {
+  } else if (direction === "vertical") {
     col = Math.floor(Math.random() * gridSize);
     row = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-        cell.textContent = word[i];
+  } else if (direction === "diagonal-down") {
+    row = Math.floor(Math.random() * (gridSize - word.length));
+    col = Math.floor(Math.random() * (gridSize - word.length));
+  } else {
+    // "diagonal-up"
+    row = Math.floor(Math.random() * (gridSize - word.length)) + word.length - 1;
+    col = Math.floor(Math.random() * (gridSize - word.length));
+  }
+
+  if (canPlaceWord(word, row, col, direction)) {
+    for (let i = 0; i < word.length; i++) {
+      let targetRow = row;
+      let targetCol = col;
+
+      if (direction === "horizontal") {
+        targetCol += i;
+      } else if (direction === "vertical") {
+        targetRow += i;
+      } else if (direction === "diagonal-down") {
+        targetRow += i;
+        targetCol += i;
+      } else if (direction === "diagonal-up") {
+        targetRow -= i;
+        targetCol += i;
       }
-    } else {
-      placeWord(word); // Retry placement
+
+      const cell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+      cell.textContent = word[i];
     }
+  } else {
+    placeWord(word); // Retry placement
   }
 }
 
