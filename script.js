@@ -7,7 +7,8 @@ if (typeof gridSize === "undefined" || typeof words === "undefined") {
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
-let dragDirection = null; // Stores the locked-in direction
+let startCell = null;
+let direction = null;
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -97,15 +98,15 @@ function placeWord(word) {
 
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
-    let cell;
-    if (direction === "horizontal") {
-      cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-    } else if (direction === "vertical") {
-      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-    } else {
-      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+    const cell = direction === "horizontal"
+      ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
+      : direction === "vertical"
+      ? document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`)
+      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+
+    if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) {
+      return false;
     }
-    if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) return false;
   }
   return true;
 }
@@ -125,64 +126,69 @@ function fillRandomLetters() {
 
 function startDrag(cell) {
   isDragging = true;
+  startCell = cell;
   selectedCells = [cell];
   cell.classList.add("selected");
-  dragDirection = null; // Reset direction at start
 }
 
 function dragOver(cell) {
-  if (isDragging && !selectedCells.includes(cell)) {
-    const lastCell = selectedCells[selectedCells.length - 1];
-    const rowDiff = cell.dataset.row - lastCell.dataset.row;
-    const colDiff = cell.dataset.col - lastCell.dataset.col;
+  if (!isDragging || selectedCells.includes(cell)) return;
 
-    if (!dragDirection) {
-      // Lock direction on second cell
-      if (rowDiff === 0) dragDirection = "horizontal";
-      else if (colDiff === 0) dragDirection = "vertical";
-      else if (Math.abs(rowDiff) === Math.abs(colDiff)) dragDirection = "diagonal";
-    }
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const rowDiff = cell.dataset.row - startCell.dataset.row;
+  const colDiff = cell.dataset.col - startCell.dataset.col;
 
-    // Enforce straight-line selection
-    if (
-      (dragDirection === "horizontal" && rowDiff === 0) ||
-      (dragDirection === "vertical" && colDiff === 0) ||
-      (dragDirection === "diagonal" && Math.abs(rowDiff) === Math.abs(colDiff))
-    ) {
-      selectedCells.push(cell);
-      cell.classList.add("selected");
+  if (!direction) {
+    if (rowDiff === 0) direction = "horizontal";
+    else if (colDiff === 0) direction = "vertical";
+    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
+    else return; // Invalid move
+  }
 
-      // Fill in missing cells if realigned
-      fillMissedCells(lastCell, cell);
-    }
+  if (
+    (direction === "horizontal" && cell.dataset.row == startCell.dataset.row) ||
+    (direction === "vertical" && cell.dataset.col == startCell.dataset.col) ||
+    (direction === "diagonal" && Math.abs(rowDiff) === Math.abs(colDiff))
+  ) {
+    const missingCells = getMissingCells(lastCell, cell);
+    missingCells.forEach(missingCell => {
+      if (!selectedCells.includes(missingCell)) {
+        selectedCells.push(missingCell);
+        missingCell.classList.add("selected");
+      }
+    });
+
+    selectedCells.push(cell);
+    cell.classList.add("selected");
   }
 }
 
-function fillMissedCells(startCell, endCell) {
-  let startRow = parseInt(startCell.dataset.row);
-  let startCol = parseInt(startCell.dataset.col);
-  let endRow = parseInt(endCell.dataset.row);
-  let endCol = parseInt(endCell.dataset.col);
+function getMissingCells(lastCell, currentCell) {
+  let missingCells = [];
+  const lastRow = parseInt(lastCell.dataset.row);
+  const lastCol = parseInt(lastCell.dataset.col);
+  const currentRow = parseInt(currentCell.dataset.row);
+  const currentCol = parseInt(currentCell.dataset.col);
 
-  let rowStep = startRow === endRow ? 0 : startRow < endRow ? 1 : -1;
-  let colStep = startCol === endCol ? 0 : startCol < endCol ? 1 : -1;
+  const rowStep = currentRow > lastRow ? 1 : currentRow < lastRow ? -1 : 0;
+  const colStep = currentCol > lastCol ? 1 : currentCol < lastCol ? -1 : 0;
 
-  let currentRow = startRow;
-  let currentCol = startCol;
+  let row = lastRow + rowStep;
+  let col = lastCol + colStep;
 
-  while (currentRow !== endRow || currentCol !== endCol) {
-    currentRow += rowStep;
-    currentCol += colStep;
-    const missingCell = document.querySelector(`.cell[data-row="${currentRow}"][data-col="${currentCol}"]`);
-    if (missingCell && !selectedCells.includes(missingCell)) {
-      selectedCells.push(missingCell);
-      missingCell.classList.add("selected");
-    }
+  while (row !== currentRow || col !== currentCol) {
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (cell) missingCells.push(cell);
+    row += rowStep;
+    col += colStep;
   }
+
+  return missingCells;
 }
 
 function endDrag() {
   isDragging = false;
+  direction = null;
   checkForWord();
 }
 
@@ -203,6 +209,35 @@ function checkForWord() {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
   }
+}
+
+// ========================
+// Mobile Support
+// ========================
+
+function addTouchSupport() {
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach(cell => {
+    cell.addEventListener("touchstart", handleTouchStart);
+    cell.addEventListener("touchmove", handleTouchMove);
+    cell.addEventListener("touchend", handleTouchEnd);
+  });
+}
+
+function handleTouchStart(e) {
+  e.preventDefault();
+  startDrag(e.target);
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (target?.classList.contains("cell")) dragOver(target);
+}
+
+function handleTouchEnd() {
+  endDrag();
 }
 
 // ========================
