@@ -24,10 +24,12 @@ let traceOpacity = opacitySlider.value;
 
 colorPicker.addEventListener("input", () => {
   traceColor = colorPicker.value;
+  updateTraceColor();
 });
 
 opacitySlider.addEventListener("input", () => {
   traceOpacity = opacitySlider.value;
+  updateTraceOpacity();
 });
 
 resetColorsBtn.addEventListener("click", resetGridColors);
@@ -238,6 +240,11 @@ function hexToRGBA(hex, opacity) {
   let g = parseInt(hex.substring(3, 5), 16);
   let b = parseInt(hex.substring(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+function applyTraceColor(cell) {
+  const rgbaColor = hexToRGBA(traceColor, traceOpacity);
+  cell.style.backgroundColor = rgbaColor;
 }
 
 function resetGridColors() {
