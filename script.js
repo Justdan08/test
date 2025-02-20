@@ -22,11 +22,11 @@ function initializeGame() {
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
 
-  // Clear existing content
+  // Clear the grid and word list
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>";
+  wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
 
-  // Create grid cells
+  // Create the grid
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       const cell = createCell(i, j);
@@ -34,7 +34,7 @@ function initializeGame() {
     }
   }
 
-  // Place words and fill grid
+  // Place words and fill random letters
   words.forEach(word => placeWord(word));
   fillRandomLetters();
 
