@@ -17,10 +17,12 @@ h1 {
 #wordsearch {
   display: grid;
   gap: 2px;
-  margin: 20px auto;
+  margin: 20px auto; /* Center horizontally */
   max-width: 95%;
-  grid-template-columns: repeat(15, 1fr); /* 15x15 grid */
+  justify-content: center; /* Center grid columns */
+  grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
 }
+
 
 .cell {
   aspect-ratio: 1;
@@ -89,6 +91,11 @@ h1 {
     grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
   }
 
+  body {
+    padding: 5px; /* Reduce padding on small screens */
+  }
+}
+
   .cell {
     font-size: 12px;
   }
@@ -99,3 +106,5 @@ h1 {
     gap: 10px;
   }
 }
+
+
