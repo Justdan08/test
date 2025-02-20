@@ -14,24 +14,6 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
-// Color picker and opacity slider
-const colorPicker = document.getElementById("trace-color");
-const opacitySlider = document.getElementById("trace-opacity");
-const resetColorsBtn = document.getElementById("reset-colors");
-
-let traceColor = colorPicker.value;
-let traceOpacity = opacitySlider.value;
-
-colorPicker.addEventListener("input", () => {
-  traceColor = colorPicker.value;
-});
-
-opacitySlider.addEventListener("input", () => {
-  traceOpacity = opacitySlider.value;
-});
-
-resetColorsBtn.addEventListener("click", resetGridColors);
-
 // ========================
 // Core Game Functions
 // ========================
@@ -137,13 +119,13 @@ function fillRandomLetters() {
 function startDrag(cell) {
   isDragging = true;
   selectedCells = [cell];
-  applyTraceColor(cell);
+  cell.classList.add("selected");
 }
 
 function dragOver(cell) {
   if (isDragging && !selectedCells.includes(cell)) {
     selectedCells.push(cell);
-    applyTraceColor(cell);
+    cell.classList.add("selected");
   }
 }
 
@@ -207,10 +189,12 @@ function handleTouchStart(e) {
   const cell = e.target;
   if (!cell.classList.contains("cell")) return;
 
+  // Reset previous selection
   selectedCells.forEach(c => c.classList.remove("selected"));
   selectedCells = [];
   currentDirection = null;
 
+  // Record starting cell
   startRow = parseInt(cell.dataset.row);
   startCol = parseInt(cell.dataset.col);
   selectedCells.push(cell);
@@ -226,6 +210,7 @@ function handleTouchMove(e) {
   const currentRow = parseInt(target.dataset.row);
   const currentCol = parseInt(target.dataset.col);
 
+  // Calculate direction if not set
   if (!currentDirection) {
     const dRow = currentRow - startRow;
     const dCol = currentCol - startCol;
@@ -233,19 +218,29 @@ function handleTouchMove(e) {
     if (dRow === 0 && dCol !== 0) currentDirection = "horizontal";
     else if (dCol === 0 && dRow !== 0) currentDirection = "vertical";
     else if (Math.abs(dRow) === Math.abs(dCol)) currentDirection = "diagonal";
-    else return;
+    else return; // Invalid direction
   }
 
+  // Get all cells in the straight path from start to current
   const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
   if (!pathCells) return;
 
-  selectedCells.forEach(c => c.style.backgroundColor = "");
+  // Update selected cells
+  selectedCells.forEach(c => c.classList.remove("selected"));
   selectedCells = pathCells;
-  selectedCells.forEach(c => applyTraceColor(c));
+  selectedCells.forEach(c => c.classList.add("selected"));
 }
 
 function handleTouchEnd() {
-  endDrag();
+  if (selectedCells.length > 1) {
+    checkForWord(); // Only check if multiple cells are selected
+  } else {
+    // Reset single-cell selection
+    selectedCells.forEach(c => c.classList.remove("selected"));
+    selectedCells = [];
+  }
+
+  // Reset touch state
   startRow = -1;
   startCol = -1;
   currentDirection = null;
@@ -255,17 +250,49 @@ function handleTouchEnd() {
 // Utility Functions
 // ========================
 
-function hexToRGBA(hex, opacity) {
-  let r = parseInt(hex.substring(1, 3), 16);
-  let g = parseInt(hex.substring(3, 5), 16);
-  let b = parseInt(hex.substring(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
+function getStraightPath(startRow, startCol, endRow, endCol, direction) {
+  const cells = [];
+  const dRow = endRow - startRow;
+  const dCol = endCol - startCol;
 
-function resetGridColors() {
-  document.querySelectorAll(".cell").forEach(cell => {
-    cell.style.backgroundColor = "";
-  });
+  let steps;
+  switch (direction) {
+    case "horizontal":
+      steps = Math.abs(dCol);
+      break;
+    case "vertical":
+      steps = Math.abs(dRow);
+      break;
+    case "diagonal":
+      steps = Math.abs(dRow); // For diagonal, dRow === dCol
+      break;
+    default:
+      return null;
+  }
+
+  for (let i = 0; i <= steps; i++) {
+    let row, col;
+    switch (direction) {
+      case "horizontal":
+        row = startRow;
+        col = startCol + (dCol > 0 ? i : -i);
+        break;
+      case "vertical":
+        row = startRow + (dRow > 0 ? i : -i);
+        col = startCol;
+        break;
+      case "diagonal":
+        row = startRow + (dRow > 0 ? i : -i);
+        col = startCol + (dCol > 0 ? i : -i);
+        break;
+    }
+
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (!cell) return null; // Out of bounds
+    cells.push(cell);
+  }
+
+  return cells;
 }
 
 // ========================
@@ -279,6 +306,5 @@ function resetGame() {
   wordsContainer.innerHTML = "<div>Words to find:</div>";
   selectedCells = [];
   foundWords = [];
-  resetGridColors();
   initializeGame();
 }
