@@ -1,6 +1,6 @@
-// Check if gridSize and words are defined (they should be in your HTML)
+// Validate puzzle settings
 if (typeof gridSize === "undefined" || typeof words === "undefined") {
-  console.error("Error: gridSize or words are not defined. Define them in your HTML!");
+  console.error("Error: gridSize or words are not defined in the HTML!");
 }
 
 // Game state
@@ -8,26 +8,25 @@ let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
 
-// Initialize the game when the page loads
+// Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
 
-// Reset button functionality
+// Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
 // ========================
-// Core Functions
+// Core Game Functions
 // ========================
 
-// ... (keep the existing code for gridSize, words, etc.)
-
 function initializeGame() {
-  // Clear existing grid and word list
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
+
+  // Clear existing content
   wordsearch.innerHTML = "";
   wordsContainer.innerHTML = "<div>Words to find:</div>";
 
-  // Create the grid cells
+  // Create grid cells
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       const cell = createCell(i, j);
@@ -35,7 +34,7 @@ function initializeGame() {
     }
   }
 
-  // Place words and fill random letters
+  // Place words and fill grid
   words.forEach(word => placeWord(word));
   fillRandomLetters();
 
@@ -45,12 +44,6 @@ function initializeGame() {
     wordElement.textContent = word;
     wordsContainer.appendChild(wordElement);
   });
-
-  // Reattach touch events to new cells
-  addTouchSupport(); // Critical for mobile!
-}
-
-// ... (keep the rest of your code, including addTouchSupport and touch handlers)
 
   // Add touch support
   addTouchSupport();
@@ -81,7 +74,7 @@ function placeWord(word) {
         cell.textContent = word[i];
       }
     } else {
-      placeWord(word); // Retry placing the word
+      placeWord(word); // Retry placement
     }
   } else {
     col = Math.floor(Math.random() * gridSize);
@@ -92,7 +85,7 @@ function placeWord(word) {
         cell.textContent = word[i];
       }
     } else {
-      placeWord(word); // Retry placing the word
+      placeWord(word); // Retry placement
     }
   }
 }
@@ -102,17 +95,14 @@ function canPlaceWord(word, row, col, direction) {
     const cell = direction === "horizontal"
       ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
       : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-    if (cell.textContent !== "" && cell.textContent !== word[i]) {
-      return false; // Conflict detected
-    }
+    if (cell.textContent !== "" && cell.textContent !== word[i]) return false;
   }
-  return true; // No conflicts
+  return true;
 }
 
 function fillRandomLetters() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const cells = document.querySelectorAll(".cell");
-  cells.forEach(cell => {
+  document.querySelectorAll(".cell").forEach(cell => {
     if (cell.textContent === "") {
       cell.textContent = letters[Math.floor(Math.random() * letters.length)];
     }
@@ -148,17 +138,12 @@ function checkForWord() {
     selectedCells.forEach(cell => cell.classList.add("found"));
     selectedCells = [];
 
-    // Mark the word as found
-    const wordElements = document.querySelectorAll("#words div");
-    wordElements.forEach(el => {
-      if (el.textContent === selectedWord) {
-        el.classList.add("found");
-      }
+    // Mark word as found
+    document.querySelectorAll("#words div").forEach(el => {
+      if (el.textContent === selectedWord) el.classList.add("found");
     });
 
-    if (foundWords.length === words.length) {
-      alert("Good Job Big Dog!");
-    }
+    if (foundWords.length === words.length) alert("Good Job Big Dog!");
   } else {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
@@ -172,6 +157,10 @@ function checkForWord() {
 function addTouchSupport() {
   const cells = document.querySelectorAll(".cell");
   cells.forEach(cell => {
+    cell.removeEventListener("touchstart", handleTouchStart);
+    cell.removeEventListener("touchmove", handleTouchMove);
+    cell.removeEventListener("touchend", handleTouchEnd);
+
     cell.addEventListener("touchstart", handleTouchStart);
     cell.addEventListener("touchmove", handleTouchMove);
     cell.addEventListener("touchend", handleTouchEnd);
@@ -187,9 +176,7 @@ function handleTouchMove(e) {
   e.preventDefault();
   const touch = e.touches[0];
   const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (target?.classList.contains("cell")) {
-    dragOver(target);
-  }
+  if (target?.classList.contains("cell")) dragOver(target);
 }
 
 function handleTouchEnd() {
