@@ -7,6 +7,7 @@ if (typeof gridSize === "undefined" || typeof words === "undefined") {
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
+let dragDirection = null; // Variable to store the direction of the drag
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -62,13 +63,13 @@ function createCell(row, col) {
 }
 
 function placeWord(word) {
-  const direction = Math.floor(Math.random() * 3); // 0: horizontal, 1: vertical, 2: diagonal
+  const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
   let row, col;
 
-  if (direction === 0) { // Horizontal
+  if (direction === "horizontal") {
     row = Math.floor(Math.random() * gridSize);
     col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, "horizontal")) {
+    if (canPlaceWord(word, row, col, direction)) {
       for (let i = 0; i < word.length; i++) {
         const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
         cell.textContent = word[i];
@@ -76,23 +77,12 @@ function placeWord(word) {
     } else {
       placeWord(word); // Retry placement
     }
-  } else if (direction === 1) { // Vertical
+  } else {
     col = Math.floor(Math.random() * gridSize);
     row = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, "vertical")) {
+    if (canPlaceWord(word, row, col, direction)) {
       for (let i = 0; i < word.length; i++) {
         const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
-    }
-  } else { // Diagonal
-    row = Math.floor(Math.random() * (gridSize - word.length));
-    col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, "diagonal")) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
         cell.textContent = word[i];
       }
     } else {
@@ -105,13 +95,8 @@ function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
     const cell = direction === "horizontal"
       ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
-      : direction === "vertical"
-      ? document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`)
-      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-    
-    if (!cell || cell.textContent !== "" && cell.textContent !== word[i]) {
-      return false;
-    }
+      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+    if (cell.textContent !== "" && cell.textContent !== word[i]) return false;
   }
   return true;
 }
@@ -133,17 +118,39 @@ function startDrag(cell) {
   isDragging = true;
   selectedCells = [cell];
   cell.classList.add("selected");
+  
+  // Determine the direction of the drag
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const rowDiff = Math.abs(cell.dataset.row - lastCell.dataset.row);
+  const colDiff = Math.abs(cell.dataset.col - lastCell.dataset.col);
+  
+  if (rowDiff === 0) {
+    dragDirection = 'horizontal'; // Horizontal drag
+  } else if (colDiff === 0) {
+    dragDirection = 'vertical'; // Vertical drag
+  } else if (rowDiff === colDiff) {
+    dragDirection = 'diagonal'; // Diagonal drag
+  }
 }
 
 function dragOver(cell) {
   if (isDragging && !selectedCells.includes(cell)) {
-    // Check if the cell is part of the same line (horizontal, vertical, or diagonal)
+    // Check if the current drag follows the same direction
     const lastCell = selectedCells[selectedCells.length - 1];
     const rowDiff = Math.abs(cell.dataset.row - lastCell.dataset.row);
     const colDiff = Math.abs(cell.dataset.col - lastCell.dataset.col);
+    
+    let isValidMove = false;
+    
+    if (dragDirection === 'horizontal' && rowDiff === 0 && colDiff === 1) {
+      isValidMove = true;
+    } else if (dragDirection === 'vertical' && colDiff === 0 && rowDiff === 1) {
+      isValidMove = true;
+    } else if (dragDirection === 'diagonal' && rowDiff === colDiff) {
+      isValidMove = true;
+    }
 
-    // Allow only horizontal, vertical, or diagonal lines
-    if ((rowDiff === 0 && colDiff === 1) || (colDiff === 0 && rowDiff === 1) || (rowDiff === colDiff)) {
+    if (isValidMove) {
       selectedCells.push(cell);
       cell.classList.add("selected");
     }
