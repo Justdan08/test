@@ -14,6 +14,24 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
+// Color picker and opacity slider
+const colorPicker = document.getElementById("trace-color");
+const opacitySlider = document.getElementById("trace-opacity");
+const resetColorsBtn = document.getElementById("reset-colors");
+
+let traceColor = colorPicker.value;
+let traceOpacity = opacitySlider.value;
+
+colorPicker.addEventListener("input", () => {
+  traceColor = colorPicker.value;
+});
+
+opacitySlider.addEventListener("input", () => {
+  traceOpacity = opacitySlider.value;
+});
+
+resetColorsBtn.addEventListener("click", resetGridColors);
+
 // ========================
 // Core Game Functions
 // ========================
@@ -119,13 +137,13 @@ function fillRandomLetters() {
 function startDrag(cell) {
   isDragging = true;
   selectedCells = [cell];
-  cell.classList.add("selected");
+  applyTraceColor(cell);
 }
 
 function dragOver(cell) {
   if (isDragging && !selectedCells.includes(cell)) {
     selectedCells.push(cell);
-    cell.classList.add("selected");
+    applyTraceColor(cell);
   }
 }
 
@@ -153,54 +171,11 @@ function checkForWord() {
     selectedCells = [];
   }
 }
-// Get the color input elements
-const colorPicker = document.getElementById("trace-color");
-const opacitySlider = document.getElementById("trace-opacity");
-const resetColorsBtn = document.getElementById("reset-colors");
-
-let traceColor = colorPicker.value;
-let traceOpacity = opacitySlider.value;
-
-// Listen for color changes
-colorPicker.addEventListener("input", () => {
-  traceColor = colorPicker.value;
-});
-
-opacitySlider.addEventListener("input", () => {
-  traceOpacity = opacitySlider.value;
-});
-
-// Reset colors button
-resetColorsBtn.addEventListener("click", resetGridColors);
 
 // ========================
-// Updated Selection Functions
+// Touch Support
 // ========================
 
-function applyTraceColor(cell) {
-  cell.style.backgroundColor = hexToRGBA(traceColor, traceOpacity);
-}
-
-function startDrag(cell) {
-  isDragging = true;
-  selectedCells = [cell];
-  applyTraceColor(cell);
-}
-
-function dragOver(cell) {
-  if (isDragging && !selectedCells.includes(cell)) {
-    selectedCells.push(cell);
-    applyTraceColor(cell);
-  }
-}
-
-function endDrag() {
-  isDragging = false;
-  checkForWord();
-}
-// ========================
-// Updated Touch Support
-// ========================
 let startRow = -1;
 let startCol = -1;
 let currentDirection = null;
@@ -242,9 +217,9 @@ function handleTouchMove(e) {
   const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
   if (!pathCells) return;
 
-  selectedCells.forEach(c => c.classList.remove("selected"));
+  selectedCells.forEach(c => c.style.backgroundColor = "");
   selectedCells = pathCells;
-  selectedCells.forEach(c => c.classList.add("selected"));
+  selectedCells.forEach(c => applyTraceColor(c));
 }
 
 function handleTouchEnd() {
@@ -253,42 +228,11 @@ function handleTouchEnd() {
   startCol = -1;
   currentDirection = null;
 }
-// ========================
-// Touch Support Updates
-// ========================
-
-function handleTouchMove(e) {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (!target?.classList.contains("cell")) return;
-
-  const currentRow = parseInt(target.dataset.row);
-  const currentCol = parseInt(target.dataset.col);
-
-  if (!currentDirection) {
-    const dRow = currentRow - startRow;
-    const dCol = currentCol - startCol;
-
-    if (dRow === 0 && dCol !== 0) currentDirection = "horizontal";
-    else if (dCol === 0 && dRow !== 0) currentDirection = "vertical";
-    else if (Math.abs(dRow) === Math.abs(dCol)) currentDirection = "diagonal";
-    else return;
-  }
-
-  const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
-  if (!pathCells) return;
-
-  selectedCells.forEach(c => c.style.backgroundColor = "");
-  selectedCells = pathCells;
-  selectedCells.forEach(c => applyTraceColor(c));
-}
 
 // ========================
 // Utility Functions
 // ========================
 
-// Convert HEX to RGBA with opacity
 function hexToRGBA(hex, opacity) {
   let r = parseInt(hex.substring(1, 3), 16);
   let g = parseInt(hex.substring(3, 5), 16);
@@ -296,7 +240,6 @@ function hexToRGBA(hex, opacity) {
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
-// Reset grid cell colors
 function resetGridColors() {
   document.querySelectorAll(".cell").forEach(cell => {
     cell.style.backgroundColor = "";
@@ -308,8 +251,12 @@ function resetGridColors() {
 // ========================
 
 function resetGame() {
-  document.getElementById("wordsearch").innerHTML = "";
+  const wordsearch = document.getElementById("wordsearch");
+  const wordsContainer = document.getElementById("words");
+  wordsearch.innerHTML = "";
+  wordsContainer.innerHTML = "<div>Words to find:</div>";
   selectedCells = [];
   foundWords = [];
+  resetGridColors();
   initializeGame();
 }
