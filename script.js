@@ -118,30 +118,29 @@ function startDrag(cell) {
   isDragging = true;
   selectedCells = [cell];
   cell.classList.add("selected");
-  
-  // Determine the direction of the drag
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const rowDiff = Math.abs(cell.dataset.row - lastCell.dataset.row);
-  const colDiff = Math.abs(cell.dataset.col - lastCell.dataset.col);
-  
-  if (rowDiff === 0) {
-    dragDirection = 'horizontal'; // Horizontal drag
-  } else if (colDiff === 0) {
-    dragDirection = 'vertical'; // Vertical drag
-  } else if (rowDiff === colDiff) {
-    dragDirection = 'diagonal'; // Diagonal drag
-  }
+  dragDirection = null; // Reset the direction each time a new drag starts
 }
 
 function dragOver(cell) {
   if (isDragging && !selectedCells.includes(cell)) {
-    // Check if the current drag follows the same direction
     const lastCell = selectedCells[selectedCells.length - 1];
     const rowDiff = Math.abs(cell.dataset.row - lastCell.dataset.row);
     const colDiff = Math.abs(cell.dataset.col - lastCell.dataset.col);
-    
+
+    // Determine the direction based on the first valid move
+    if (!dragDirection) {
+      if (rowDiff === 0) {
+        dragDirection = 'horizontal'; // Horizontal drag
+      } else if (colDiff === 0) {
+        dragDirection = 'vertical'; // Vertical drag
+      } else if (rowDiff === colDiff) {
+        dragDirection = 'diagonal'; // Diagonal drag
+      }
+    }
+
+    // Only accept moves that match the chosen direction
     let isValidMove = false;
-    
+
     if (dragDirection === 'horizontal' && rowDiff === 0 && colDiff === 1) {
       isValidMove = true;
     } else if (dragDirection === 'vertical' && colDiff === 0 && rowDiff === 1) {
