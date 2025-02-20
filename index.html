@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Word Search Puzzles</title>
   <link rel="stylesheet" href="style.css">
-    <label for="trace-color">Select Trace Color:</label>
-<input type="color" id="trace-color" value="#00ff00">
-
-<label for="trace-opacity">Adjust Opacity:</label>
-<input type="range" id="trace-opacity" min="0.1" max="1" step="0.1" value="1">
-
-<button id="reset-colors">Reset Colors</button>
 </head>
 <body>
   <h1>Choose a Puzzle</h1>
+
+  <!-- Color and opacity controls -->
+  <label for="trace-color">Select Trace Color:</label>
+  <input type="color" id="trace-color" value="#00ff00">
+
+  <label for="trace-opacity">Adjust Opacity:</label>
+  <input type="range" id="trace-opacity" min="0.1" max="1" step="0.1" value="1">
+
+  <button id="reset-colors">Reset Colors</button>
+
   <div class="puzzle-links">
     <a href="puzzle1.html" class="puzzle-link">Marvel</a>
     <a href="puzzle2.html" class="puzzle-link">HALO</a>
@@ -22,5 +25,7 @@
     <a href="puzzle4.html" class="puzzle-link">WWE 2025</a>
     <a href="puzzle4.html" class="puzzle-link">2010s Horror</a>
   </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
