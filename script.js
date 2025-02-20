@@ -153,7 +153,101 @@ function checkForWord() {
     selectedCells = [];
   }
 }
+// Get the color input elements
+const colorPicker = document.getElementById("trace-color");
+const opacitySlider = document.getElementById("trace-opacity");
+const resetColorsBtn = document.getElementById("reset-colors");
 
+let traceColor = colorPicker.value;
+let traceOpacity = opacitySlider.value;
+
+// Listen for color changes
+colorPicker.addEventListener("input", () => {
+  traceColor = colorPicker.value;
+});
+
+opacitySlider.addEventListener("input", () => {
+  traceOpacity = opacitySlider.value;
+});
+
+// Reset colors button
+resetColorsBtn.addEventListener("click", resetGridColors);
+
+// ========================
+// Updated Selection Functions
+// ========================
+
+function applyTraceColor(cell) {
+  cell.style.backgroundColor = hexToRGBA(traceColor, traceOpacity);
+}
+
+function startDrag(cell) {
+  isDragging = true;
+  selectedCells = [cell];
+  applyTraceColor(cell);
+}
+
+function dragOver(cell) {
+  if (isDragging && !selectedCells.includes(cell)) {
+    selectedCells.push(cell);
+    applyTraceColor(cell);
+  }
+}
+
+function endDrag() {
+  isDragging = false;
+  checkForWord();
+}
+
+// ========================
+// Touch Support Updates
+// ========================
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!target?.classList.contains("cell")) return;
+
+  const currentRow = parseInt(target.dataset.row);
+  const currentCol = parseInt(target.dataset.col);
+
+  if (!currentDirection) {
+    const dRow = currentRow - startRow;
+    const dCol = currentCol - startCol;
+
+    if (dRow === 0 && dCol !== 0) currentDirection = "horizontal";
+    else if (dCol === 0 && dRow !== 0) currentDirection = "vertical";
+    else if (Math.abs(dRow) === Math.abs(dCol)) currentDirection = "diagonal";
+    else return;
+  }
+
+  const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
+  if (!pathCells) return;
+
+  selectedCells.forEach(c => c.style.backgroundColor = "");
+  selectedCells = pathCells;
+  selectedCells.forEach(c => applyTraceColor(c));
+}
+
+// ========================
+// Utility Functions
+// ========================
+
+// Convert HEX to RGBA with opacity
+function hexToRGBA(hex, opacity) {
+  let r = parseInt(hex.substring(1, 3), 16);
+  let g = parseInt(hex.substring(3, 5), 16);
+  let b = parseInt(hex.substring(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+// Reset grid cell colors
+function resetGridColors() {
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.style.backgroundColor = "";
+  });
+}
 // ========================
 // Touch Support
 // ========================
