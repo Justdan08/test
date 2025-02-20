@@ -12,6 +12,8 @@ let direction = null;
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
+
+// Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
 // ========================
@@ -22,9 +24,9 @@ function initializeGame() {
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
 
-  // Clear grid and word list
+  // Clear the grid and word list
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>";
+  wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -89,7 +91,7 @@ function placeWord(word) {
       }
     }
   } else {
-    placeWord(word);
+    placeWord(word); // Retry placement
   }
 }
 
@@ -136,6 +138,7 @@ function dragOver(cell) {
   const dy = cell.dataset.row - startCell.dataset.row;
 
   if (!direction) {
+    // Determine initial direction
     if (dx === 0) direction = "vertical";
     else if (dy === 0) direction = "horizontal";
     else if (Math.abs(dx) === Math.abs(dy)) direction = "diagonal";
@@ -147,9 +150,10 @@ function dragOver(cell) {
     (direction === "vertical" && dx !== 0) ||
     (direction === "diagonal" && Math.abs(dx) !== Math.abs(dy))
   ) {
-    return;
+    return; // Invalid movement, ignore
   }
 
+  // Fill in missing cells if touch reconnects
   const missingCells = getCellsBetween(lastCell, cell);
   missingCells.forEach(missingCell => {
     if (!selectedCells.includes(missingCell)) {
@@ -189,7 +193,6 @@ function getCellsBetween(cell1, cell2) {
 
 function checkForWord() {
   const selectedWord = selectedCells.map(cell => cell.textContent).join("");
-  
   if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
@@ -243,3 +246,4 @@ function resetGame() {
   selectedCells = [];
   foundWords = [];
   initializeGame();
+}
