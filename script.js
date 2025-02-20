@@ -189,10 +189,8 @@ function handleTouchEnd() {
 
 function resetGame() {
   const wordsearch = document.getElementById("wordsearch");
-  const wordsContainer = document.getElementById("words");
-  wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>";
+  wordsearch.innerHTML = ""; // Only clear the grid
   selectedCells = [];
   foundWords = [];
-  initializeGame();
+  initializeGame(); // initializeGame will reset the word list
 }
