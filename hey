@@ -1,1 +1,29 @@
-hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2024 Musical Artist</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>2024 Musical Artist</h1>
+  <div id="wordsearch"></div>
+  <div id="word-list">
+    <div>Words to find:</div>
+    <div id="words"></div>
+  </div>
+  <button id="reset-button">Reset Game</button>
+  <div class="nav-links">
+    <a href="index.html">Back to Menu</a>
+    <a href="puzzle2.html">Previous Puzzle</a>
+  </div>
+  
+  <!-- Define puzzle-specific settings -->
+  <script>
+    const gridSize = 15;
+    const words = ["GAGA", "CHAPPELL", "SABRINA", "BRUNO", "KENDRICK", "HOZIER", "LAUFEY", "CHARLI", "LISA", "FUTURE", "METRO",];
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
