@@ -38,7 +38,22 @@ h1 {
 .cell.selected {
   background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
 }
+/* Add default values for trace color and opacity */
+:root {
+  --trace-color: #00ff00;
+  --trace-opacity: 1;
+}
 
+/* Use these CSS variables where you want to apply the trace color and opacity */
+.selected {
+  background-color: var(--trace-color);
+  opacity: var(--trace-opacity);
+}
+
+/* For the opacity of the reset button and color picker */
+#trace-color, #trace-opacity {
+  margin: 10px;
+}
 /* Word List */
 #word-list {
   margin: 10px;
