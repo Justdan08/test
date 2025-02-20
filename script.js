@@ -192,5 +192,5 @@ function resetGame() {
   wordsearch.innerHTML = ""; // Only clear the grid
   selectedCells = [];
   foundWords = [];
-  initializeGame(); // initializeGame will reset the word list
+  initializeGame(); // Let initializeGame handle the word list
 }
