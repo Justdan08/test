@@ -198,7 +198,61 @@ function endDrag() {
   isDragging = false;
   checkForWord();
 }
+// ========================
+// Updated Touch Support
+// ========================
+let startRow = -1;
+let startCol = -1;
+let currentDirection = null;
 
+function handleTouchStart(e) {
+  e.preventDefault();
+  const cell = e.target;
+  if (!cell.classList.contains("cell")) return;
+
+  selectedCells.forEach(c => c.classList.remove("selected"));
+  selectedCells = [];
+  currentDirection = null;
+
+  startRow = parseInt(cell.dataset.row);
+  startCol = parseInt(cell.dataset.col);
+  selectedCells.push(cell);
+  cell.classList.add("selected");
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!target?.classList.contains("cell")) return;
+
+  const currentRow = parseInt(target.dataset.row);
+  const currentCol = parseInt(target.dataset.col);
+
+  if (!currentDirection) {
+    const dRow = currentRow - startRow;
+    const dCol = currentCol - startCol;
+
+    if (dRow === 0 && dCol !== 0) currentDirection = "horizontal";
+    else if (dCol === 0 && dRow !== 0) currentDirection = "vertical";
+    else if (Math.abs(dRow) === Math.abs(dCol)) currentDirection = "diagonal";
+    else return;
+  }
+
+  const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
+  if (!pathCells) return;
+
+  selectedCells.forEach(c => c.classList.remove("selected"));
+  selectedCells = pathCells;
+  selectedCells.forEach(c => c.classList.add("selected"));
+}
+
+function handleTouchEnd() {
+  endDrag();
+  startRow = -1;
+  startCol = -1;
+  currentDirection = null;
+}
 // ========================
 // Touch Support Updates
 // ========================
