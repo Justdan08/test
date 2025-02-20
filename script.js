@@ -108,9 +108,29 @@ function placeWord(word) {
 
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
-    const cell = direction === "horizontal"
-      ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
-      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+    let targetRow = row;
+    let targetCol = col;
+
+    if (direction === "horizontal") {
+      targetCol += i;
+    } else if (direction === "vertical") {
+      targetRow += i;
+    } else if (direction === "diagonal-down") {
+      targetRow += i;
+      targetCol += i;
+    } else if (direction === "diagonal-up") {
+      targetRow -= i;
+      targetCol += i;
+    }
+
+    if (
+      targetRow < 0 || targetRow >= gridSize || 
+      targetCol < 0 || targetCol >= gridSize
+    ) {
+      return false; // Out of bounds
+    }
+
+    const cell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
     if (cell.textContent !== "" && cell.textContent !== word[i]) return false;
   }
   return true;
