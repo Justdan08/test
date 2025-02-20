@@ -23,6 +23,7 @@ h1 {
   grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
 }
 
+
 .cell {
   aspect-ratio: 1;
   border: 1px solid black;
@@ -34,26 +35,8 @@ h1 {
   user-select: none;
 }
 
-/* Use CSS Variables for trace color and opacity */
-:root {
-  --trace-color: #00ff00;
-  --trace-opacity: 1;
-}
-
-/* Trace the color using CSS Variables */
-.selected {
-  background-color: var(--trace-color);
-  opacity: var(--trace-opacity);
-}
-
 .cell.selected {
-  background-color: var(--trace-color); /* Apply the trace color */
-  opacity: var(--trace-opacity); /* Apply the opacity */
-}
-
-/* For the opacity of the reset button and color picker */
-#trace-color, #trace-opacity {
-  margin: 10px;
+  background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
 }
 
 /* Word List */
@@ -105,12 +88,13 @@ h1 {
 /* Mobile Optimization */
 @media (max-width: 600px) {
   #wordsearch {
-    grid-template-columns: repeat(15, 7vw); /* Adjust for mobile grid */
+    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
   }
 
   body {
     padding: 5px; /* Reduce padding on small screens */
   }
+}
 
   .cell {
     font-size: 12px;
@@ -122,3 +106,4 @@ h1 {
     gap: 10px;
   }
 }
+
