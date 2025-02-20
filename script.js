@@ -62,7 +62,8 @@ function createCell(row, col) {
 }
 
 function placeWord(word) {
-  const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+  const directions = ["horizontal", "vertical", "diagonal"];
+  const direction = directions[Math.floor(Math.random() * directions.length)]; // Randomly choose a direction
   let row, col;
 
   if (direction === "horizontal") {
@@ -76,7 +77,7 @@ function placeWord(word) {
     } else {
       placeWord(word); // Retry placement
     }
-  } else {
+  } else if (direction === "vertical") {
     col = Math.floor(Math.random() * gridSize);
     row = Math.floor(Math.random() * (gridSize - word.length));
     if (canPlaceWord(word, row, col, direction)) {
@@ -87,17 +88,36 @@ function placeWord(word) {
     } else {
       placeWord(word); // Retry placement
     }
+  } else if (direction === "diagonal") {
+    row = Math.floor(Math.random() * (gridSize - word.length));
+    col = Math.floor(Math.random() * (gridSize - word.length));
+    if (canPlaceWord(word, row, col, direction)) {
+      for (let i = 0; i < word.length; i++) {
+        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+        cell.textContent = word[i];
+      }
+    } else {
+      placeWord(word); // Retry placement
+    }
   }
 }
 
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
-    const cell = direction === "horizontal"
-      ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
-      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-    if (cell.textContent !== "" && cell.textContent !== word[i]) return false;
+    let cell;
+    if (direction === "horizontal") {
+      cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+    } else if (direction === "vertical") {
+      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+    } else if (direction === "diagonal") {
+      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+    }
+
+    if (cell.textContent !== "" && cell.textContent !== word[i]) {
+      return false; // Conflict detected
+    }
   }
-  return true;
+  return true; // No conflicts
 }
 
 function fillRandomLetters() {
