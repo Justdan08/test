@@ -42,9 +42,19 @@ function initializeGame() {
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
 
-  // Clear the grid and word list
+  // Clear the grid (but not the words list, as we want to keep "Words to find:" and the previous word list)
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>";
+
+  // Add "Words to find:" label if it doesn't exist
+  if (!wordsContainer.querySelector(".label")) {
+    const label = document.createElement("div");
+    label.textContent = "Words to find:";
+    label.classList.add("label");
+    wordsContainer.appendChild(label);
+  }
+
+  // Clear the previous words (if any), before appending new ones
+  wordsContainer.querySelectorAll(".word-item").forEach(item => item.remove());
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -62,13 +72,13 @@ function initializeGame() {
   words.forEach(word => {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
+    wordElement.classList.add("word-item");
     wordsContainer.appendChild(wordElement);
   });
 
   // Add touch support
   addTouchSupport();
 }
-
 function createCell(row, col) {
   const cell = document.createElement("div");
   cell.classList.add("cell");
