@@ -263,7 +263,3 @@ function resetGame() {
   wordsearch.innerHTML = "";
   wordsContainer.innerHTML = "<div>Words to find:</div>";
   selectedCells = [];
-  foundWords = [];
-  resetGridColors();
-  initializeGame();
-}
