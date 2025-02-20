@@ -24,7 +24,7 @@ function initializeGame() {
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
+  wordsContainer.innerHTML = "<div>Words to find:</div>";
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -63,61 +63,44 @@ function createCell(row, col) {
 
 function placeWord(word) {
   const directions = ["horizontal", "vertical", "diagonal"];
-  const direction = directions[Math.floor(Math.random() * directions.length)]; // Randomly choose a direction
+  const direction = directions[Math.floor(Math.random() * directions.length)];
   let row, col;
 
   if (direction === "horizontal") {
     row = Math.floor(Math.random() * gridSize);
     col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
-    }
   } else if (direction === "vertical") {
     col = Math.floor(Math.random() * gridSize);
     row = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
-    }
-  } else if (direction === "diagonal") {
+  } else {
     row = Math.floor(Math.random() * (gridSize - word.length));
     col = Math.floor(Math.random() * (gridSize - word.length));
-    if (canPlaceWord(word, row, col, direction)) {
-      for (let i = 0; i < word.length; i++) {
-        const cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-        cell.textContent = word[i];
-      }
-    } else {
-      placeWord(word); // Retry placement
+  }
+
+  if (canPlaceWord(word, row, col, direction)) {
+    for (let i = 0; i < word.length; i++) {
+      let targetCell;
+      if (direction === "horizontal") targetCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+      if (direction === "vertical") targetCell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+      if (direction === "diagonal") targetCell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+
+      if (targetCell) targetCell.textContent = word[i];
     }
+  } else {
+    placeWord(word);
   }
 }
 
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
     let cell;
-    if (direction === "horizontal") {
-      cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-    } else if (direction === "vertical") {
-      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-    } else if (direction === "diagonal") {
-      cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-    }
+    if (direction === "horizontal") cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+    if (direction === "vertical") cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+    if (direction === "diagonal") cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
 
-    if (cell.textContent !== "" && cell.textContent !== word[i]) {
-      return false; // Conflict detected
-    }
+    if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) return false;
   }
-  return true; // No conflicts
+  return true;
 }
 
 function fillRandomLetters() {
@@ -155,25 +138,16 @@ function checkForWord() {
   const selectedWord = selectedCells.map(cell => cell.textContent).join("");
   const reversedWord = selectedCells.reverse().map(cell => cell.textContent).join("");
 
-  if (
-    (words.includes(selectedWord) || words.includes(reversedWord)) &&
-    !foundWords.includes(selectedWord) &&
-    !foundWords.includes(reversedWord)
-  ) {
+  if ((words.includes(selectedWord) || words.includes(reversedWord)) && !foundWords.includes(selectedWord)) {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
     selectedCells = [];
 
-    // Mark word as found
     document.querySelectorAll("#words div").forEach(el => {
-      if (el.textContent === selectedWord || el.textContent === reversedWord) {
-        el.classList.add("found");
-      }
+      if (el.textContent === selectedWord || el.textContent === reversedWord) el.classList.add("found");
     });
 
-    if (foundWords.length === words.length) {
-      alert("Good Job Big Dog!");
-    }
+    if (foundWords.length === words.length) alert("Good Job Big Dog!");
   } else {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
@@ -181,124 +155,42 @@ function checkForWord() {
 }
 
 // ========================
-// Touch Handling Variables
+// Touch Support
 // ========================
-let startRow = -1;
-let startCol = -1;
-let currentDirection = null;
 
-// ========================
-// Mobile Support (Updated)
-// ========================
+function addTouchSupport() {
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.addEventListener("touchstart", handleTouchStart, { passive: false });
+    cell.addEventListener("touchmove", handleTouchMove, { passive: false });
+    cell.addEventListener("touchend", handleTouchEnd, { passive: false });
+  });
+}
+
 function handleTouchStart(e) {
+  if (!e.target.classList.contains("cell")) return;
   e.preventDefault();
-  const cell = e.target;
-  if (!cell.classList.contains("cell")) return;
-
-  // Reset state
-  selectedCells.forEach(c => c.classList.remove("selected"));
-  selectedCells = [];
-  currentDirection = null;
-
-  // Record starting cell
-  startRow = parseInt(cell.dataset.row);
-  startCol = parseInt(cell.dataset.col);
-  selectedCells.push(cell);
-  cell.classList.add("selected");
+  startDrag(e.target);
 }
 
 function handleTouchMove(e) {
-  e.preventDefault();
   const touch = e.touches[0];
   const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (!target?.classList.contains("cell")) return;
-
-  const currentRow = parseInt(target.dataset.row);
-  const currentCol = parseInt(target.dataset.col);
-
-  // Calculate direction if not set
-  if (!currentDirection) {
-    const dRow = currentRow - startRow;
-    const dCol = currentCol - startCol;
-
-    if (dRow === 0 && dCol !== 0) currentDirection = "horizontal";
-    else if (dCol === 0 && dRow !== 0) currentDirection = "vertical";
-    else if (Math.abs(dRow) === Math.abs(dCol)) currentDirection = "diagonal";
-    else return; // Invalid direction
-  }
-
-  // Get all cells in the straight path from start to current
-  const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
-  if (!pathCells) return;
-
-  // Update selected cells
-  selectedCells.forEach(c => c.classList.remove("selected"));
-  selectedCells = pathCells;
-  selectedCells.forEach(c => c.classList.add("selected"));
+  if (!target || !target.classList.contains("cell")) return;
+  e.preventDefault();
+  dragOver(target);
 }
 
 function handleTouchEnd() {
   endDrag();
-  startRow = -1;
-  startCol = -1;
-  currentDirection = null;
 }
 
-// ========================
-// Bresenham's Line Algorithm
-// ========================
-function getStraightPath(startRow, startCol, endRow, endCol, direction) {
-  const cells = [];
-  const dRow = endRow - startRow;
-  const dCol = endCol - startCol;
-
-  let steps;
-  switch (direction) {
-    case "horizontal":
-      steps = Math.abs(dCol);
-      break;
-    case "vertical":
-      steps = Math.abs(dRow);
-      break;
-    case "diagonal":
-      steps = Math.abs(dRow); // For diagonal, dRow === dCol
-      break;
-    default:
-      return null;
-  }
-
-  for (let i = 0; i <= steps; i++) {
-    let row, col;
-    switch (direction) {
-      case "horizontal":
-        row = startRow;
-        col = startCol + (dCol > 0 ? i : -i);
-        break;
-      case "vertical":
-        row = startRow + (dRow > 0 ? i : -i);
-        col = startCol;
-        break;
-      case "diagonal":
-        row = startRow + (dRow > 0 ? i : -i);
-        col = startCol + (dCol > 0 ? i : -i);
-        break;
-    }
-
-    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (!cell) return null; // Out of bounds
-    cells.push(cell);
-  }
-
-  return cells;
-}
 // ========================
 // Reset Functionality
 // ========================
 
 function resetGame() {
-  const wordsearch = document.getElementById("wordsearch");
-  wordsearch.innerHTML = ""; // Only clear the grid
+  document.getElementById("wordsearch").innerHTML = "";
   selectedCells = [];
   foundWords = [];
-  initializeGame(); // Let initializeGame handle the word list
+  initializeGame();
 }
