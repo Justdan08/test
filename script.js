@@ -7,14 +7,30 @@ if (typeof gridSize === "undefined" || typeof words === "undefined") {
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
-let startCell = null;
-let direction = null;
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
 
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
+
+// Color picker and opacity slider
+const colorPicker = document.getElementById("trace-color");
+const opacitySlider = document.getElementById("trace-opacity");
+const resetColorsBtn = document.getElementById("reset-colors");
+
+let traceColor = colorPicker.value;
+let traceOpacity = opacitySlider.value;
+
+colorPicker.addEventListener("input", () => {
+  traceColor = colorPicker.value;
+});
+
+opacitySlider.addEventListener("input", () => {
+  traceOpacity = opacitySlider.value;
+});
+
+resetColorsBtn.addEventListener("click", resetGridColors);
 
 // ========================
 // Core Game Functions
@@ -26,7 +42,7 @@ function initializeGame() {
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
+  wordsContainer.innerHTML = "<div>Words to find:</div>";
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -57,7 +73,7 @@ function createCell(row, col) {
   cell.dataset.row = row;
   cell.dataset.col = col;
   cell.textContent = "";
-  cell.addEventListener("mousedown", (e) => startDrag(e, cell));
+  cell.addEventListener("mousedown", () => startDrag(cell));
   cell.addEventListener("mouseenter", () => dragOver(cell));
   cell.addEventListener("mouseup", endDrag);
   return cell;
@@ -81,30 +97,26 @@ function placeWord(word) {
 
   if (canPlaceWord(word, row, col, direction)) {
     for (let i = 0; i < word.length; i++) {
-      const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-      cell.textContent = word[i];
-      if (direction === "horizontal") col++;
-      else if (direction === "vertical") row++;
-      else {
-        row++;
-        col++;
-      }
+      let targetCell;
+      if (direction === "horizontal") targetCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+      if (direction === "vertical") targetCell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+      if (direction === "diagonal") targetCell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+
+      if (targetCell) targetCell.textContent = word[i];
     }
   } else {
-    placeWord(word); // Retry placement
+    placeWord(word);
   }
 }
 
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
-    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    let cell;
+    if (direction === "horizontal") cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+    if (direction === "vertical") cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+    if (direction === "diagonal") cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+
     if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) return false;
-    if (direction === "horizontal") col++;
-    else if (direction === "vertical") row++;
-    else {
-      row++;
-      col++;
-    }
   }
   return true;
 }
@@ -122,48 +134,17 @@ function fillRandomLetters() {
 // User Interaction
 // ========================
 
-function startDrag(event, cell) {
+function startDrag(cell) {
   isDragging = true;
   selectedCells = [cell];
-  startCell = cell;
-  direction = null;
-  cell.classList.add("selected");
+  applyTraceColor(cell);
 }
 
 function dragOver(cell) {
-  if (!isDragging || selectedCells.includes(cell)) return;
-
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const dx = cell.dataset.col - startCell.dataset.col;
-  const dy = cell.dataset.row - startCell.dataset.row;
-
-  if (!direction) {
-    // Determine initial direction
-    if (dx === 0) direction = "vertical";
-    else if (dy === 0) direction = "horizontal";
-    else if (Math.abs(dx) === Math.abs(dy)) direction = "diagonal";
-    else return;
+  if (isDragging && !selectedCells.includes(cell)) {
+    selectedCells.push(cell);
+    applyTraceColor(cell);
   }
-
-  if (
-    (direction === "horizontal" && dy !== 0) ||
-    (direction === "vertical" && dx !== 0) ||
-    (direction === "diagonal" && Math.abs(dx) !== Math.abs(dy))
-  ) {
-    return; // Invalid movement, ignore
-  }
-
-  // Fill in missing cells if touch reconnects
-  const missingCells = getCellsBetween(lastCell, cell);
-  missingCells.forEach(missingCell => {
-    if (!selectedCells.includes(missingCell)) {
-      selectedCells.push(missingCell);
-      missingCell.classList.add("selected");
-    }
-  });
-
-  selectedCells.push(cell);
-  cell.classList.add("selected");
 }
 
 function endDrag() {
@@ -171,70 +152,120 @@ function endDrag() {
   checkForWord();
 }
 
-function getCellsBetween(cell1, cell2) {
-  const cells = [];
-  let row1 = parseInt(cell1.dataset.row),
-      col1 = parseInt(cell1.dataset.col),
-      row2 = parseInt(cell2.dataset.row),
-      col2 = parseInt(cell2.dataset.col);
-
-  const dx = Math.sign(col2 - col1);
-  const dy = Math.sign(row2 - row1);
-
-  while (row1 !== row2 || col1 !== col2) {
-    row1 += dy;
-    col1 += dx;
-    const cell = document.querySelector(`.cell[data-row="${row1}"][data-col="${col1}"]`);
-    if (cell) cells.push(cell);
-  }
-
-  return cells;
-}
-
 function checkForWord() {
   const selectedWord = selectedCells.map(cell => cell.textContent).join("");
-  if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
-    foundWords.push(selectedWord);
-    selectedCells.forEach(cell => cell.classList.add("found"));
-    selectedCells = [];
+  const reversedWord = selectedCells.reverse().map(cell => cell.textContent).join("");
 
-    document.querySelectorAll("#words div").forEach(el => {
-      if (el.textContent === selectedWord) el.classList.add("found");
+  if (
+    (words.includes(selectedWord) || words.includes(reversedWord)) &&
+    !foundWords.includes(selectedWord) &&
+    !foundWords.includes(reversedWord)
+  ) {
+    // Mark the word as found
+    foundWords.push(selectedWord);
+
+    // Highlight the selected cells
+    selectedCells.forEach(cell => {
+      cell.classList.add("found");
+      cell.style.backgroundColor = ""; // Remove trace color
     });
 
-    if (foundWords.length === words.length) alert("Good Job Big Dog!");
+    // Cross off the word in the word list
+    const wordElements = document.querySelectorAll("#words div");
+    wordElements.forEach(el => {
+      if (el.textContent === selectedWord || el.textContent === reversedWord) {
+        el.classList.add("found");
+      }
+    });
+
+    // Check if all words are found
+    if (foundWords.length === words.length) {
+      alert("Good Job Big Dog!");
+    }
   } else {
-    selectedCells.forEach(cell => cell.classList.remove("selected"));
-    selectedCells = [];
+    // Reset selection if the word is incorrect
+    selectedCells.forEach(cell => {
+      cell.classList.remove("selected");
+      cell.style.backgroundColor = ""; // Remove trace color
+    });
   }
+
+  // Reset selection state
+  selectedCells = [];
 }
 
 // ========================
-// Mobile Support
+// Touch Support
 // ========================
 
-function addTouchSupport() {
-  document.querySelectorAll(".cell").forEach(cell => {
-    cell.addEventListener("touchstart", handleTouchStart);
-    cell.addEventListener("touchmove", handleTouchMove);
-    cell.addEventListener("touchend", handleTouchEnd);
-  });
-}
+let startRow = -1;
+let startCol = -1;
+let currentDirection = null;
 
 function handleTouchStart(e) {
   e.preventDefault();
-  startDrag(e, e.target);
+  const cell = e.target;
+  if (!cell.classList.contains("cell")) return;
+
+  selectedCells.forEach(c => c.classList.remove("selected"));
+  selectedCells = [];
+  currentDirection = null;
+
+  startRow = parseInt(cell.dataset.row);
+  startCol = parseInt(cell.dataset.col);
+  selectedCells.push(cell);
+  cell.classList.add("selected");
 }
 
 function handleTouchMove(e) {
   e.preventDefault();
   const touch = e.touches[0];
   const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (target?.classList.contains("cell")) dragOver(target);
+  if (!target?.classList.contains("cell")) return;
+
+  const currentRow = parseInt(target.dataset.row);
+  const currentCol = parseInt(target.dataset.col);
+
+  if (!currentDirection) {
+    const dRow = currentRow - startRow;
+    const dCol = currentCol - startCol;
+
+    if (dRow === 0 && dCol !== 0) currentDirection = "horizontal";
+    else if (dCol === 0 && dRow !== 0) currentDirection = "vertical";
+    else if (Math.abs(dRow) === Math.abs(dCol)) currentDirection = "diagonal";
+    else return;
+  }
+
+  const pathCells = getStraightPath(startRow, startCol, currentRow, currentCol, currentDirection);
+  if (!pathCells) return;
+
+  selectedCells.forEach(c => c.style.backgroundColor = "");
+  selectedCells = pathCells;
+  selectedCells.forEach(c => applyTraceColor(c));
 }
 
 function handleTouchEnd() {
   endDrag();
+  startRow = -1;
+  startCol = -1;
+  currentDirection = null;
+}
+
+// ========================
+// Utility Functions
+// ========================
+
+function hexToRGBA(hex, opacity) {
+  let r = parseInt(hex.substring(1, 3), 16);
+  let g = parseInt(hex.substring(3, 5), 16);
+  let b = parseInt(hex.substring(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+function resetGridColors() {
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.style.backgroundColor = "";
+  });
 }
 
 // ========================
@@ -242,8 +273,12 @@ function handleTouchEnd() {
 // ========================
 
 function resetGame() {
-  document.getElementById("wordsearch").innerHTML = "";
+  const wordsearch = document.getElementById("wordsearch");
+  const wordsContainer = document.getElementById("words");
+  wordsearch.innerHTML = "";
+  wordsContainer.innerHTML = "<div>Words to find:</div>";
   selectedCells = [];
   foundWords = [];
+  resetGridColors();
   initializeGame();
 }
