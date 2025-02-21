@@ -1,6 +1,6 @@
 // Validate puzzle settings
-if (typeof gridSize === "undefined" || typeof wordPool === "undefined") {
-  console.error("Error: gridSize or wordPool is not defined in the HTML!");
+if (typeof gridSize === "undefined" || typeof words === "undefined") {
+  console.error("Error: gridSize or words are not defined in the HTML!");
 }
 
 // Game state
@@ -9,7 +9,6 @@ let foundWords = [];
 let isDragging = false;
 let startCell = null;
 let direction = null;
-let words = []; // This will store the 15 randomly chosen words
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -29,9 +28,6 @@ function initializeGame() {
   wordsearch.innerHTML = "";
   wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
 
-  // Select 15 random words from the pool
-  words = getRandomWords(15);
-
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
@@ -40,12 +36,15 @@ function initializeGame() {
     }
   }
 
+  // Select 15 random words from the word pool
+  const selectedWords = getRandomWords(15);
+  
   // Place words and fill random letters
-  words.forEach(word => placeWord(word));
+  selectedWords.forEach(word => placeWord(word));
   fillRandomLetters();
 
   // Display words to find
-  words.forEach(word => {
+  selectedWords.forEach(word => {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
     wordsContainer.appendChild(wordElement);
@@ -56,7 +55,7 @@ function initializeGame() {
 }
 
 function getRandomWords(count) {
-  let shuffled = [...wordPool].sort(() => 0.5 - Math.random());
+  const shuffled = wordsPool.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
 
@@ -72,6 +71,7 @@ function createCell(row, col) {
   return cell;
 }
 
+// Word placement logic
 function placeWord(word) {
   const directions = ["horizontal", "vertical", "diagonal"];
   const direction = directions[Math.floor(Math.random() * directions.length)];
@@ -105,21 +105,6 @@ function placeWord(word) {
   }
 }
 
-function canPlaceWord(word, row, col, direction) {
-  for (let i = 0; i < word.length; i++) {
-    const cell = direction === "horizontal"
-      ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
-      : direction === "vertical"
-      ? document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`)
-      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-
-    if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
 function fillRandomLetters() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   document.querySelectorAll(".cell").forEach(cell => {
@@ -138,6 +123,7 @@ function startDrag(cell) {
   startCell = cell;
   selectedCells = [cell];
   cell.classList.add("selected");
+  direction = null;
 }
 
 function dragOver(cell) {
@@ -159,18 +145,23 @@ function dragOver(cell) {
     return;
   }
 
-  if (
-    (direction === "horizontal" && cell.dataset.row == startCell.dataset.row) ||
-    (direction === "vertical" && cell.dataset.col == startCell.dataset.col) ||
-    (direction === "diagonal" && Math.abs(rowDiff) === Math.abs(colDiff))
-  ) {
+  if (isValidDirection(cell)) {
+    const missingCells = getMissingCells(lastCell, cell);
+    missingCells.forEach(missingCell => {
+      if (!selectedCells.includes(missingCell)) {
+        selectedCells.push(missingCell);
+        missingCell.classList.add("selected");
+      }
+    });
+
     selectedCells.push(cell);
     cell.classList.add("selected");
   }
 }
 
 function isMovingBackward(cell) {
-  return selectedCells.length > 1 && selectedCells[selectedCells.length - 2] === cell;
+  if (selectedCells.length < 2) return false;
+  return selectedCells[selectedCells.length - 2] === cell;
 }
 
 function deselectLastCell() {
@@ -178,6 +169,17 @@ function deselectLastCell() {
     const lastCell = selectedCells.pop();
     lastCell.classList.remove("selected");
   }
+}
+
+function isValidDirection(cell) {
+  const lastCell = selectedCells[selectedCells.length - 1];
+  return (
+    (direction === "horizontal" && cell.dataset.row == startCell.dataset.row) ||
+    (direction === "vertical" && cell.dataset.col == startCell.dataset.col) ||
+    (direction === "diagonal" &&
+      Math.abs(cell.dataset.row - startCell.dataset.row) ===
+      Math.abs(cell.dataset.col - startCell.dataset.col))
+  );
 }
 
 function endDrag() {
