@@ -29,7 +29,13 @@ function initializeGame() {
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>";
+
+  // Only add "Words to find:" if it doesn't already exist
+  if (!wordsContainer.querySelector("div:first-child")) {
+    wordsContainer.innerHTML = "<div>Words to find:</div>";
+  } else {
+    wordsContainer.innerHTML = ""; // Clear the word list but keep the "Words to find:" text
+  }
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
