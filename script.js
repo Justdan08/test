@@ -136,11 +136,11 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction (Updated)
+// User Interaction (Updated to allow selecting found cells)
 // ========================
 
 function startDrag(cell) {
-  if (cell.classList.contains("found")) return;
+  // Removed the found cell check
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
@@ -149,7 +149,8 @@ function startDrag(cell) {
 }
 
 function dragOver(cell) {
-  if (!isDragging || cell.classList.contains("found")) return;
+  // Removed the found cell check
+  if (!isDragging) return;
 
   // Check if we're backtracking to an existing cell
   const existingIndex = selectedCells.indexOf(cell);
@@ -259,10 +260,12 @@ function checkForWord() {
   if (currentWords.includes(selectedWord) && !foundWords.includes(selectedWord)) {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => {
-      cell.classList.add("found"); // Mark cell as found
+      // Only add 'found' class if not already present
+      if (!cell.classList.contains("found")) {
+        cell.classList.add("found");
+      }
       cell.classList.remove("selected"); // Remove selection styling
     });
-    selectedCells = [];
 
     // Mark word as found in the word list
     document.querySelectorAll("#words div").forEach(el => {
@@ -274,8 +277,8 @@ function checkForWord() {
     selectedCells.forEach(cell => {
       cell.classList.remove("selected");
     });
-    selectedCells = [];
   }
+  selectedCells = [];
 }
 
 // ========================
