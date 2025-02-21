@@ -1,14 +1,10 @@
-// Validate puzzle settings
-if (typeof gridSize === "undefined" || typeof words === "undefined") {
-  console.error("Error: gridSize or words are not defined in the HTML!");
-}
-
-// Game state
+/// Game state
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
 let startCell = null;
 let direction = null;
+let currentWords = []; // Stores the 15 randomly selected words
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -21,12 +17,19 @@ document.getElementById("reset-button").addEventListener("click", resetGame);
 // ========================
 
 function initializeGame() {
+  // Get the word pool from the HTML
+  const wordPoolElement = document.getElementById("word-pool");
+  const wordPool = JSON.parse(wordPoolElement.dataset.words);
+
+  // Randomly select 15 words from the pool
+  currentWords = getRandomWords(wordPool, 15);
+
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
+  wordsContainer.innerHTML = "<div>Words to find:</div>";
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -37,11 +40,11 @@ function initializeGame() {
   }
 
   // Place words and fill random letters
-  words.forEach(word => placeWord(word));
+  currentWords.forEach(word => placeWord(word));
   fillRandomLetters();
 
   // Display words to find
-  words.forEach(word => {
+  currentWords.forEach(word => {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
     wordsContainer.appendChild(wordElement);
@@ -49,6 +52,12 @@ function initializeGame() {
 
   // Add touch support
   addTouchSupport();
+}
+
+// Function to randomly select N words from the pool
+function getRandomWords(pool, count) {
+  const shuffled = [...pool].sort(() => 0.5 - Math.random()); // Shuffle the pool
+  return shuffled.slice(0, count); // Select the first N words
 }
 
 function createCell(row, col) {
@@ -125,6 +134,7 @@ function fillRandomLetters() {
 // ========================
 
 function startDrag(cell) {
+  if (cell.classList.contains("found")) return; // Ignore found cells
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
@@ -132,7 +142,7 @@ function startDrag(cell) {
 }
 
 function dragOver(cell) {
-  if (!isDragging || selectedCells.includes(cell)) return;
+  if (!isDragging || selectedCells.includes(cell) || cell.classList.contains("found")) return;
 
   const lastCell = selectedCells[selectedCells.length - 1];
   const rowDiff = cell.dataset.row - startCell.dataset.row;
@@ -158,7 +168,7 @@ function dragOver(cell) {
   ) {
     const missingCells = getMissingCells(lastCell, cell);
     missingCells.forEach(missingCell => {
-      if (!selectedCells.includes(missingCell)) {
+      if (!selectedCells.includes(missingCell) && !missingCell.classList.contains("found")) {
         selectedCells.push(missingCell);
         missingCell.classList.add("selected");
       }
@@ -229,9 +239,12 @@ function endDrag() {
 
 function checkForWord() {
   const selectedWord = selectedCells.map(cell => cell.textContent).join("");
-  if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+  if (currentWords.includes(selectedWord) && !foundWords.includes(selectedWord)) {
     foundWords.push(selectedWord);
-    selectedCells.forEach(cell => cell.classList.add("found"));
+    selectedCells.forEach(cell => {
+      cell.classList.add("found");
+      cell.classList.remove("selected"); // Remove selection styling
+    });
     selectedCells = [];
 
     // Mark word as found
@@ -239,9 +252,13 @@ function checkForWord() {
       if (el.textContent === selectedWord) el.classList.add("found");
     });
 
-    if (foundWords.length === words.length) alert("Good Job Big Dog!");
+    if (foundWords.length === currentWords.length) alert("Good Job Big Dog!");
   } else {
-    selectedCells.forEach(cell => cell.classList.remove("selected"));
+    selectedCells.forEach(cell => {
+      if (!cell.classList.contains("found")) {
+        cell.classList.remove("selected");
+      }
+    });
     selectedCells = [];
   }
 }
@@ -283,5 +300,5 @@ function resetGame() {
   document.getElementById("wordsearch").innerHTML = "";
   selectedCells = [];
   foundWords = [];
-  initializeGame();
+  initializeGame(); // Regenerate puzzle with new random words
 }
