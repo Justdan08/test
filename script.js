@@ -1,4 +1,4 @@
-/// Game state
+// Game state
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
@@ -134,7 +134,6 @@ function fillRandomLetters() {
 // ========================
 
 function startDrag(cell) {
-  if (cell.classList.contains("found")) return; // Ignore found cells
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
@@ -142,7 +141,7 @@ function startDrag(cell) {
 }
 
 function dragOver(cell) {
-  if (!isDragging || selectedCells.includes(cell) || cell.classList.contains("found")) return;
+  if (!isDragging || selectedCells.includes(cell)) return;
 
   const lastCell = selectedCells[selectedCells.length - 1];
   const rowDiff = cell.dataset.row - startCell.dataset.row;
@@ -168,7 +167,7 @@ function dragOver(cell) {
   ) {
     const missingCells = getMissingCells(lastCell, cell);
     missingCells.forEach(missingCell => {
-      if (!selectedCells.includes(missingCell) && !missingCell.classList.contains("found")) {
+      if (!selectedCells.includes(missingCell)) {
         selectedCells.push(missingCell);
         missingCell.classList.add("selected");
       }
@@ -255,9 +254,7 @@ function checkForWord() {
     if (foundWords.length === currentWords.length) alert("Good Job Big Dog!");
   } else {
     selectedCells.forEach(cell => {
-      if (!cell.classList.contains("found")) {
-        cell.classList.remove("selected");
-      }
+      cell.classList.remove("selected");
     });
     selectedCells = [];
   }
