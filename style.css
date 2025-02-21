@@ -23,7 +23,6 @@ h1 {
   grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
 }
 
-
 .cell {
   aspect-ratio: 1;
   border: 1px solid black;
@@ -94,7 +93,6 @@ h1 {
   body {
     padding: 5px; /* Reduce padding on small screens */
   }
-}
 
   .cell {
     font-size: 12px;
