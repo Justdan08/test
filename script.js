@@ -1,118 +1,8 @@
-// Validate puzzle settings
-if (typeof gridSize === "undefined" || typeof words === "undefined") {
-  console.error("Error: gridSize or words are not defined in the HTML!");
-}
-
-// Game state
-let selectedCells = [];
-let foundWords = [];
 let isDragging = false;
 let startCell = null;
+let selectedCells = [];
 let direction = null;
-
-// Initialize the game
-document.addEventListener("DOMContentLoaded", initializeGame);
-
-// Reset button
-document.getElementById("reset-button").addEventListener("click", resetGame);
-
-// ========================
-// Core Game Functions
-// ========================
-
-function initializeGame() {
-  const wordsearch = document.getElementById("wordsearch");
-  const wordsContainer = document.getElementById("words");
-
-  // Clear the grid and word list
-  wordsearch.innerHTML = "";
-  wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
-
-  // Create the grid
-  for (let i = 0; i < gridSize; i++) {
-    for (let j = 0; j < gridSize; j++) {
-      const cell = createCell(i, j);
-      wordsearch.appendChild(cell);
-    }
-  }
-
-  // Select 15 random words from the word pool
-  const selectedWords = getRandomWords(15);
-  
-  // Place words and fill random letters
-  selectedWords.forEach(word => placeWord(word));
-  fillRandomLetters();
-
-  // Display words to find
-  selectedWords.forEach(word => {
-    const wordElement = document.createElement("div");
-    wordElement.textContent = word;
-    wordsContainer.appendChild(wordElement);
-  });
-
-  // Add touch support
-  addTouchSupport();
-}
-
-function getRandomWords(count) {
-  const shuffled = wordsPool.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
-
-function createCell(row, col) {
-  const cell = document.createElement("div");
-  cell.classList.add("cell");
-  cell.dataset.row = row;
-  cell.dataset.col = col;
-  cell.textContent = "";
-  cell.addEventListener("mousedown", () => startDrag(cell));
-  cell.addEventListener("mouseenter", () => dragOver(cell));
-  cell.addEventListener("mouseup", endDrag);
-  return cell;
-}
-
-// Word placement logic
-function placeWord(word) {
-  const directions = ["horizontal", "vertical", "diagonal"];
-  const direction = directions[Math.floor(Math.random() * directions.length)];
-  let row, col;
-
-  if (direction === "horizontal") {
-    row = Math.floor(Math.random() * gridSize);
-    col = Math.floor(Math.random() * (gridSize - word.length));
-  } else if (direction === "vertical") {
-    col = Math.floor(Math.random() * gridSize);
-    row = Math.floor(Math.random() * (gridSize - word.length));
-  } else {
-    row = Math.floor(Math.random() * (gridSize - word.length));
-    col = Math.floor(Math.random() * (gridSize - word.length));
-  }
-
-  if (canPlaceWord(word, row, col, direction)) {
-    for (let i = 0; i < word.length; i++) {
-      let cell;
-      if (direction === "horizontal") {
-        cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-      } else if (direction === "vertical") {
-        cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
-      } else {
-        cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
-      }
-      cell.textContent = word[i];
-    }
-  } else {
-    placeWord(word); // Retry placement
-  }
-}
-
-function fillRandomLetters() {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  document.querySelectorAll(".cell").forEach(cell => {
-    if (cell.textContent === "") {
-      cell.textContent = letters[Math.floor(Math.random() * letters.length)];
-    }
-  });
-}
+let lastDraggedCell = null;
 
 // ========================
 // User Interaction
@@ -122,14 +12,14 @@ function startDrag(cell) {
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
-  cell.classList.add("selected");
   direction = null;
+  lastDraggedCell = cell;
+  cell.classList.add("selected");
 }
 
 function dragOver(cell) {
   if (!isDragging || selectedCells.includes(cell)) return;
 
-  const lastCell = selectedCells[selectedCells.length - 1];
   const rowDiff = cell.dataset.row - startCell.dataset.row;
   const colDiff = cell.dataset.col - startCell.dataset.col;
 
@@ -140,13 +30,16 @@ function dragOver(cell) {
     else return; // Invalid move
   }
 
+  // Handle backward movement
   if (isMovingBackward(cell)) {
     deselectLastCell();
     return;
   }
 
+  // Handle progress and realignment
   if (isValidDirection(cell)) {
-    const missingCells = getMissingCells(lastCell, cell);
+    // Populating cells in between the start and current cell if realigned
+    const missingCells = getMissingCells(startCell, cell);
     missingCells.forEach(missingCell => {
       if (!selectedCells.includes(missingCell)) {
         selectedCells.push(missingCell);
@@ -156,9 +49,35 @@ function dragOver(cell) {
 
     selectedCells.push(cell);
     cell.classList.add("selected");
+    lastDraggedCell = cell; // Update the last dragged cell
   }
 }
 
+// Calculate all cells between startCell and cell
+function getMissingCells(start, end) {
+  let cells = [];
+  const rowStep = end.dataset.row > start.dataset.row ? 1 : (end.dataset.row < start.dataset.row ? -1 : 0);
+  const colStep = end.dataset.col > start.dataset.col ? 1 : (end.dataset.col < start.dataset.col ? -1 : 0);
+
+  let currentRow = parseInt(start.dataset.row);
+  let currentCol = parseInt(start.dataset.col);
+
+  while (currentRow !== parseInt(end.dataset.row) || currentCol !== parseInt(end.dataset.col)) {
+    currentRow += rowStep;
+    currentCol += colStep;
+    const cell = getCellByCoordinates(currentRow, currentCol);
+    if (cell && !cells.includes(cell)) cells.push(cell);
+  }
+
+  return cells;
+}
+
+// Helper function to get the cell by row and column index
+function getCellByCoordinates(row, col) {
+  return document.querySelector(`[data-row='${row}'][data-col='${col}']`);
+}
+
+// Check if the user is moving backward
 function isMovingBackward(cell) {
   if (selectedCells.length < 2) return false;
   return selectedCells[selectedCells.length - 2] === cell;
@@ -190,7 +109,7 @@ function endDrag() {
 
 function checkForWord() {
   const selectedWord = selectedCells.map(cell => cell.textContent).join("");
-  if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+  if (wordsPool.includes(selectedWord) && !foundWords.includes(selectedWord)) {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
     selectedCells = [];
@@ -199,7 +118,7 @@ function checkForWord() {
       if (el.textContent === selectedWord) el.classList.add("found");
     });
 
-    if (foundWords.length === words.length) alert("Good Job Big Dog!");
+    if (foundWords.length === wordsPool.length) alert("Good Job Big Dog!");
   } else {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
@@ -207,8 +126,33 @@ function checkForWord() {
 }
 
 // ========================
-// Mobile Support
+// Setup Grid
 // ========================
+
+function createGrid() {
+  const grid = document.getElementById('wordsearch');
+  const gridFragment = document.createDocumentFragment();
+
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      cell.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        startDrag(cell);
+      });
+      cell.addEventListener('mouseover', (e) => {
+        e.preventDefault();
+        dragOver(cell);
+      });
+      cell.addEventListener('mouseup', endDrag);
+      gridFragment.appendChild(cell);
+    }
+  }
+  grid.appendChild(gridFragment);
+}
 
 function addTouchSupport() {
   document.querySelectorAll(".cell").forEach(cell => {
@@ -235,12 +179,10 @@ function handleTouchEnd() {
 }
 
 // ========================
-// Reset Functionality
+// Initialize Game
 // ========================
 
-function resetGame() {
-  document.getElementById("wordsearch").innerHTML = "";
-  selectedCells = [];
-  foundWords = [];
-  initializeGame();
-}
+document.addEventListener("DOMContentLoaded", () => {
+  createGrid();
+  addTouchSupport();
+});
