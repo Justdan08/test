@@ -136,79 +136,92 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction
+// User Interaction (Updated)
 // ========================
 
 function startDrag(cell) {
+  if (cell.classList.contains("found")) return;
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
+  direction = null; // Reset direction on new drag
   cell.classList.add("selected");
 }
 
-// ========================
-// User Interaction (Updated Backward Movement Handling)
-// ========================
-
 function dragOver(cell) {
-  if (!isDragging || selectedCells.includes(cell) || cell.classList.contains("found")) return;
+  if (!isDragging || cell.classList.contains("found")) return;
 
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const rowDiff = parseInt(cell.dataset.row) - parseInt(startCell.dataset.row);
-  const colDiff = parseInt(cell.dataset.col) - parseInt(startCell.dataset.col);
-
-  if (!direction) {
-    // Determine initial direction
-    if (rowDiff === 0) direction = "horizontal";
-    else if (colDiff === 0) direction = "vertical";
-    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
-    else return;
-  }
-
-  // Enhanced backward detection
-  if (selectedCells.length > 1) {
-    const existingIndex = selectedCells.findIndex(c => c === cell);
-    if (existingIndex > -1) {
-      // User moved back to a previous cell - deselect all after it
-      const cellsToRemove = selectedCells.splice(existingIndex + 1);
-      cellsToRemove.forEach(c => c.classList.remove("selected"));
-      return;
-    }
-  }
-
-  // Existing direction-based backward check
-  if (isMovingBackward(cell)) {
-    deselectLastCell();
+  // Check if we're backtracking to an existing cell
+  const existingIndex = selectedCells.indexOf(cell);
+  if (existingIndex > -1) {
+    const removedCells = selectedCells.splice(existingIndex + 1);
+    removedCells.forEach(c => c.classList.remove("selected"));
     return;
   }
 
-  // Rest of your existing dragOver logic...
+  // Don't process if moving to a non-adjacent cell
+  if (!isAdjacent(cell)) return;
+
+  // Determine direction if not set
+  if (!direction) {
+    const startRow = parseInt(startCell.dataset.row);
+    const startCol = parseInt(startCell.dataset.col);
+    const currentRow = parseInt(cell.dataset.row);
+    const currentCol = parseInt(cell.dataset.col);
+    
+    const rowDiff = currentRow - startRow;
+    const colDiff = currentCol - startCol;
+    
+    if (rowDiff === 0) direction = "horizontal";
+    else if (colDiff === 0) direction = "vertical";
+    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
+    else return; // Invalid initial direction
+  }
+
+  // Validate movement direction
+  if (!isValidDirection(cell)) return;
+
+  // Add missing cells between last and current
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const missing = getMissingCells(lastCell, cell);
+  
+  missing.forEach(missingCell => {
+    if (!selectedCells.includes(missingCell)) {
+      missingCell.classList.add("selected");
+      selectedCells.push(missingCell);
+    }
+  });
+
+  cell.classList.add("selected");
+  selectedCells.push(cell);
 }
 
-// Improved backward movement detector
-function isMovingBackward(cell) {
-  if (selectedCells.length < 2) return false;
+// Helper: Check if cell is adjacent in any direction
+function isAdjacent(cell) {
+  const last = selectedCells[selectedCells.length - 1];
+  const rowDiff = Math.abs(parseInt(cell.dataset.row) - parseInt(last.dataset.row));
+  const colDiff = Math.abs(parseInt(cell.dataset.col) - parseInt(last.dataset.col));
   
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const secondLastCell = selectedCells[selectedCells.length - 2];
-  
-  const lastRow = parseInt(lastCell.dataset.row);
-  const lastCol = parseInt(lastCell.dataset.col);
+  return (rowDiff <= 1 && colDiff <= 1);
+}
+
+// Helper: Validate movement continues in set direction
+function isValidDirection(cell) {
+  const last = selectedCells[selectedCells.length - 1];
+  const lastRow = parseInt(last.dataset.row);
+  const lastCol = parseInt(last.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
-  
-  // Calculate expected next position based on last movement
-  const rowStep = lastRow - parseInt(secondLastCell.dataset.row);
-  const colStep = lastCol - parseInt(secondLastCell.dataset.col);
-  
-  return currentRow !== lastRow + rowStep || currentCol !== lastCol + colStep;
-}
 
-
-function deselectLastCell() {
-  if (selectedCells.length > 1) {
-    const lastCell = selectedCells.pop();
-    lastCell.classList.remove("selected");
+  switch(direction) {
+    case "horizontal":
+      return currentRow === lastRow;
+    case "vertical":
+      return currentCol === lastCol;
+    case "diagonal":
+      return Math.abs(currentRow - lastRow) === Math.abs(currentCol - lastCol);
+    default:
+      return false;
   }
 }
 
