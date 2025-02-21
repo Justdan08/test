@@ -1,14 +1,15 @@
 // Validate puzzle settings
 if (typeof gridSize === "undefined" || typeof wordPool === "undefined") {
-  console.error("Error: gridSize or wordPool are not defined in the HTML!");
+  console.error("Error: gridSize or wordPool is not defined in the HTML!");
 }
 
-let words = []; // Selected words for the current puzzle
+// Game state
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
 let startCell = null;
 let direction = null;
+let words = []; // This will store the 15 randomly chosen words
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -21,34 +22,15 @@ document.getElementById("reset-button").addEventListener("click", resetGame);
 // ========================
 
 function initializeGame() {
-  words = getRandomWords(10); // Select 10 random words from wordPool
-  setupPuzzle();
-}
-
-function resetGame() {
-  document.getElementById("wordsearch").innerHTML = "";
-  selectedCells = [];
-  foundWords = [];
-  words = getRandomWords(10); // Select a new set of 10 words
-  setupPuzzle();
-}
-
-function getRandomWords(count) {
-  if (!Array.isArray(wordPool) || wordPool.length < count) {
-    console.error("Error: wordPool is not a valid array or has too few words!");
-    return [];
-  }
-  const shuffled = [...wordPool].sort(() => 0.5 - Math.random()); // Shuffle without modifying original wordPool
-  return shuffled.slice(0, count); // Get first `count` words
-}
-
-function setupPuzzle() {
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
   wordsContainer.innerHTML = "<div>Words to find:</div>"; // Reset word list ONCE
+
+  // Select 15 random words from the pool
+  words = getRandomWords(15);
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -71,6 +53,11 @@ function setupPuzzle() {
 
   // Add touch support
   addTouchSupport();
+}
+
+function getRandomWords(count) {
+  let shuffled = [...wordPool].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
 }
 
 function createCell(row, col) {
@@ -172,16 +159,14 @@ function dragOver(cell) {
     return;
   }
 
-  const missingCells = getMissingCells(lastCell, cell);
-  missingCells.forEach(missingCell => {
-    if (!selectedCells.includes(missingCell)) {
-      selectedCells.push(missingCell);
-      missingCell.classList.add("selected");
-    }
-  });
-
-  selectedCells.push(cell);
-  cell.classList.add("selected");
+  if (
+    (direction === "horizontal" && cell.dataset.row == startCell.dataset.row) ||
+    (direction === "vertical" && cell.dataset.col == startCell.dataset.col) ||
+    (direction === "diagonal" && Math.abs(rowDiff) === Math.abs(colDiff))
+  ) {
+    selectedCells.push(cell);
+    cell.classList.add("selected");
+  }
 }
 
 function isMovingBackward(cell) {
@@ -193,25 +178,6 @@ function deselectLastCell() {
     const lastCell = selectedCells.pop();
     lastCell.classList.remove("selected");
   }
-}
-
-function getMissingCells(lastCell, currentCell) {
-  let missingCells = [];
-  let row = parseInt(lastCell.dataset.row);
-  let col = parseInt(lastCell.dataset.col);
-  const targetRow = parseInt(currentCell.dataset.row);
-  const targetCol = parseInt(currentCell.dataset.col);
-  const rowStep = targetRow > row ? 1 : targetRow < row ? -1 : 0;
-  const colStep = targetCol > col ? 1 : targetCol < col ? -1 : 0;
-
-  while (row !== targetRow || col !== targetCol) {
-    row += rowStep;
-    col += colStep;
-    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (cell) missingCells.push(cell);
-  }
-
-  return missingCells;
 }
 
 function endDrag() {
@@ -226,6 +192,12 @@ function checkForWord() {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
     selectedCells = [];
+
+    document.querySelectorAll("#words div").forEach(el => {
+      if (el.textContent === selectedWord) el.classList.add("found");
+    });
+
+    if (foundWords.length === words.length) alert("Good Job Big Dog!");
   } else {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
@@ -251,10 +223,22 @@ function handleTouchStart(e) {
 
 function handleTouchMove(e) {
   e.preventDefault();
-  const target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+  const touch = e.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
   if (target?.classList.contains("cell")) dragOver(target);
 }
 
 function handleTouchEnd() {
   endDrag();
+}
+
+// ========================
+// Reset Functionality
+// ========================
+
+function resetGame() {
+  document.getElementById("wordsearch").innerHTML = "";
+  selectedCells = [];
+  foundWords = [];
+  initializeGame();
 }
