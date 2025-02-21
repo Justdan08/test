@@ -29,13 +29,12 @@ function initializeGame() {
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
+  wordsContainer.innerHTML = ""; // Clear the word list completely
 
-  // Only add "Words to find:" if it doesn't already exist
-  if (!wordsContainer.querySelector("div:first-child")) {
-    wordsContainer.innerHTML = "<div>Words to find:</div>";
-  } else {
-    wordsContainer.innerHTML = ""; // Clear the word list but keep the "Words to find:" text
-  }
+  // Add "Words to find:" dynamically
+  const wordsToFindText = document.createElement("div");
+  wordsToFindText.textContent = "Words to find:";
+  wordsContainer.appendChild(wordsToFindText);
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -136,11 +135,11 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction (Updated to allow selecting found cells)
+// User Interaction
 // ========================
 
 function startDrag(cell) {
-  // Removed the found cell check
+  if (cell.classList.contains("found")) return;
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
@@ -149,8 +148,7 @@ function startDrag(cell) {
 }
 
 function dragOver(cell) {
-  // Removed the found cell check
-  if (!isDragging) return;
+  if (!isDragging || cell.classList.contains("found")) return;
 
   // Check if we're backtracking to an existing cell
   const existingIndex = selectedCells.indexOf(cell);
