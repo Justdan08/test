@@ -242,12 +242,12 @@ function checkForWord() {
   if (currentWords.includes(selectedWord) && !foundWords.includes(selectedWord)) {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => {
-      cell.classList.add("found");
+      cell.classList.add("found"); // Mark cell as found
       cell.classList.remove("selected"); // Remove selection styling
     });
     selectedCells = [];
 
-    // Mark word as found
+    // Mark word as found in the word list
     document.querySelectorAll("#words div").forEach(el => {
       if (el.textContent === selectedWord) el.classList.add("found");
     });
