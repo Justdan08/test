@@ -146,42 +146,62 @@ function startDrag(cell) {
   cell.classList.add("selected");
 }
 
+// ========================
+// User Interaction (Updated Backward Movement Handling)
+// ========================
+
 function dragOver(cell) {
-  if (!isDragging || selectedCells.includes(cell)) return;
+  if (!isDragging || selectedCells.includes(cell) || cell.classList.contains("found")) return;
 
   const lastCell = selectedCells[selectedCells.length - 1];
-  const rowDiff = cell.dataset.row - startCell.dataset.row;
-  const colDiff = cell.dataset.col - startCell.dataset.col;
+  const rowDiff = parseInt(cell.dataset.row) - parseInt(startCell.dataset.row);
+  const colDiff = parseInt(cell.dataset.col) - parseInt(startCell.dataset.col);
 
   if (!direction) {
+    // Determine initial direction
     if (rowDiff === 0) direction = "horizontal";
     else if (colDiff === 0) direction = "vertical";
     else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
-    else return; // Invalid move
+    else return;
   }
 
-  // Check if moving backward
+  // Enhanced backward detection
+  if (selectedCells.length > 1) {
+    const existingIndex = selectedCells.findIndex(c => c === cell);
+    if (existingIndex > -1) {
+      // User moved back to a previous cell - deselect all after it
+      const cellsToRemove = selectedCells.splice(existingIndex + 1);
+      cellsToRemove.forEach(c => c.classList.remove("selected"));
+      return;
+    }
+  }
+
+  // Existing direction-based backward check
   if (isMovingBackward(cell)) {
     deselectLastCell();
     return;
   }
 
-  if (
-    (direction === "horizontal" && cell.dataset.row == startCell.dataset.row) ||
-    (direction === "vertical" && cell.dataset.col == startCell.dataset.col) ||
-    (direction === "diagonal" && Math.abs(rowDiff) === Math.abs(colDiff))
-  ) {
-    const missingCells = getMissingCells(lastCell, cell);
-    missingCells.forEach(missingCell => {
-      if (!selectedCells.includes(missingCell)) {
-        selectedCells.push(missingCell);
-        missingCell.classList.add("selected");
-      }
-    });
+  // Rest of your existing dragOver logic...
+}
 
-    selectedCells.push(cell);
-    cell.classList.add("selected");
-  }
+// Improved backward movement detector
+function isMovingBackward(cell) {
+  if (selectedCells.length < 2) return false;
+  
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const secondLastCell = selectedCells[selectedCells.length - 2];
+  
+  const lastRow = parseInt(lastCell.dataset.row);
+  const lastCol = parseInt(lastCell.dataset.col);
+  const currentRow = parseInt(cell.dataset.row);
+  const currentCol = parseInt(cell.dataset.col);
+  
+  // Calculate expected next position based on last movement
+  const rowStep = lastRow - parseInt(secondLastCell.dataset.row);
+  const colStep = lastCol - parseInt(secondLastCell.dataset.col);
+  
+  return currentRow !== lastRow + rowStep || currentCol !== lastCol + colStep;
 }
 
 function isMovingBackward(cell) {
