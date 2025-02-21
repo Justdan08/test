@@ -1,9 +1,9 @@
 // Validate puzzle settings
-if (typeof gridSize === "undefined" || typeof words === "undefined") {
-  console.error("Error: gridSize or words are not defined in the HTML!");
+if (typeof gridSize === "undefined" || typeof wordPool === "undefined") {
+  console.error("Error: gridSize or wordPool are not defined in the HTML!");
 }
 
-// Game state
+let words = []; // Selected words for the current puzzle
 let selectedCells = [];
 let foundWords = [];
 let isDragging = false;
@@ -21,6 +21,28 @@ document.getElementById("reset-button").addEventListener("click", resetGame);
 // ========================
 
 function initializeGame() {
+  words = getRandomWords(10); // Select 10 random words from wordPool
+  setupPuzzle();
+}
+
+function resetGame() {
+  document.getElementById("wordsearch").innerHTML = "";
+  selectedCells = [];
+  foundWords = [];
+  words = getRandomWords(10); // Select a new set of 10 words
+  setupPuzzle();
+}
+
+function getRandomWords(count) {
+  if (!Array.isArray(wordPool) || wordPool.length < count) {
+    console.error("Error: wordPool is not a valid array or has too few words!");
+    return [];
+  }
+  const shuffled = [...wordPool].sort(() => 0.5 - Math.random()); // Shuffle without modifying original wordPool
+  return shuffled.slice(0, count); // Get first `count` words
+}
+
+function setupPuzzle() {
   const wordsearch = document.getElementById("wordsearch");
   const wordsContainer = document.getElementById("words");
 
@@ -145,50 +167,25 @@ function dragOver(cell) {
     else return; // Invalid move
   }
 
-  // Check if moving backward
   if (isMovingBackward(cell)) {
     deselectLastCell();
     return;
   }
 
-  if (
-    (direction === "horizontal" && cell.dataset.row == startCell.dataset.row) ||
-    (direction === "vertical" && cell.dataset.col == startCell.dataset.col) ||
-    (direction === "diagonal" && Math.abs(rowDiff) === Math.abs(colDiff))
-  ) {
-    const missingCells = getMissingCells(lastCell, cell);
-    missingCells.forEach(missingCell => {
-      if (!selectedCells.includes(missingCell)) {
-        selectedCells.push(missingCell);
-        missingCell.classList.add("selected");
-      }
-    });
+  const missingCells = getMissingCells(lastCell, cell);
+  missingCells.forEach(missingCell => {
+    if (!selectedCells.includes(missingCell)) {
+      selectedCells.push(missingCell);
+      missingCell.classList.add("selected");
+    }
+  });
 
-    selectedCells.push(cell);
-    cell.classList.add("selected");
-  }
+  selectedCells.push(cell);
+  cell.classList.add("selected");
 }
 
 function isMovingBackward(cell) {
-  if (selectedCells.length < 2) return false;
-
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const secondLastCell = selectedCells[selectedCells.length - 2];
-
-  const lastRow = parseInt(lastCell.dataset.row);
-  const lastCol = parseInt(lastCell.dataset.col);
-  const secondLastRow = parseInt(secondLastCell.dataset.row);
-  const secondLastCol = parseInt(secondLastCell.dataset.col);
-  const currentRow = parseInt(cell.dataset.row);
-  const currentCol = parseInt(cell.dataset.col);
-
-  const rowStep = lastRow - secondLastRow;
-  const colStep = lastCol - secondLastCol;
-
-  const expectedRow = lastRow + rowStep;
-  const expectedCol = lastCol + colStep;
-
-  return currentRow !== expectedRow || currentCol !== expectedCol;
+  return selectedCells.length > 1 && selectedCells[selectedCells.length - 2] === cell;
 }
 
 function deselectLastCell() {
@@ -200,22 +197,18 @@ function deselectLastCell() {
 
 function getMissingCells(lastCell, currentCell) {
   let missingCells = [];
-  const lastRow = parseInt(lastCell.dataset.row);
-  const lastCol = parseInt(lastCell.dataset.col);
-  const currentRow = parseInt(currentCell.dataset.row);
-  const currentCol = parseInt(currentCell.dataset.col);
+  let row = parseInt(lastCell.dataset.row);
+  let col = parseInt(lastCell.dataset.col);
+  const targetRow = parseInt(currentCell.dataset.row);
+  const targetCol = parseInt(currentCell.dataset.col);
+  const rowStep = targetRow > row ? 1 : targetRow < row ? -1 : 0;
+  const colStep = targetCol > col ? 1 : targetCol < col ? -1 : 0;
 
-  const rowStep = currentRow > lastRow ? 1 : currentRow < lastRow ? -1 : 0;
-  const colStep = currentCol > lastCol ? 1 : currentCol < lastCol ? -1 : 0;
-
-  let row = lastRow + rowStep;
-  let col = lastCol + colStep;
-
-  while (row !== currentRow || col !== currentCol) {
-    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (cell) missingCells.push(cell);
+  while (row !== targetRow || col !== targetCol) {
     row += rowStep;
     col += colStep;
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (cell) missingCells.push(cell);
   }
 
   return missingCells;
@@ -233,13 +226,6 @@ function checkForWord() {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
     selectedCells = [];
-
-    // Mark word as found
-    document.querySelectorAll("#words div").forEach(el => {
-      if (el.textContent === selectedWord) el.classList.add("found");
-    });
-
-    if (foundWords.length === words.length) alert("Good Job Big Dog!");
   } else {
     selectedCells.forEach(cell => cell.classList.remove("selected"));
     selectedCells = [];
@@ -251,8 +237,7 @@ function checkForWord() {
 // ========================
 
 function addTouchSupport() {
-  const cells = document.querySelectorAll(".cell");
-  cells.forEach(cell => {
+  document.querySelectorAll(".cell").forEach(cell => {
     cell.addEventListener("touchstart", handleTouchStart);
     cell.addEventListener("touchmove", handleTouchMove);
     cell.addEventListener("touchend", handleTouchEnd);
@@ -266,22 +251,10 @@ function handleTouchStart(e) {
 
 function handleTouchMove(e) {
   e.preventDefault();
-  const touch = e.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  const target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
   if (target?.classList.contains("cell")) dragOver(target);
 }
 
 function handleTouchEnd() {
   endDrag();
-}
-
-// ========================
-// Reset Functionality
-// ========================
-
-function resetGame() {
-  document.getElementById("wordsearch").innerHTML = "";
-  selectedCells = [];
-  foundWords = [];
-  initializeGame();
 }
