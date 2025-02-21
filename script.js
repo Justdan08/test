@@ -204,27 +204,6 @@ function isMovingBackward(cell) {
   return currentRow !== lastRow + rowStep || currentCol !== lastCol + colStep;
 }
 
-function isMovingBackward(cell) {
-  if (selectedCells.length < 2) return false;
-
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const secondLastCell = selectedCells[selectedCells.length - 2];
-
-  const lastRow = parseInt(lastCell.dataset.row);
-  const lastCol = parseInt(lastCell.dataset.col);
-  const secondLastRow = parseInt(secondLastCell.dataset.row);
-  const secondLastCol = parseInt(secondLastCell.dataset.col);
-  const currentRow = parseInt(cell.dataset.row);
-  const currentCol = parseInt(cell.dataset.col);
-
-  const rowStep = lastRow - secondLastRow;
-  const colStep = lastCol - secondLastCol;
-
-  const expectedRow = lastRow + rowStep;
-  const expectedCol = lastCol + colStep;
-
-  return currentRow !== expectedRow || currentCol !== expectedCol;
-}
 
 function deselectLastCell() {
   if (selectedCells.length > 1) {
