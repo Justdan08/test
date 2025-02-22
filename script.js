@@ -34,7 +34,7 @@ function initializeGame() {
   // Create the "Words to find" box
   const wordsBox = document.createElement("div");
   wordsBox.style.border = "1px solid black"; // Thin black border
-  wordsBox.style.padding = "10px"; // Add some padding
+  wordsBox.style.padding = "5px"; // Add some padding
   wordsBox.style.display = "grid";
   wordsBox.style.gap = "5px"; // Space between words
   wordsBox.style.marginTop = "20px"; // Add some space above the box
