@@ -16,7 +16,7 @@ document.getElementById("reset-button").addEventListener("click", resetGame);
 // Core Game Functions
 // ========================
 
-ffunction initializeGame() {
+function initializeGame() {
   // Get the word pool from the HTML
   const wordPoolElement = document.getElementById("word-pool");
   const wordPool = JSON.parse(wordPoolElement.dataset.words);
