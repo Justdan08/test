@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indusrty Lingo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Industry Lingo</h1>
+  <div id="wordsearch"></div>
+  <div id="word-list">
+    <div>Words to find:</div>
+    <div id="words"></div>
+  </div>
+  <button id="reset-button">Reset Game</button>
+  <div class="nav-links">
+    <a href="index.html">Back to Menu</a>
+    <a href="puzzle5.html">Previous Puzzle</a>
+  </div>
+  
+  <!-- Define puzzle-specific settings -->
+  <script>
+    const gridSize = 15;
+    const words = ["DSP", "CONVERSION", "STREAMS", "CPM", "ADSENSE", "COLLABORATION", "PUBLISHING", "PUBDEAL", "SPLITS", 
+    "STEMS", "MONETIZATION", "RECORD", "CHARTS", "GOLD", "SILVER", "DIAMOND", "STREAMFARMS", "ENGAGEMENT", "SHARE", "PROMO",
+    "INDEPENDENT", "MASTERS", "ROYALTIES", "DISTRIBUTION", "PLANT", "INITIATIVE", "TOUR", "MERCHANDISING", "BUNDLE"
+    "CANCELLED", "BLACKBALL" ];
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
