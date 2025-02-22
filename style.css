@@ -12,7 +12,29 @@ h1 {
   color: #333;
   margin-bottom: 10px;
 }
+/* Add to your CSS */
+.button-container {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
 
+#time-attack-button {
+  margin: 15px auto;
+  padding: 10px 20px;
+  background-color: #D9534F; /* Red to match Marvel danger theme */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#time-attack-button:hover {
+  background-color: #C9302C;
+}
 /* Grid */
 #wordsearch {
   display: grid;
