@@ -7,7 +7,6 @@ let direction = null;
 let currentWords = []; // Stores the 15 randomly selected words
 let timerInterval = null; // Timer interval
 let secondsElapsed = 0; // Total seconds elapsed
-const gridSize = 15; // Assuming a 15x15 grid
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -105,35 +104,12 @@ function initializeGame() {
     }
   }
 
-  // Start flickering letters for 2 seconds before placing words and filling random letters
-  flickerLetters(2000);
-}
-
-// Function to flicker letters for a specified duration
-function flickerLetters(duration) {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const cells = document.querySelectorAll(".cell");
-  const flickerInterval = 100; // Change letters every 100ms
-
-  const flicker = setInterval(() => {
-    cells.forEach(cell => {
-      if (cell.textContent !== "") {
-        cell.textContent = letters[Math.floor(Math.random() * letters.length)];
-      }
-    });
-  }, flickerInterval);
-
-  // Stop flickering after the specified duration
-  setTimeout(() => {
-    clearInterval(flicker);
-    placeWordsAndFillRandomLetters(); // Place words and fill random letters after flickering
-  }, duration);
-}
-
-// Function to place words and fill random letters
-function placeWordsAndFillRandomLetters() {
+  // Place words and fill random letters
   currentWords.forEach(word => placeWord(word));
   fillRandomLetters();
+
+  // Add touch support
+  addTouchSupport();
 }
 
 // Function to randomly select N words from the pool
