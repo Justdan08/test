@@ -14,6 +14,19 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
+// Navigation buttons
+document.getElementById("back-to-menu").addEventListener("click", () => {
+  window.location.href = "index.html"; // Redirect to the menu
+});
+
+document.getElementById("next-puzzle").addEventListener("click", () => {
+  window.location.href = "puzzle7.html"; // Redirect to the next puzzle
+});
+
+document.getElementById("once-more").addEventListener("click", () => {
+  resetGame(); // Restart the current puzzle
+});
+
 // ========================
 // Timer Functions
 // ========================
