@@ -8,8 +8,8 @@ let currentWords = [];
 let timerInterval = null;
 let secondsElapsed = 0;
 let isTimeAttack = false;
-const timeAttackDuration = 150; // 2 minutes 30 seconds in seconds
-const gridSize = 15; // Define grid size
+const timeAttackDuration = 150; // 2 minutes 30 seconds
+const gridSize = 15;
 
 // Initialize game
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,30 +23,25 @@ document.addEventListener("DOMContentLoaded", () => {
 // ========================
 
 function initializeGame() {
-  // Reset game state
   selectedCells = [];
   foundWords = [];
   isDragging = false;
   startCell = null;
   direction = null;
 
-  // Reset timer
   secondsElapsed = isTimeAttack ? timeAttackDuration : 0;
   updateTimerDisplay();
-  stopTimer(); // Ensure no duplicate timers
+  stopTimer();
   startTimer();
 
-  // Get the word pool from the HTML
   const wordPool = JSON.parse(document.getElementById("word-pool").dataset.words);
   currentWords = getRandomWords(wordPool, 15);
 
-  // Clear the grid and word list
   const wordsearch = document.getElementById("wordsearch");
   wordsearch.innerHTML = "";
   const wordsContainer = document.getElementById("words");
   wordsContainer.innerHTML = "";
 
-  // Create the "Words to find" box
   const wordsBox = document.createElement("div");
   wordsBox.style.display = "grid";
   wordsBox.style.gridTemplateColumns = "repeat(3, 1fr)";
@@ -58,7 +53,6 @@ function initializeGame() {
   wordsTitle.style.fontWeight = "bold";
   wordsBox.appendChild(wordsTitle);
 
-  // Add words to the word list
   currentWords.forEach(word => {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
@@ -66,14 +60,12 @@ function initializeGame() {
   });
   wordsContainer.appendChild(wordsBox);
 
-  // Create the grid
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       wordsearch.appendChild(createCell(i, j));
     }
   }
 
-  // Place words and fill random letters
   currentWords.forEach(word => placeWord(word));
   fillRandomLetters();
   addTouchSupport();
@@ -89,7 +81,7 @@ function startTimeAttack() {
 }
 
 function startTimer() {
-  stopTimer(); // Ensure no duplicate timers
+  stopTimer();
   timerInterval = setInterval(() => {
     if (isTimeAttack) {
       secondsElapsed--;
@@ -152,6 +144,19 @@ function placeWord(word) {
     else if (direction === "vertical") row++;
     else { row++; col++; }
   }
+}
+
+function canPlaceWord(word, row, col, direction) {
+  if (direction === "horizontal" && col + word.length > gridSize) return false;
+  if (direction === "vertical" && row + word.length > gridSize) return false;
+  if (direction === "diagonal" && (row + word.length > gridSize || col + word.length > gridSize)) return false;
+  return true;
+}
+
+function getStartPosition(wordLength, direction) {
+  if (direction === "horizontal") return [Math.floor(Math.random() * gridSize), Math.floor(Math.random() * (gridSize - wordLength + 1))];
+  if (direction === "vertical") return [Math.floor(Math.random() * (gridSize - wordLength + 1)), Math.floor(Math.random() * gridSize)];
+  return [Math.floor(Math.random() * (gridSize - wordLength + 1)), Math.floor(Math.random() * (gridSize - wordLength + 1))];
 }
 
 function checkForWord() {
