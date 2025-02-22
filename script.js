@@ -9,10 +9,14 @@ let timerInterval = null;
 let secondsElapsed = 0;
 let isTimeAttack = false;
 const timeAttackDuration = 150; // 2 minutes 30 seconds in seconds
+const gridSize = 15; // Define grid size
 
 // Initialize game
-document.addEventListener("DOMContentLoaded", initializeGame);
-document.getElementById("time-attack-button").addEventListener("click", startTimeAttack);
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("time-attack-button").addEventListener("click", startTimeAttack);
+  document.getElementById("reset-button").addEventListener("click", resetGame);
+  initializeGame();
+});
 
 // ========================
 // Core Functions
@@ -29,6 +33,7 @@ function initializeGame() {
   // Reset timer
   secondsElapsed = isTimeAttack ? timeAttackDuration : 0;
   updateTimerDisplay();
+  stopTimer(); // Ensure no duplicate timers
   startTimer();
 
   // Get the word pool from the HTML
@@ -84,6 +89,7 @@ function startTimeAttack() {
 }
 
 function startTimer() {
+  stopTimer(); // Ensure no duplicate timers
   timerInterval = setInterval(() => {
     if (isTimeAttack) {
       secondsElapsed--;
@@ -102,19 +108,26 @@ function startTimer() {
   }, 1000);
 }
 
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
 function updateTimerDisplay() {
   const minutes = Math.floor(secondsElapsed / 60);
   const seconds = secondsElapsed % 60;
-  document.getElementById("timer").textContent = 
-    `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
 function resetGame() {
+  isTimeAttack = false;
   document.getElementById("wordsearch").innerHTML = "";
   selectedCells = [];
   foundWords = [];
   stopTimer();
-  if (!isTimeAttack) secondsElapsed = 0;
+  secondsElapsed = 0;
   initializeGame();
 }
 
@@ -132,8 +145,12 @@ function placeWord(word) {
   } while (!canPlaceWord(word, row, col, direction));
 
   for (let i = 0; i < word.length; i++) {
-    const cell = document.querySelector(getCellSelector(row, col, direction, i));
-    cell.textContent = word[i];
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (cell) cell.textContent = word[i];
+
+    if (direction === "horizontal") col++;
+    else if (direction === "vertical") row++;
+    else { row++; col++; }
   }
 }
 
@@ -188,45 +205,10 @@ function startDrag(cell) {
 }
 
 function dragOver(cell) {
-  if (!isDragging) return;
-
-  const existingIndex = selectedCells.indexOf(cell);
-  if (existingIndex > -1) {
-    const removedCells = selectedCells.splice(existingIndex + 1);
-    removedCells.forEach(c => c.classList.remove("selected"));
-    return;
-  }
-
+  if (!isDragging || selectedCells.includes(cell)) return;
   if (!isAdjacent(cell)) return;
 
-  if (!direction) {
-    const startRow = parseInt(startCell.dataset.row);
-    const startCol = parseInt(startCell.dataset.col);
-    const currentRow = parseInt(cell.dataset.row);
-    const currentCol = parseInt(cell.dataset.col);
-    
-    const rowDiff = currentRow - startRow;
-    const colDiff = currentCol - startCol;
-    
-    if (rowDiff === 0) direction = "horizontal";
-    else if (colDiff === 0) direction = "vertical";
-    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
-    else return;
-  }
-
-  if (!isValidDirection(cell)) return;
-
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const missing = getMissingCells(lastCell, cell);
-  
-  missing.forEach(missingCell => {
-    if (!selectedCells.includes(missingCell)) {
-      missingCell.classList.add("selected"));
-      selectedCells.push(missingCell);
-    }
-  });
-
-  cell.classList.add("selected"));
+  cell.classList.add("selected");
   selectedCells.push(cell);
 }
 
@@ -235,48 +217,6 @@ function isAdjacent(cell) {
   const rowDiff = Math.abs(parseInt(cell.dataset.row) - parseInt(last.dataset.row));
   const colDiff = Math.abs(parseInt(cell.dataset.col) - parseInt(last.dataset.col));
   return (rowDiff <= 1 && colDiff <= 1);
-}
-
-function isValidDirection(cell) {
-  const last = selectedCells[selectedCells.length - 1];
-  const lastRow = parseInt(last.dataset.row);
-  const lastCol = parseInt(last.dataset.col);
-  const currentRow = parseInt(cell.dataset.row);
-  const currentCol = parseInt(cell.dataset.col);
-
-  switch(direction) {
-    case "horizontal":
-      return currentRow === lastRow;
-    case "vertical":
-      return currentCol === lastCol;
-    case "diagonal":
-      return Math.abs(currentRow - lastRow) === Math.abs(currentCol - lastCol);
-    default:
-      return false;
-  }
-}
-
-function getMissingCells(lastCell, currentCell) {
-  let missingCells = [];
-  const lastRow = parseInt(lastCell.dataset.row);
-  const lastCol = parseInt(lastCell.dataset.col);
-  const currentRow = parseInt(currentCell.dataset.row);
-  const currentCol = parseInt(currentCell.dataset.col);
-
-  const rowStep = currentRow > lastRow ? 1 : currentRow < lastRow ? -1 : 0;
-  const colStep = currentCol > lastCol ? 1 : currentCol < lastCol ? -1 : 0;
-
-  let row = lastRow + rowStep;
-  let col = lastCol + colStep;
-
-  while (row !== currentRow || col !== currentCol) {
-    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (cell) missingCells.push(cell);
-    row += rowStep;
-    col += colStep;
-  }
-
-  return missingCells;
 }
 
 function endDrag() {
