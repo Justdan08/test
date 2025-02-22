@@ -1,117 +1,103 @@
-/* General Styles */
 body {
-  font-family: 'Georgia', serif;
-  background-color: white;
-  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
   margin: 0;
-  padding: 10px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-h1 {
+#game-container {
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+}
+
+#timer {
   font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
   color: #333;
-  margin-bottom: 10px;
 }
 
-/* Grid */
+.button-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: opacity 0.2s;
+}
+
+#reset-button {
+  background-color: #4984B8;
+  color: blue;
+}
+
+#time-attack-button {
+  background-color: #4984B8;
+  color: blue;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
 #wordsearch {
   display: grid;
+  grid-template-columns: repeat(15, 1fr);
   gap: 2px;
-  margin: 20px auto; /* Center horizontally */
-  max-width: 95%;
-  justify-content: center; /* Center grid columns */
-  grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
+  margin: 0 auto 20px;
+  max-width: 600px;
 }
 
 .cell {
-  aspect-ratio: 1;
-  border: 1px solid black;
-  font-size: 14px;
+  width: 35px;
+  height: 35px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   background-color: white;
+  border: 1px solid #ddd;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
   user-select: none;
 }
 
 .cell.selected {
-  background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
+  background-color: #a8d8ff;
 }
 
-/* Word List */
-#word-list {
-  margin: 10px;
+.cell.found {
+  background-color: #b3ffb3;
+}
+
+#words {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  margin: 0 auto;
+  width: 90%;
+}
+
+#words div {
   font-size: 16px;
+  margin: 5px 0;
+  padding: 3px;
 }
 
-#word-list div {
-  margin: 5px;
-}
-
-.found {
+#words div.found {
   text-decoration: line-through;
   color: #888;
-}
-
-/* Buttons & Links */
-#reset-button {
-  margin: 15px auto;
-  padding: 10px 20px;
-  background-color: #4984B8;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-#timer {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  padding: 5px 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-}
-
-.puzzle-links {
-  margin: 20px;
-}
-
-.puzzle-link {
-  display: block;
-  margin: 10px;
-  padding: 10px;
-  background-color: #4984B8;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
-.nav-links a {
-  margin: 0 10px;
-  color: #4984B8;
-  text-decoration: none;
-}
-
-/* Mobile Optimization */
-@media (max-width: 600px) {
-  #wordsearch {
-    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
-  }
-
-  body {
-    padding: 5px; /* Reduce padding on small screens */
-  }
-
-  .cell {
-    font-size: 12px;
-  }
-
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
 }
