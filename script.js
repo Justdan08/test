@@ -29,13 +29,34 @@ function initializeGame() {
 
   // Clear the grid and word list
   wordsearch.innerHTML = "";
+  wordsContainer.innerHTML = ""; // Clear the word list completely
 
-  // Only add "Words to find:" if it doesn't already exist
-  if (!wordsContainer.querySelector("div:first-child")) {
-    wordsContainer.innerHTML = "<div>Words to find:</div>";
-  } else {
-    wordsContainer.innerHTML = ""; // Clear the word list but keep the "Words to find:" text
-  }
+  // Create the "Words to find" box
+  const wordsBox = document.createElement("div");
+  wordsBox.style.border = "1px solid black"; // Thin black border
+  wordsBox.style.padding = "10px"; // Add some padding
+  wordsBox.style.display = "grid";
+  wordsBox.style.gridTemplateColumns = "repeat(3, 1fr)"; // 3 columns
+  wordsBox.style.gap = "5px"; // Space between words
+  wordsBox.style.marginTop = "20px"; // Add some space above the box
+
+  // Add "Words to find:" title
+  const wordsTitle = document.createElement("div");
+  wordsTitle.textContent = "Words to find:";
+  wordsTitle.style.gridColumn = "1 / -1"; // Span all columns
+  wordsTitle.style.fontWeight = "bold"; // Make the title bold
+  wordsTitle.style.marginBottom = "10px"; // Add space below the title
+  wordsBox.appendChild(wordsTitle);
+
+  // Add words in 3 columns and 5 rows
+  currentWords.forEach((word, index) => {
+    const wordElement = document.createElement("div");
+    wordElement.textContent = word;
+    wordsBox.appendChild(wordElement);
+  });
+
+  // Append the words box to the words container
+  wordsContainer.appendChild(wordsBox);
 
   // Create the grid
   for (let i = 0; i < gridSize; i++) {
@@ -48,13 +69,6 @@ function initializeGame() {
   // Place words and fill random letters
   currentWords.forEach(word => placeWord(word));
   fillRandomLetters();
-
-  // Display words to find
-  currentWords.forEach(word => {
-    const wordElement = document.createElement("div");
-    wordElement.textContent = word;
-    wordsContainer.appendChild(wordElement);
-  });
 
   // Add touch support
   addTouchSupport();
@@ -136,11 +150,11 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction (Updated to allow selecting found cells)
+// User Interaction
 // ========================
 
 function startDrag(cell) {
-  // Removed the found cell check
+  if (cell.classList.contains("found")) return;
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
@@ -149,8 +163,7 @@ function startDrag(cell) {
 }
 
 function dragOver(cell) {
-  // Removed the found cell check
-  if (!isDragging) return;
+  if (!isDragging || cell.classList.contains("found")) return;
 
   // Check if we're backtracking to an existing cell
   const existingIndex = selectedCells.indexOf(cell);
