@@ -5,6 +5,8 @@ let isDragging = false;
 let startCell = null;
 let direction = null;
 let currentWords = []; // Stores the 15 randomly selected words
+let timerInterval = null; // Timer interval
+let secondsElapsed = 0; // Total seconds elapsed
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -13,10 +15,37 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
 // ========================
+// Timer Functions
+// ========================
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    updateTimerDisplay();
+  }, 1000); // Update every second
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(secondsElapsed / 60);
+  const seconds = secondsElapsed % 60;
+  const timerDisplay = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  document.getElementById("timer").textContent = timerDisplay;
+}
+
+// ========================
 // Core Game Functions
 // ========================
 
 function initializeGame() {
+  // Reset timer
+  secondsElapsed = 0;
+  updateTimerDisplay();
+  startTimer();
+
   // Get the word pool from the HTML
   const wordPoolElement = document.getElementById("word-pool");
   const wordPool = JSON.parse(wordPoolElement.dataset.words);
@@ -163,7 +192,6 @@ function fillRandomLetters() {
 // ========================
 
 function startDrag(cell) {
-  // Removed the found cell check to allow selecting cells even if they are part of a found word
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
@@ -294,7 +322,10 @@ function checkForWord() {
       if (el.textContent === selectedWord) el.classList.add("found");
     });
 
-    if (foundWords.length === currentWords.length) alert("Good Job Big Dog!");
+    if (foundWords.length === currentWords.length) {
+      stopTimer(); // Stop the timer when the puzzle is completed
+      alert("Good Job Big Dog!");
+    }
   } else {
     selectedCells.forEach(cell => {
       cell.classList.remove("selected");
@@ -340,5 +371,6 @@ function resetGame() {
   document.getElementById("wordsearch").innerHTML = "";
   selectedCells = [];
   foundWords = [];
+  stopTimer(); // Stop the timer
   initializeGame(); // Regenerate puzzle with new random words
 }
