@@ -53,29 +53,15 @@ h1 {
   color: #888;
 }
 
-/* Style for all buttons */
-button {
+/* Buttons & Links */
+#reset-button {
+  margin: 15px auto;
   padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
+  background-color: #4984B8;
   color: white;
-  background-color: #007BFF; /* Blue color */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin: 5px; /* Add some spacing between buttons */
-}
-
-/* Hover effect for buttons */
-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-/* Container for navigation buttons */
-.nav-buttons {
-  display: flex;
-  justify-content: center; /* Center buttons horizontally */
-  margin-top: 10px; /* Add some space above the buttons */
 }
 #timer {
   position: fixed;
