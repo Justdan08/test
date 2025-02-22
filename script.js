@@ -12,7 +12,6 @@ const timeAttackDuration = 150; // 2 minutes 30 seconds in seconds
 
 // Initialize game
 document.addEventListener("DOMContentLoaded", initializeGame);
-document.getElementById("reset-button").addEventListener("click", resetGame);
 document.getElementById("time-attack-button").addEventListener("click", startTimeAttack);
 
 // ========================
@@ -20,18 +19,29 @@ document.getElementById("time-attack-button").addEventListener("click", startTim
 // ========================
 
 function initializeGame() {
+  // Reset game state
+  selectedCells = [];
+  foundWords = [];
+  isDragging = false;
+  startCell = null;
+  direction = null;
+
+  // Reset timer
   secondsElapsed = isTimeAttack ? timeAttackDuration : 0;
   updateTimerDisplay();
   startTimer();
 
+  // Get the word pool from the HTML
   const wordPool = JSON.parse(document.getElementById("word-pool").dataset.words);
   currentWords = getRandomWords(wordPool, 15);
 
+  // Clear the grid and word list
   const wordsearch = document.getElementById("wordsearch");
   wordsearch.innerHTML = "";
-  document.getElementById("words").innerHTML = "";
+  const wordsContainer = document.getElementById("words");
+  wordsContainer.innerHTML = "";
 
-  // Create words list
+  // Create the "Words to find" box
   const wordsBox = document.createElement("div");
   wordsBox.style.display = "grid";
   wordsBox.style.gridTemplateColumns = "repeat(3, 1fr)";
@@ -43,14 +53,15 @@ function initializeGame() {
   wordsTitle.style.fontWeight = "bold";
   wordsBox.appendChild(wordsTitle);
 
+  // Add words to the word list
   currentWords.forEach(word => {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
     wordsBox.appendChild(wordElement);
   });
-  document.getElementById("words").appendChild(wordsBox);
+  wordsContainer.appendChild(wordsBox);
 
-  // Create grid
+  // Create the grid
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       wordsearch.appendChild(createCell(i, j));
@@ -132,7 +143,7 @@ function checkForWord() {
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => cell.classList.add("found"));
     document.querySelectorAll("#words div").forEach(el => {
-      if (el.textContent === selectedWord) el.classList.add("found"));
+      if (el.textContent === selectedWord) el.classList.add("found");
     });
 
     if (foundWords.length === currentWords.length) {
