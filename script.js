@@ -34,19 +34,17 @@ function initializeGame() {
   // Create the "Words to find" box
   const wordsBox = document.createElement("div");
   wordsBox.style.border = "1px solid black"; // Thin black border
-  wordsBox.style.padding = "5px"; // Add some padding
+  wordsBox.style.padding = "10px"; // Restore original padding
   wordsBox.style.display = "grid";
   wordsBox.style.gap = "5px"; // Space between words
   wordsBox.style.marginTop = "20px"; // Add some space above the box
   wordsBox.style.overflow = "visible"; // Allow overflow
-
-  // Calculate the width of the longest word
-  const longestWord = currentWords.reduce((a, b) => (a.length > b.length ? a : b));
-  const longestWordWidth = longestWord.length * 10; // Approximate width based on character count
-  const columnWidth = `${longestWordWidth}px`; // Set column width based on the longest word
+  wordsBox.style.width = "90%"; // Increase box width to almost full screen
+  wordsBox.style.marginLeft = "auto"; // Center the box horizontally
+  wordsBox.style.marginRight = "auto"; // Center the box horizontally
 
   // Set grid template columns
-  wordsBox.style.gridTemplateColumns = `repeat(3, ${columnWidth})`; // 3 columns with dynamic width
+  wordsBox.style.gridTemplateColumns = "repeat(3, 1fr)"; // 3 equal-width columns
 
   // Add "Words to find:" title
   const wordsTitle = document.createElement("div");
@@ -62,6 +60,7 @@ function initializeGame() {
     wordElement.textContent = word;
     wordElement.style.whiteSpace = "nowrap"; // Prevent text wrapping
     wordElement.style.overflow = "visible"; // Allow overflow
+    wordElement.style.fontSize = "0.75em"; // Decrease font size by 25%
     wordsBox.appendChild(wordElement);
   });
 
