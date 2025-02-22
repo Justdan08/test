@@ -38,7 +38,7 @@ function initializeGame() {
   wordsBox.style.display = "grid";
   wordsBox.style.gap = "5px"; // Space between words
   wordsBox.style.marginTop = "20px"; // Add some space above the box
-  wordsBox.style.overflow = "hidden"; // Prevent overflow
+  wordsBox.style.overflow = "visible"; // Allow overflow
 
   // Calculate the width of the longest word
   const longestWord = currentWords.reduce((a, b) => (a.length > b.length ? a : b));
@@ -61,8 +61,7 @@ function initializeGame() {
     const wordElement = document.createElement("div");
     wordElement.textContent = word;
     wordElement.style.whiteSpace = "nowrap"; // Prevent text wrapping
-    wordElement.style.overflow = "hidden"; // Hide overflow
-    wordElement.style.textOverflow = "ellipsis"; // Add ellipsis if text overflows
+    wordElement.style.overflow = "visible"; // Allow overflow
     wordsBox.appendChild(wordElement);
   });
 
