@@ -60,7 +60,7 @@ function initializeGame() {
     wordElement.textContent = word;
     wordElement.style.whiteSpace = "nowrap"; // Prevent text wrapping
     wordElement.style.overflow = "visible"; // Allow overflow
-    wordElement.style.fontSize = "1em"; // Decrease font size by 25%
+    wordElement.style.fontSize = ".85em"; // Decrease font size by 25%
     wordsBox.appendChild(wordElement);
   });
 
