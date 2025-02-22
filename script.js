@@ -48,10 +48,6 @@ function initializeGame() {
   // Set grid template columns
   wordsBox.style.gridTemplateColumns = `repeat(3, ${columnWidth})`; // 3 columns with dynamic width
 
-  // Calculate the total width of the box
-  const totalWidth = longestWordWidth * 3 + 40; // 3 columns + padding and gap
-  wordsBox.style.width = `${totalWidth}px`; // Set the box width dynamically
-
   // Add "Words to find:" title
   const wordsTitle = document.createElement("div");
   wordsTitle.textContent = "Words to find:";
