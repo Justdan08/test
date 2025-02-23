@@ -52,7 +52,65 @@ h1 {
   text-decoration: line-through;
   color: #888;
 }
+/* New CSS */
+.container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
 
+.left-panel {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.right-panel {
+  width: 250px;
+}
+
+/* Desktop Layout (min-width: 901px) */
+@media (min-width: 901px) {
+  #word-list {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  #words {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* Single column */
+    gap: 10px !important;
+  }
+
+  #words div {
+    font-size: 1.2em !important;
+    white-space: nowrap !important;
+  }
+
+  .left-panel #combo-container {
+    position: static !important;
+    width: 100% !important;
+  }
+}
+
+/* Mobile Layout (max-width: 900px) */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .left-panel, .right-panel {
+    width: 100% !important;
+  }
+
+  /* Keep original mobile positioning */
+  #combo-container {
+    position: fixed;
+    top: 50px;
+    left: 10px;
+  }
+}
 /* Buttons & Links */
 #reset-button {
   margin: 15px auto;
