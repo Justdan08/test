@@ -11,7 +11,6 @@ let score = 0; // Added score tracking
 let comboMultiplier = 1; // Combo multiplier
 let comboTimeLeft = 0; // Time left for current combo
 let comboInterval = null; // Combo timer interval
-const gridSize = 15; // Defines the size of the grid (15x15)
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
