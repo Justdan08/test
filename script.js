@@ -9,6 +9,9 @@ let timerInterval = null; // Timer interval
 let secondsElapsed = 0; // Total seconds elapsed
 let score = 0; // Added score tracking
 
+// Access gridSize from HTML or define it here
+const gridSize = window.gridSize || 15; // Use HTML-defined gridSize or default to 15
+
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
 
