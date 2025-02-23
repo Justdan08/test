@@ -100,7 +100,30 @@ button:hover {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
+#combo-container {
+  position: fixed;
+  top: 60px; /* Adjust based on your layout */
+  left: 10px;
+  width: 200px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
 
+#combo-bar {
+  height: 10px;
+  background-color: #4CAF50;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+#combo-text {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 5px;
+}
 .puzzle-links {
   margin: 20px;
 }
