@@ -92,8 +92,6 @@ function calculatePoints(wordLength) {
 // ========================
 
 function initializeGame() {
-  // Add no-select class to body during initialization
-  document.body.classList.add("no-select");
   // Reset game state
   score = 0;
   secondsElapsed = 0;
@@ -176,15 +174,15 @@ function getRandomWords(pool, count) {
   return shuffled.slice(0, count); // Select the first N words
 }
 
-// Modified createCell function
 function createCell(row, col) {
   const cell = document.createElement("div");
-  cell.classList.add("cell", "no-select"); // Add no-select class
+  cell.classList.add("cell");
   cell.dataset.row = row;
   cell.dataset.col = col;
   cell.textContent = "";
   cell.addEventListener("mousedown", () => startDrag(cell));
   cell.addEventListener("mouseenter", () => dragOver(cell));
+  cell.addEventListener("mouseup", endDrag);
   return cell;
 }
 
@@ -307,8 +305,7 @@ missingCells.forEach(missingCell => {
     selectedCells.push(missingCell);
   }
 });
-// Add document-wide mouseup listener
-document.addEventListener("mouseup", endDrag);
+
 // Add current cell
 cell.classList.add("selected"); // Removed extra )
 selectedCells.push(cell);
