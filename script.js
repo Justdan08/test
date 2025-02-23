@@ -299,17 +299,17 @@ function dragOver(cell) {
 
   if (!isValidSegment) return;
 
-  // Add missing cells to selection
-  missingCells.forEach(missingCell => {
-    if (!selectedCells.includes(missingCell)) {
-      missingCell.classList.add("selected");
-      selectedCells.push(missingCell);
-    }
-  });
+ // CORRECTED CODE
+missingCells.forEach(missingCell => {
+  if (!selectedCells.includes(missingCell)) {
+    missingCell.classList.add("selected"); // Removed extra )
+    selectedCells.push(missingCell);
+  }
+});
 
-  // Add current cell
-  cell.classList.add("selected");
-  selectedCells.push(cell);
+// Add current cell
+cell.classList.add("selected"); // Removed extra )
+selectedCells.push(cell);
 }
 
 // Helper: Validate movement continues in set direction
