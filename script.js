@@ -8,6 +8,10 @@ let currentWords = []; // Stores the 15 randomly selected words
 let timerInterval = null; // Timer interval
 let secondsElapsed = 0; // Total seconds elapsed
 let score = 0; // Added score tracking
+let comboMultiplier = 1; // Combo multiplier
+let comboTimeLeft = 0; // Time left for current combo
+let comboInterval = null; // Combo timer interval
+const gridSize = 15; // Defines the size of the grid (15x15)
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -38,6 +42,39 @@ function updateTimerDisplay() {
 }
 
 // ========================
+// Combo Functions
+// ========================
+
+function startComboTimer() {
+  comboTimeLeft = 10; // Reset combo timer to 10 seconds
+  updateComboBar();
+
+  if (comboInterval) clearInterval(comboInterval); // Clear existing interval
+
+  comboInterval = setInterval(() => {
+    comboTimeLeft--;
+    updateComboBar();
+
+    if (comboTimeLeft <= 0) {
+      clearInterval(comboInterval);
+      comboMultiplier = 1; // Reset combo multiplier
+      updateComboBar();
+    }
+  }, 1000); // Update every second
+}
+
+function updateComboBar() {
+  const comboBar = document.getElementById("combo-bar");
+  const comboText = document.getElementById("combo-text");
+
+  // Update bar width
+  comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
+
+  // Update combo text
+  comboText.textContent = `Combo: ${comboMultiplier}x`;
+}
+
+// ========================
 // Score Functions
 // ========================
 
@@ -48,7 +85,7 @@ function updateScoreDisplay() {
 function calculatePoints(wordLength) {
   const timeChunk = Math.floor(secondsElapsed / 15);
   const pointsPerLetter = Math.max(10 - timeChunk, 0);
-  return wordLength * pointsPerLetter;
+  return wordLength * pointsPerLetter * comboMultiplier; // Apply combo multiplier
 }
 
 // ========================
@@ -59,8 +96,11 @@ function initializeGame() {
   // Reset game state
   score = 0;
   secondsElapsed = 0;
+  comboMultiplier = 1;
+  comboTimeLeft = 0;
   updateScoreDisplay();
   updateTimerDisplay();
+  updateComboBar();
   startTimer();
 
   // Get the word pool from the HTML
@@ -205,7 +245,7 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction
+// User Interaction (Updated Drag Logic)
 // ========================
 
 function startDrag(cell) {
@@ -219,16 +259,13 @@ function startDrag(cell) {
 function dragOver(cell) {
   if (!isDragging) return;
 
-  // Check if we're backtracking to an existing cell
+  // Check for backtracking
   const existingIndex = selectedCells.indexOf(cell);
   if (existingIndex > -1) {
     const removedCells = selectedCells.splice(existingIndex + 1);
     removedCells.forEach(c => c.classList.remove("selected"));
     return;
   }
-
-  // Don't process if moving to a non-adjacent cell
-  if (!isAdjacent(cell)) return;
 
   // Determine direction if not set
   if (!direction) {
@@ -249,45 +286,46 @@ function dragOver(cell) {
   // Validate movement direction
   if (!isValidDirection(cell)) return;
 
-  // Add missing cells between last and current
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const missing = getMissingCells(lastCell, cell);
+  // Get last valid cell in the current path
+  const lastValidCell = selectedCells[selectedCells.length - 1];
   
-  missing.forEach(missingCell => {
+  // Find all cells between last valid cell and current cell
+  const missingCells = getMissingCells(lastValidCell, cell);
+  
+  // Validate entire missing path segment
+  const isValidSegment = missingCells.every(missingCell => 
+    isValidDirection(missingCell, lastValidCell)
+  );
+
+  if (!isValidSegment) return;
+
+  // Add missing cells to selection
+  missingCells.forEach(missingCell => {
     if (!selectedCells.includes(missingCell)) {
       missingCell.classList.add("selected");
       selectedCells.push(missingCell);
     }
   });
 
+  // Add current cell
   cell.classList.add("selected");
   selectedCells.push(cell);
 }
 
-// Helper: Check if cell is adjacent in any direction
-function isAdjacent(cell) {
-  const last = selectedCells[selectedCells.length - 1];
-  const rowDiff = Math.abs(parseInt(cell.dataset.row) - parseInt(last.dataset.row));
-  const colDiff = Math.abs(parseInt(cell.dataset.col) - parseInt(last.dataset.col));
-  
-  return (rowDiff <= 1 && colDiff <= 1);
-}
-
 // Helper: Validate movement continues in set direction
-function isValidDirection(cell) {
-  const last = selectedCells[selectedCells.length - 1];
-  const lastRow = parseInt(last.dataset.row);
-  const lastCol = parseInt(last.dataset.col);
+function isValidDirection(cell, referenceCell = selectedCells[selectedCells.length - 1]) {
+  const refRow = parseInt(referenceCell.dataset.row);
+  const refCol = parseInt(referenceCell.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
   switch(direction) {
     case "horizontal":
-      return currentRow === lastRow;
+      return currentRow === refRow;
     case "vertical":
-      return currentCol === lastCol;
+      return currentCol === refCol;
     case "diagonal":
-      return Math.abs(currentRow - lastRow) === Math.abs(currentCol - lastCol);
+      return Math.abs(currentRow - refRow) === Math.abs(currentCol - refCol);
     default:
       return false;
   }
@@ -329,6 +367,12 @@ function checkForWord() {
     const wordScore = calculatePoints(selectedWord.length);
     score += wordScore;
     updateScoreDisplay();
+
+    // Update combo
+    if (comboTimeLeft > 0) {
+      comboMultiplier += 0.25; // Increase combo multiplier
+    }
+    startComboTimer(); // Restart combo timer
 
     foundWords.push(selectedWord);
     selectedCells.forEach(cell => {
@@ -392,7 +436,10 @@ function resetGame() {
   selectedCells = [];
   foundWords = [];
   score = 0;
+  comboMultiplier = 1;
+  comboTimeLeft = 0;
   updateScoreDisplay();
+  updateComboBar();
   stopTimer();
   initializeGame();
 }
