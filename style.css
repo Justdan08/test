@@ -53,42 +53,17 @@ h1 {
   color: #888;
 }
 
-/* Style for all buttons */
-button {
+/* Buttons & Links */
+#reset-button {
+  margin: 15px auto;
   padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
+  background-color: #4984B8;
   color: white;
-  background-color: #4984B8; /* Blue color */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin: 5px; /* Add some spacing between buttons */
 }
 
-/* Hover effect for buttons */
-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-/* Container for navigation buttons */
-.nav-buttons {
-  display: flex;
-  justify-content: center; /* Center buttons horizontally */
-  margin-top: 10px; /* Add some space above the buttons */
-}
-#score {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  font-size: 24px;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-}
 #timer {
   position: fixed;
   top: 10px;
@@ -100,30 +75,7 @@ button:hover {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
-#combo-container {
-  position: fixed;
-  top: 60px; /* Adjust based on your layout */
-  left: 10px;
-  width: 200px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
 
-#combo-bar {
-  height: 10px;
-  background-color: #4CAF50;
-  width: 0%;
-  transition: width 0.5s ease;
-}
-
-#combo-text {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 5px;
-}
 .puzzle-links {
   margin: 20px;
 }
@@ -144,6 +96,32 @@ button:hover {
   text-decoration: none;
 }
 
+/* Combo Bar */
+#combo-container {
+  position: fixed;
+  top: 60px; /* Below the timer */
+  left: 10px;
+  width: 200px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+#combo-bar {
+  height: 10px;
+  background-color: #4CAF50; /* Green for progress */
+  width: 0%;
+  transition: width 0.5s ease; /* Smooth animation */
+}
+
+#combo-text {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 5px;
+}
+
 /* Mobile Optimization */
 @media (max-width: 600px) {
   #wordsearch {
@@ -162,5 +140,15 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  /* Adjust combo bar for mobile */
+  #combo-container {
+    top: 50px; /* Move higher on mobile */
+    width: 150px; /* Smaller width for mobile */
+  }
+
+  #combo-text {
+    font-size: 12px; /* Smaller text for mobile */
   }
 }
