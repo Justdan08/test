@@ -82,8 +82,8 @@ function updateScoreDisplay() {
 }
 
 function calculatePoints(wordLength) {
-  const timeChunk = Math.floor(secondsElapsed / 15);
-  const pointsPerLetter = Math.max(10 - timeChunk, 0);
+  const timeChunk = Math.floor(secondsElapsed / 15); // Calculate 15-second chunks
+  const pointsPerLetter = Math.max(50 - (timeChunk * 5), 0); // Base 50, decrease by 5 every 15 seconds
   return wordLength * pointsPerLetter * comboMultiplier; // Apply combo multiplier
 }
 
