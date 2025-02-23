@@ -121,6 +121,26 @@ h1 {
   text-align: center;
   margin-top: 5px;
 }
+/* Desktop Styles (min-width: 601px) */
+@media (min-width: 601px) {
+  #words {
+    width: 70% !important; /* Tighten words box */
+    margin: 20px auto !important;
+  }
+
+  #words div {
+    font-size: 1.1em !important; /* Increase font size */
+    padding: 2px !important;
+  }
+
+  #wordsearch {
+    max-width: 600px; /* Limit grid size */
+  }
+
+  .cell {
+    font-size: 16px; /* Larger letters */
+  }
+}
 
 /* Mobile Optimization */
 @media (max-width: 600px) {
