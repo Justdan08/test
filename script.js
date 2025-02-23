@@ -9,9 +9,6 @@ let timerInterval = null; // Timer interval
 let secondsElapsed = 0; // Total seconds elapsed
 let score = 0; // Added score tracking
 
-// Access gridSize from HTML or define it here
-const gridSize = window.gridSize || 15; // Use HTML-defined gridSize or default to 15
-
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
 
@@ -208,7 +205,7 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction (Updated Drag Logic)
+// User Interaction
 // ========================
 
 function startDrag(cell) {
@@ -222,13 +219,16 @@ function startDrag(cell) {
 function dragOver(cell) {
   if (!isDragging) return;
 
-  // Check for backtracking
+  // Check if we're backtracking to an existing cell
   const existingIndex = selectedCells.indexOf(cell);
   if (existingIndex > -1) {
     const removedCells = selectedCells.splice(existingIndex + 1);
     removedCells.forEach(c => c.classList.remove("selected"));
     return;
   }
+
+  // Don't process if moving to a non-adjacent cell
+  if (!isAdjacent(cell)) return;
 
   // Determine direction if not set
   if (!direction) {
@@ -249,46 +249,45 @@ function dragOver(cell) {
   // Validate movement direction
   if (!isValidDirection(cell)) return;
 
-  // Get last valid cell in the current path
-  const lastValidCell = selectedCells[selectedCells.length - 1];
+  // Add missing cells between last and current
+  const lastCell = selectedCells[selectedCells.length - 1];
+  const missing = getMissingCells(lastCell, cell);
   
-  // Find all cells between last valid cell and current cell
-  const missingCells = getMissingCells(lastValidCell, cell);
-  
-  // Validate entire missing path segment
-  const isValidSegment = missingCells.every(missingCell => 
-    isValidDirection(missingCell, lastValidCell)
-  );
-
-  if (!isValidSegment) return;
-
-  // Add missing cells to selection
-  missingCells.forEach(missingCell => {
+  missing.forEach(missingCell => {
     if (!selectedCells.includes(missingCell)) {
-      missingCell.classList.add("selected"));
+      missingCell.classList.add("selected");
       selectedCells.push(missingCell);
     }
   });
 
-  // Add current cell
-  cell.classList.add("selected"));
+  cell.classList.add("selected");
   selectedCells.push(cell);
 }
 
+// Helper: Check if cell is adjacent in any direction
+function isAdjacent(cell) {
+  const last = selectedCells[selectedCells.length - 1];
+  const rowDiff = Math.abs(parseInt(cell.dataset.row) - parseInt(last.dataset.row));
+  const colDiff = Math.abs(parseInt(cell.dataset.col) - parseInt(last.dataset.col));
+  
+  return (rowDiff <= 1 && colDiff <= 1);
+}
+
 // Helper: Validate movement continues in set direction
-function isValidDirection(cell, referenceCell = selectedCells[selectedCells.length - 1]) {
-  const refRow = parseInt(referenceCell.dataset.row);
-  const refCol = parseInt(referenceCell.dataset.col);
+function isValidDirection(cell) {
+  const last = selectedCells[selectedCells.length - 1];
+  const lastRow = parseInt(last.dataset.row);
+  const lastCol = parseInt(last.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
   switch(direction) {
     case "horizontal":
-      return currentRow === refRow;
+      return currentRow === lastRow;
     case "vertical":
-      return currentCol === refCol;
+      return currentCol === lastCol;
     case "diagonal":
-      return Math.abs(currentRow - refRow) === Math.abs(currentCol - refCol);
+      return Math.abs(currentRow - lastRow) === Math.abs(currentCol - lastCol);
     default:
       return false;
   }
