@@ -205,7 +205,7 @@ function fillRandomLetters() {
 }
 
 // ========================
-// User Interaction
+// User Interaction (Updated Drag Logic)
 // ========================
 
 function startDrag(cell) {
@@ -219,16 +219,13 @@ function startDrag(cell) {
 function dragOver(cell) {
   if (!isDragging) return;
 
-  // Check if we're backtracking to an existing cell
+  // Check for backtracking
   const existingIndex = selectedCells.indexOf(cell);
   if (existingIndex > -1) {
     const removedCells = selectedCells.splice(existingIndex + 1);
     removedCells.forEach(c => c.classList.remove("selected"));
     return;
   }
-
-  // Don't process if moving to a non-adjacent cell
-  if (!isAdjacent(cell)) return;
 
   // Determine direction if not set
   if (!direction) {
@@ -249,45 +246,46 @@ function dragOver(cell) {
   // Validate movement direction
   if (!isValidDirection(cell)) return;
 
-  // Add missing cells between last and current
-  const lastCell = selectedCells[selectedCells.length - 1];
-  const missing = getMissingCells(lastCell, cell);
+  // Get last valid cell in the current path
+  const lastValidCell = selectedCells[selectedCells.length - 1];
   
-  missing.forEach(missingCell => {
+  // Find all cells between last valid cell and current cell
+  const missingCells = getMissingCells(lastValidCell, cell);
+  
+  // Validate entire missing path segment
+  const isValidSegment = missingCells.every(missingCell => 
+    isValidDirection(missingCell, lastValidCell)
+  );
+
+  if (!isValidSegment) return;
+
+  // Add missing cells to selection
+  missingCells.forEach(missingCell => {
     if (!selectedCells.includes(missingCell)) {
-      missingCell.classList.add("selected");
+      missingCell.classList.add("selected"));
       selectedCells.push(missingCell);
     }
   });
 
-  cell.classList.add("selected");
+  // Add current cell
+  cell.classList.add("selected"));
   selectedCells.push(cell);
 }
 
-// Helper: Check if cell is adjacent in any direction
-function isAdjacent(cell) {
-  const last = selectedCells[selectedCells.length - 1];
-  const rowDiff = Math.abs(parseInt(cell.dataset.row) - parseInt(last.dataset.row));
-  const colDiff = Math.abs(parseInt(cell.dataset.col) - parseInt(last.dataset.col));
-  
-  return (rowDiff <= 1 && colDiff <= 1);
-}
-
 // Helper: Validate movement continues in set direction
-function isValidDirection(cell) {
-  const last = selectedCells[selectedCells.length - 1];
-  const lastRow = parseInt(last.dataset.row);
-  const lastCol = parseInt(last.dataset.col);
+function isValidDirection(cell, referenceCell = selectedCells[selectedCells.length - 1]) {
+  const refRow = parseInt(referenceCell.dataset.row);
+  const refCol = parseInt(referenceCell.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
   switch(direction) {
     case "horizontal":
-      return currentRow === lastRow;
+      return currentRow === refRow;
     case "vertical":
-      return currentCol === lastCol;
+      return currentCol === refCol;
     case "diagonal":
-      return Math.abs(currentRow - lastRow) === Math.abs(currentCol - lastCol);
+      return Math.abs(currentRow - refRow) === Math.abs(currentCol - refCol);
     default:
       return false;
   }
