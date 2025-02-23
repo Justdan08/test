@@ -6,7 +6,6 @@
   <title>Marvel Word Search</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Prevent text selection during drag */
     .no-select {
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -27,6 +26,10 @@
         <div id="combo-text">Combo: 1x</div>
       </div>
       <button id="reset-button">Reset Game</button>
+      <div class="nav-links">
+        <a href="puzzle3.html">Next Puzzle</a>
+        <a href="index.html">Back to Menu</a>
+      </div>
     </div>
 
     <!-- Puzzle Center -->
@@ -37,21 +40,13 @@
       <div id="word-list">
         <div id="words"></div>
       </div>
-      <div class="nav-links">
-        <a href="puzzle3.html">Next Puzzle</a>
-        <a href="index.html">Back to Menu</a>
-      </div>
     </div>
   </div>
 
-  <!-- Marvel word pool -->
   <div id="word-pool" data-words='["HULK", "THOR", "BLACKPANTHER", "IRONMAN", "SPIDERMAN", "GROOT", "ROCKET", "WIDOW", "HAWKEYE", "ANTMAN", "BUCKY", "FREIGHTCAR", "TESSERACT", "GAUNTLET", "SHIELD", "VIBRANIUM", "STARLORD", "MANTIS", "DRAX", "FALCON", "WASP", "WARMACHINE", "LOKI"]'></div>
-
-  <!-- Puzzle-specific settings -->
   <script>
-    const gridSize = 15;  // Defines the 15x15 grid size
+    const gridSize = 15;
   </script>
-  
   <script src="script.js"></script>
 </body>
 </html>
