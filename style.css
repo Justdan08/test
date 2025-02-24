@@ -265,7 +265,7 @@ h1 {
 /* Timer - Now top right of the puzzle */
 #timer {
     position: absolute; /* Keeps the timer fixed */
-    top: 60px; /* Adjust this if needed to align with the top of the puzzle */
+    top: -50px; /* Adjust this if needed to align with the top of the puzzle */
     right: 10px; /* Keep this or adjust to move closer/further from the right edge */
     font-size: 24px;
     font-weight: bold;
@@ -299,7 +299,7 @@ h1 {
 /* Combo Meter - Placing above the puzzle */
 #combo-container {
     position: absolute; /* Keeps the combo meter fixed */
-    top: 30px; /* Adjust this based on the height of the timer if they overlap */
+    top: -50px; /* Adjust this based on the height of the timer if they overlap */
     left: 10px; /* Aligns with the left edge of the page */
     width: 200px; /* Adjust width as necessary */
     background-color: rgba(255, 255, 255, 0.8);
