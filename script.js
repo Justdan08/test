@@ -67,10 +67,10 @@ function updateComboBar() {
   const comboText = document.getElementById("combo-text");
 
   // Update bar width
-  comboBar.style.width = ${(comboTimeLeft / 10) * 100}%;
+  comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
 
   // Update combo text
-  comboText.textContent = Combo: ${comboMultiplier}x;
+  comboText.textContent = `Combo: ${comboMultiplier}x`;
 }
 
 // ========================
@@ -78,12 +78,12 @@ function updateComboBar() {
 // ========================
 
 function updateScoreDisplay() {
-  document.getElementById("score").textContent = Score: ${score};
+  document.getElementById("score").textContent = `Score: ${score}`;
 }
 
 function calculatePoints(wordLength) {
-  const timeChunk = Math.floor(secondsElapsed / 15); // Calculate 15-second chunks
-  const pointsPerLetter = Math.max(50 - (timeChunk * 5), 0); // Base 50, decrease by 5 every 15 seconds
+  const timeChunk = Math.floor(secondsElapsed / 15);
+  const pointsPerLetter = Math.max(10 - timeChunk, 0);
   return wordLength * pointsPerLetter * comboMultiplier; // Apply combo multiplier
 }
 
@@ -206,11 +206,11 @@ function placeWord(word) {
     for (let i = 0; i < word.length; i++) {
       let cell;
       if (direction === "horizontal") {
-        cell = document.querySelector(.cell[data-row="${row}"][data-col="${col + i}"]);
+        cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
       } else if (direction === "vertical") {
-        cell = document.querySelector(.cell[data-row="${row + i}"][data-col="${col}"]);
+        cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
       } else {
-        cell = document.querySelector(.cell[data-row="${row + i}"][data-col="${col + i}"]);
+        cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
       }
       cell.textContent = word[i];
     }
@@ -222,10 +222,10 @@ function placeWord(word) {
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
     const cell = direction === "horizontal"
-      ? document.querySelector(.cell[data-row="${row}"][data-col="${col + i}"])
+      ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
       : direction === "vertical"
-      ? document.querySelector(.cell[data-row="${row + i}"][data-col="${col}"])
-      : document.querySelector(.cell[data-row="${row + i}"][data-col="${col + i}"]);
+      ? document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`)
+      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
 
     if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) {
       return false;
@@ -248,72 +248,109 @@ function fillRandomLetters() {
 // ========================
 
 function startDrag(cell) {
-  if (!cell) return;
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
   direction = null; // Reset direction on new drag
-
-  // Ensure the starting cell is visually selected
   cell.classList.add("selected");
 }
 
-
 function dragOver(cell) {
-  if (!isDragging || !startCell) return;
+  if (!isDragging) return;
 
-  // Ensure startCell remains in selection
-  if (!selectedCells.includes(startCell)) {
-    selectedCells = [startCell];
-    startCell.classList.add("selected");
+  // Check for backtracking
+  const existingIndex = selectedCells.indexOf(cell);
+  if (existingIndex > -1) {
+    const removedCells = selectedCells.splice(existingIndex + 1);
+    removedCells.forEach(c => c.classList.remove("selected"));
+    return;
   }
 
-  // Get row/col positions
-  const startRow = parseInt(startCell.dataset.row);
-  const startCol = parseInt(startCell.dataset.col);
+  // Determine direction if not set
+  if (!direction) {
+    const startRow = parseInt(startCell.dataset.row);
+    const startCol = parseInt(startCell.dataset.col);
+    const currentRow = parseInt(cell.dataset.row);
+    const currentCol = parseInt(cell.dataset.col);
+    
+    const rowDiff = currentRow - startRow;
+    const colDiff = currentCol - startCol;
+    
+    if (rowDiff === 0) direction = "horizontal";
+    else if (colDiff === 0) direction = "vertical";
+    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
+    else return; // Invalid initial direction
+  }
+
+  // Validate movement direction
+  if (!isValidDirection(cell)) return;
+
+  // Get last valid cell in the current path
+  const lastValidCell = selectedCells[selectedCells.length - 1];
+  
+  // Find all cells between last valid cell and current cell
+  const missingCells = getMissingCells(lastValidCell, cell);
+  
+  // Validate entire missing path segment
+  const isValidSegment = missingCells.every(missingCell => 
+    isValidDirection(missingCell, lastValidCell)
+  );
+
+  if (!isValidSegment) return;
+
+ // CORRECTED CODE
+missingCells.forEach(missingCell => {
+  if (!selectedCells.includes(missingCell)) {
+    missingCell.classList.add("selected"); // Removed extra )
+    selectedCells.push(missingCell);
+  }
+});
+
+// Add current cell
+cell.classList.add("selected"); // Removed extra )
+selectedCells.push(cell);
+}
+
+// Helper: Validate movement continues in set direction
+function isValidDirection(cell, referenceCell = selectedCells[selectedCells.length - 1]) {
+  const refRow = parseInt(referenceCell.dataset.row);
+  const refCol = parseInt(referenceCell.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
-  // Calculate direction deltas
-  const rowDiff = currentRow - startRow;
-  const colDiff = currentCol - startCol;
-
-  // Determine movement direction
-  let newDirection = null;
-  if (rowDiff === 0) newDirection = "horizontal";
-  else if (colDiff === 0) newDirection = "vertical";
-  else if (Math.abs(rowDiff) === Math.abs(colDiff)) newDirection = "diagonal";
-  else return; // Ignore invalid movements
-
-  // Allow changing direction dynamically
-  if (!direction || newDirection !== direction) {
-    direction = newDirection;
+  switch(direction) {
+    case "horizontal":
+      return currentRow === refRow;
+    case "vertical":
+      return currentCol === refCol;
+    case "diagonal":
+      return Math.abs(currentRow - refRow) === Math.abs(currentCol - refCol);
+    default:
+      return false;
   }
+}
 
-  // Calculate step values
-  const rowStep = Math.sign(rowDiff);
-  const colStep = Math.sign(colDiff);
+function getMissingCells(lastCell, currentCell) {
+  let missingCells = [];
+  const lastRow = parseInt(lastCell.dataset.row);
+  const lastCol = parseInt(lastCell.dataset.col);
+  const currentRow = parseInt(currentCell.dataset.row);
+  const currentCol = parseInt(currentCell.dataset.col);
 
-  // Build new selection path
-  let row = startRow;
-  let col = startCol;
-  let newSelection = [startCell]; // Start cell remains selected
+  const rowStep = currentRow > lastRow ? 1 : currentRow < lastRow ? -1 : 0;
+  const colStep = currentCol > lastCol ? 1 : currentCol < lastCol ? -1 : 0;
+
+  let row = lastRow + rowStep;
+  let col = lastCol + colStep;
 
   while (row !== currentRow || col !== currentCol) {
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (cell) missingCells.push(cell);
     row += rowStep;
     col += colStep;
-    const nextCell = document.querySelector(.cell[data-row="${row}"][data-col="${col}"]);
-    if (!nextCell) break;
-    newSelection.push(nextCell);
   }
 
-  // Ensure the last cell is the current cell to keep valid paths
-  if (newSelection[newSelection.length - 1] !== cell) return;
-
-  // Apply new selection
-  selectedCells.forEach(c => c.classList.remove("selected"));
-  newSelection.forEach(c => c.classList.add("selected"));
-  selectedCells = newSelection;
+  return missingCells;
 }
 
 function endDrag() {
@@ -350,7 +387,7 @@ function checkForWord() {
 
     if (foundWords.length === currentWords.length) {
       stopTimer();
-      alert(Good Job Big Dog!\nFinal Score: ${score});
+      alert(`Good Job Big Dog!\nFinal Score: ${score}`);
     }
   } else {
     selectedCells.forEach(cell => {
@@ -361,7 +398,7 @@ function checkForWord() {
 }
 
 // ========================
-// Mobile Support (Updated Touch Logic)
+// Mobile Support
 // ========================
 
 function addTouchSupport() {
@@ -375,25 +412,14 @@ function addTouchSupport() {
 
 function handleTouchStart(e) {
   e.preventDefault();
-  const touch = e.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  
-  if (target?.classList.contains("cell")) {
-    startDrag(target);
-  }
+  startDrag(e.target);
 }
-
 
 function handleTouchMove(e) {
   e.preventDefault();
   const touch = e.touches[0];
   const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (target?.classList.contains("cell")) {
-    // Only process if moving to new cell
-    if (target !== selectedCells[selectedCells.length - 1]) {
-      dragOver(target);
-    }
-  }
+  if (target?.classList.contains("cell")) dragOver(target);
 }
 
 function handleTouchEnd() {
