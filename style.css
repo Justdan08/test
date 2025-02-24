@@ -15,7 +15,7 @@ h1 {
 
 /* Options Button -  */
 #options-btn {
-    position: fixed; /* Keeps the button fixed */
+    position: absolute; /* Keeps the button fixed */
     top: 10px;
     right: 10px; /* Changed from right to left */
     padding: 8px 12px;
@@ -264,7 +264,7 @@ h1 {
 
 /* Timer - Now top right of the puzzle */
 #timer {
-    position: fixed; /* Keeps the timer fixed */
+    position: absolute; /* Keeps the timer fixed */
     top: 60px; /* Adjust this if needed to align with the top of the puzzle */
     right: 10px; /* Keep this or adjust to move closer/further from the right edge */
     font-size: 24px;
@@ -298,7 +298,7 @@ h1 {
 
 /* Combo Meter - Placing above the puzzle */
 #combo-container {
-    position: fixed; /* Keeps the combo meter fixed */
+    position: absolute; /* Keeps the combo meter fixed */
     top: 30px; /* Adjust this based on the height of the timer if they overlap */
     left: 10px; /* Aligns with the left edge of the page */
     width: 200px; /* Adjust width as necessary */
