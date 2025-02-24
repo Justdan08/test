@@ -272,7 +272,11 @@ function dragOver(cell) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   // Get row/col positions
+=======
+  // Calculate relative position to start cell
+>>>>>>> parent of b523a60 (Update script.js)
 =======
   // Calculate relative position to start cell
 >>>>>>> parent of b523a60 (Update script.js)
