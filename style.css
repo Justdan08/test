@@ -4,6 +4,8 @@ body {
   background-color: #121212;
   color: white;
   text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 h1 {
@@ -18,7 +20,24 @@ h1 {
 }
 
 #wordsearch {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr); /* Ensure 15 columns */
+  grid-template-rows: repeat(15, 1fr);    /* Ensure 15 rows */
+  width: 100%;
+  height: 400px; /* Adjust this to your puzzle's size */
   margin-top: 20px;
+  gap: 2px; /* Gap between grid cells */
+  margin-bottom: 30px; /* Space below grid for other elements */
+}
+
+#wordsearch div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #444;
+  color: white;
+  border-radius: 5px;
+  font-size: 18px;
 }
 
 /* Combo container */
@@ -26,7 +45,7 @@ h1 {
   margin-top: 30px;
   position: relative;
   display: inline-block;
-  width: 250px; /* You can adjust this based on your preference */
+  width: 250px; /* Adjust this based on your preference */
   height: 50px;
   background-color: #333;
   border-radius: 25px;
