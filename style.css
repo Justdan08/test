@@ -131,17 +131,17 @@ h1 {
 
   #word-list {
     margin: 10px auto; /* Reduce margin around the words box */
-    padding: 10px; /* Add padding inside the words box */
+    padding: 5px 10px; /* Decrease vertical padding, keep horizontal padding */
     width: 90%; /* Make the words box wider */
   }
 
   #words {
-    gap: 5px; /* Reduce gap between words */
+    gap: 4px; /* Slightly reduce gap between words */
   }
 
   #words div {
-    font-size: 0.9em; /* Slightly smaller font size for words */
-    padding: 2px 0; /* Reduce padding between words */
+    font-size: 1em; /* Revert to original font size */
+    padding: 2px 0; /* Reduce vertical padding between words */
   }
 
   .nav-links {
@@ -174,10 +174,10 @@ h1 {
     margin-bottom: 10px; /* Add a small gap below the words box */
   }
 
-  /* Ensure the words box doesn't take up too much vertical space */
+  /* Remove scroll functionality from the words box */
   #words {
-    max-height: 150px; /* Limit height of the words box */
-    overflow-y: auto; /* Add scroll if words exceed the height */
+    max-height: none; /* Remove height limit */
+    overflow-y: visible; /* Remove scroll */
   }
 }
 /* Buttons & Links */
