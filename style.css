@@ -15,33 +15,38 @@ h1 {
 
 /* Layout Fix: Wrapping Grid & Controls */
 .wordsearch-container {
-  position: relative; /* Make this container the reference for positioning */
+  position: relative;  /* Ensures elements are positioned correctly */
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 450px; /* Ensures the grid remains visible */
+  justify-content: flex-start;
+  margin-top: 50px; /* Space from the top */
 }
 
 /* Timer */
 #timer {
-  position: absolute;
-  top: -40px; /* Adjusted to be above the grid */
+  position: relative;
+  top: 0;
   font-size: 20px;
   font-weight: bold;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 5px 10px;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
 }
 
 /* Combo Bar */
 #combo-container {
-  position: absolute;
-  top: -70px; /* Adjusted to be above the timer */
+  position: relative;
+  top: 0;
   width: 200px;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 5px;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
 }
 
 #combo-bar {
@@ -68,6 +73,15 @@ h1 {
   grid-template-columns: repeat(15, minmax(20px, 40px));
 }
 
+/* Ensure the word search grid is visible */
+.wordsearch-container #wordsearch {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 2px;
+  margin-top: 20px;
+}
+
+/* Ensure each grid cell is styled properly */
 .cell {
   aspect-ratio: 1;
   border: 1px solid black;
@@ -182,7 +196,6 @@ h1 {
 
   /* Adjust combo bar for mobile */
   #combo-container {
-    top: 50px;
     width: 150px;
   }
 
@@ -281,15 +294,5 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  /* Adjust combo bar for mobile */
-  #combo-container {
-    top: 50px;
-    width: 150px;
-  }
-
-  #combo-text {
-    font-size: 12px;
   }
 }
