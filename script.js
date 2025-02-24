@@ -92,6 +92,8 @@ function calculatePoints(wordLength) {
 // ========================
 
 function initializeGame() {
+  // Add no-select class to body during initialization
+  document.body.classList.add("no-select");
   // Reset game state
   score = 0;
   secondsElapsed = 0;
@@ -174,15 +176,15 @@ function getRandomWords(pool, count) {
   return shuffled.slice(0, count); // Select the first N words
 }
 
+// Modified createCell function
 function createCell(row, col) {
   const cell = document.createElement("div");
-  cell.classList.add("cell");
+  cell.classList.add("cell", "no-select"); // Add no-select class
   cell.dataset.row = row;
   cell.dataset.col = col;
   cell.textContent = "";
   cell.addEventListener("mousedown", () => startDrag(cell));
   cell.addEventListener("mouseenter", () => dragOver(cell));
-  cell.addEventListener("mouseup", endDrag);
   return cell;
 }
 
@@ -268,9 +270,62 @@ function dragOver(cell) {
     startCell.classList.add("selected");
   }
 
+<<<<<<< HEAD
   // Get row/col positions
   const startRow = parseInt(startCell.dataset.row);
   const startCol = parseInt(startCell.dataset.col);
+=======
+  // Determine direction if not set
+  if (!direction) {
+    const startRow = parseInt(startCell.dataset.row);
+    const startCol = parseInt(startCell.dataset.col);
+    const currentRow = parseInt(cell.dataset.row);
+    const currentCol = parseInt(cell.dataset.col);
+    
+    const rowDiff = currentRow - startRow;
+    const colDiff = currentCol - startCol;
+    
+    if (rowDiff === 0) direction = "horizontal";
+    else if (colDiff === 0) direction = "vertical";
+    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
+    else return; // Invalid initial direction
+  }
+
+  // Validate movement direction
+  if (!isValidDirection(cell)) return;
+
+  // Get last valid cell in the current path
+  const lastValidCell = selectedCells[selectedCells.length - 1];
+  
+  // Find all cells between last valid cell and current cell
+  const missingCells = getMissingCells(lastValidCell, cell);
+  
+  // Validate entire missing path segment
+  const isValidSegment = missingCells.every(missingCell => 
+    isValidDirection(missingCell, lastValidCell)
+  );
+
+  if (!isValidSegment) return;
+
+ // CORRECTED CODE
+missingCells.forEach(missingCell => {
+  if (!selectedCells.includes(missingCell)) {
+    missingCell.classList.add("selected"); // Removed extra )
+    selectedCells.push(missingCell);
+  }
+});
+// Add document-wide mouseup listener
+document.addEventListener("mouseup", endDrag);
+// Add current cell
+cell.classList.add("selected"); // Removed extra )
+selectedCells.push(cell);
+}
+
+// Helper: Validate movement continues in set direction
+function isValidDirection(cell, referenceCell = selectedCells[selectedCells.length - 1]) {
+  const refRow = parseInt(referenceCell.dataset.row);
+  const refCol = parseInt(referenceCell.dataset.col);
+>>>>>>> parent of 3080140 (Revert back to when things were good)
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
