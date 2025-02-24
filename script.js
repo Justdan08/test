@@ -18,62 +18,6 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
-document.addEventListener("DOMContentLoaded", function () {
-    const optionsBtn = document.getElementById("options-btn");
-    const optionsPopup = document.getElementById("options-popup");
-    const closeBtn = document.querySelector(".close-btn");
-    const darkModeToggle = document.getElementById("dark-mode-toggle");
-    const fontSizeButtons = document.querySelectorAll(".font-size-btn");
-
-    // Load saved settings
-    if (localStorage.getItem("darkMode") === "enabled") {
-        document.body.classList.add("dark-mode");
-        darkModeToggle.checked = true;
-    }
-
-    const savedFontSize = localStorage.getItem("fontSize") || "medium";
-    applyFontSize(savedFontSize);
-
-    // Open/close options menu
-    optionsBtn.addEventListener("click", () => {
-        optionsPopup.style.display = "block";
-    });
-
-    closeBtn.addEventListener("click", () => {
-        optionsPopup.style.display = "none";
-    });
-
-    // Dark Mode Toggle
-    darkModeToggle.addEventListener("change", () => {
-        if (darkModeToggle.checked) {
-            document.body.classList.add("dark-mode");
-            localStorage.setItem("darkMode", "enabled");
-        } else {
-            document.body.classList.remove("dark-mode");
-            localStorage.setItem("darkMode", "disabled");
-        }
-    });
-
-    // Font Size Selection
-    fontSizeButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            const size = button.dataset.size;
-            applyFontSize(size);
-            localStorage.setItem("fontSize", size);
-        });
-    });
-
-    function applyFontSize(size) {
-        const puzzle = document.querySelector("#puzzle-grid");  // Adjust selector based on your puzzle
-        const wordList = document.querySelector("#word-list");  // Adjust selector based on your word list
-
-        if (puzzle) puzzle.classList.remove("small-font", "medium-font", "large-font");
-        if (wordList) wordList.classList.remove("small-font", "medium-font", "large-font");
-
-        if (puzzle) puzzle.classList.add(`${size}-font`);
-        if (wordList) wordList.classList.add(`${size}-font`);
-    }
-});
 // ========================
 // Timer Functions
 // ========================
