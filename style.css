@@ -259,11 +259,11 @@ h1 {
   cursor: pointer;
 }
 
-/* Timer - Now top right of the puzzle */
+/* Timer - Moved to where the Options Button was (top left of the page) */
 #timer {
     position: absolute;
-    top: -50px;
-    right: 10px;
+    top: 10px; /* Position adjusted to match the options button's previous position */
+    left: 10px; /* Top-left corner */
     font-size: 24px;
     font-weight: bold;
     background-color: rgba(255, 255, 255, 0.8);
