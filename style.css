@@ -299,7 +299,7 @@ h1 {
 /* Combo Meter - Placing above the puzzle */
 #combo-container {
     position: fixed; /* Keeps the combo meter fixed */
-    top: 60px; /* Adjust this based on the height of the timer if they overlap */
+    top: 40px; /* Adjust this based on the height of the timer if they overlap */
     left: 10px; /* Aligns with the left edge of the page */
     width: 200px; /* Adjust width as necessary */
     background-color: rgba(255, 255, 255, 0.8);
