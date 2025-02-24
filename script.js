@@ -248,12 +248,16 @@ function fillRandomLetters() {
 // ========================
 
 function startDrag(cell) {
+  if (!cell) return;
   isDragging = true;
   startCell = cell;
   selectedCells = [cell];
   direction = null; // Reset direction on new drag
+
+  // Ensure the starting cell is visually selected
   cell.classList.add("selected");
 }
+
 
 function dragOver(cell) {
   if (!isDragging) return;
@@ -364,8 +368,14 @@ function addTouchSupport() {
 
 function handleTouchStart(e) {
   e.preventDefault();
-  startDrag(e.target);
+  const touch = e.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  
+  if (target?.classList.contains("cell")) {
+    startDrag(target);
+  }
 }
+
 
 function handleTouchMove(e) {
   e.preventDefault();
