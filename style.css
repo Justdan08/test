@@ -122,24 +122,64 @@ h1 {
 }
 
 /* Mobile Layout */
-@media (max-width: 900px) {
+/* Mobile Optimization */
+@media (max-width: 600px) {
+  #wordsearch {
+    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
+    margin: 10px auto; /* Reduce top and bottom margin */
+  }
+
+  #word-list {
+    margin: 10px auto; /* Reduce margin around the words box */
+    padding: 10px; /* Add padding inside the words box */
+    width: 90%; /* Make the words box wider */
+  }
+
+  #words {
+    gap: 5px; /* Reduce gap between words */
+  }
+
+  #words div {
+    font-size: 0.9em; /* Slightly smaller font size for words */
+    padding: 2px 0; /* Reduce padding between words */
+  }
+
+  .nav-links {
+    margin-top: 10px; /* Reduce space above navigation links */
+  }
+
+  /* Adjust combo bar for mobile */
+  #combo-container {
+    top: 50px; /* Move higher on mobile */
+    width: 150px; /* Smaller width for mobile */
+  }
+
+  #combo-text {
+    font-size: 12px; /* Smaller text for mobile */
+  }
+
+  /* Reduce overall padding on the body */
+  body {
+    padding: 5px;
+  }
+
+  /* Adjust the layout of the puzzle and words box */
   .container {
     flex-direction: column;
-  }
-  
-  .left-panel, .right-panel {
-    width: 100% !important;
+    gap: 10px; /* Reduce gap between puzzle and words box */
   }
 
   .right-panel {
-    order: -1;
+    order: -1; /* Keep words box above the puzzle */
+    margin-bottom: 10px; /* Add a small gap below the words box */
   }
-  
-  .nav-links {
-    margin-top: 20px;
+
+  /* Ensure the words box doesn't take up too much vertical space */
+  #words {
+    max-height: 150px; /* Limit height of the words box */
+    overflow-y: auto; /* Add scroll if words exceed the height */
   }
 }
-
 /* Buttons & Links */
 #reset-button {
   margin: 15px auto;
