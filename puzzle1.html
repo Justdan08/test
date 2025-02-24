@@ -8,27 +8,42 @@
 </head>
 <body>
   <h1>Marvel</h1>
+  
   <div id="score">Score: 0</div>
-  <div id="timer">0:00</div>
-  <div id="combo-container">
-  <div id="combo-bar"></div>
-  <div id="combo-text">Combo: 1x</div>
-</div>
-  <div id="wordsearch"></div>
+
+  <!-- Wrap the puzzle and controls in a relative-positioned container -->
+  <div class="wordsearch-container">
+    
+    <!-- Timer positioned above the grid -->
+    <div id="timer">0:00</div>
+    
+    <!-- Combo Bar positioned above the timer -->
+    <div id="combo-container">
+      <div id="combo-bar"></div>
+      <div id="combo-text">Combo: 1x</div>
+    </div>
+
+    <!-- Word Search Grid -->
+    <div id="wordsearch"></div>
+  </div>
+
   <div id="word-list">
     <div id="words"></div>
- <button id="reset-button">Reset Game</button>
+  </div>
+
+  <button id="reset-button">Reset Game</button>
+
   <div class="nav-links">
     <a href="puzzle3.html">Next Puzzle</a>
     <a href="index.html">Back to Menu</a>
   </div>
 
-  <!-- Marvel word pool -->
+  <!-- Marvel Word Pool -->
   <div id="word-pool" data-words='["HULK", "THOR", "BLACKPANTHER", "IRONMAN", "SPIDERMAN", "GROOT", "ROCKET", "WIDOW", "HAWKEYE", "ANTMAN", "BUCKY", "FREIGHTCAR", "TESSERACT", "GAUNTLET", "SHIELD", "VIBRANIUM", "STARLORD", "MANTIS", "DRAX", "FALCON", "WASP", "WARMACHINE", "LOKI"]'></div>
 
-  <!-- Puzzle-specific settings -->
+  <!-- Puzzle Grid Size -->
   <script>
-    const gridSize = 15;  // Defines the 15x15 grid size
+    const gridSize = 15;
   </script>
   
   <script src="script.js"></script>
