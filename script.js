@@ -260,12 +260,13 @@ function startDrag(cell) {
 
 
 function dragOver(cell) {
-  if (!isDragging) return;
+  if (!isDragging || !startCell) return;
 
-  // Clear previous selections while maintaining start cell
-  const keepStart = selectedCells[0];
-  selectedCells.forEach(c => c.classList.remove("selected"));
-  selectedCells = [keepStart];
+  // Ensure startCell remains in selection
+  if (!selectedCells.includes(startCell)) {
+    selectedCells = [startCell];
+    startCell.classList.add("selected");
+  }
 
   // Calculate relative position to start cell
   const startRow = parseInt(keepStart.dataset.row);
