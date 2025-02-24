@@ -44,6 +44,10 @@ function updateTimerDisplay() {
 // Combo Functions
 // ========================
 
+// ========================
+// Combo Functions
+// ========================
+
 function startComboTimer() {
   comboTimeLeft = 10; // Reset combo timer to 10 seconds
   updateComboBar();
@@ -66,6 +70,23 @@ function updateComboBar() {
   const comboBar = document.getElementById("combo-bar");
   const comboText = document.getElementById("combo-text");
 
+  // Update bar width
+  comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
+
+  // Update combo text
+  comboText.textContent = `Combo: ${comboMultiplier}x`;
+
+  // Remove previous fire intensity classes
+  comboBar.classList.remove("fire-intensity-1", "fire-intensity-2", "fire-intensity-3");
+
+  // Apply fire intensity based on combo multiplier
+  if (comboMultiplier >= 4) {
+    comboBar.classList.add("fire-intensity-3"); // Most intense
+  } else if (comboMultiplier >= 2) {
+    comboBar.classList.add("fire-intensity-2"); // Moderate intensity
+  } else {
+    comboBar.classList.add("fire-intensity-1"); // Low intensity
+  }
   // Update bar width
   comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
 
