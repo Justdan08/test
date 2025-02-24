@@ -36,7 +36,7 @@ function stopTimer() {
 function updateTimerDisplay() {
   const minutes = Math.floor(secondsElapsed / 60);
   const seconds = secondsElapsed % 60;
-  const timerDisplay = ${minutes}:${seconds.toString().padStart(2, "0")};
+  const timerDisplay = `${minutes}:${seconds.toString().padStart(2, "0")}`;
   document.getElementById("timer").textContent = timerDisplay;
 }
 
