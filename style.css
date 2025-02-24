@@ -167,30 +167,71 @@ h1 {
 }
 
 /* Combo Bar */
+/* Combo Bar */
 #combo-container {
   position: fixed;
   top: 60px; /* Below the timer */
   left: 10px;
   width: 200px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px;
+  height: 30px;
+  background-color: #ff7f00; /* Orange color for combo bar */
   border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 #combo-bar {
-  height: 10px;
-  background-color: #4CAF50; /* Green for progress */
-  width: 0%;
-  transition: width 0.5s ease; /* Smooth animation */
+  height: 100%;
+  background-color: #ff7f00;
+  border-radius: 5px;
+  position: relative;
+  transition: width 0.3s ease;
+  /* This is where the fire effect will be placed */
+  background: linear-gradient(0deg, rgba(255, 99, 71, 0.5) 20%, rgba(255, 165, 0, 0.8) 80%);
 }
 
 #combo-text {
-  font-size: 14px;
+  font-size: 18px;
+  color: white;
+  margin-left: 10px;
   font-weight: bold;
-  text-align: center;
-  margin-top: 5px;
+  z-index: 2;
+  position: relative;
 }
+
+/* Fire Animation for the Combo Bar */
+@keyframes fire {
+  0% {
+    background-color: rgba(255, 99, 71, 0.8);
+  }
+  25% {
+    background-color: rgba(255, 69, 0, 0.8);
+  }
+  50% {
+    background-color: rgba(255, 140, 0, 0.8);
+  }
+  75% {
+    background-color: rgba(255, 165, 0, 0.8);
+  }
+  100% {
+    background-color: rgba(255, 99, 71, 0.8);
+  }
+}
+
+/* Intensify the fire effect as the combo level increases */
+.fire-intensity-1 {
+  animation: fire 0.5s infinite alternate; /* Fast and mild */
+}
+
+.fire-intensity-2 {
+  animation: fire 0.3s infinite alternate; /* Faster and stronger */
+}
+
+.fire-intensity-3 {
+  animation: fire 0.2s infinite alternate; /* Very fast and intense */
+}
+
 /* Desktop Styles (min-width: 601px) */
 @media (min-width: 601px) {
   #words {
