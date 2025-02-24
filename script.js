@@ -269,8 +269,8 @@ function dragOver(cell) {
   }
 
   // Calculate relative position to start cell
-  const startRow = parseInt(keepStart.dataset.row);
-  const startCol = parseInt(keepStart.dataset.col);
+  const startRow = parseInt(startCell.dataset.row);
+  const startCol = parseInt(startCell.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
@@ -278,11 +278,15 @@ function dragOver(cell) {
   const rowDiff = currentRow - startRow;
   const colDiff = currentCol - startCol;
   
-  let direction;
-  if (rowDiff === 0) direction = "horizontal";
-  else if (colDiff === 0) direction = "vertical";
-  else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
+  let newDirection;
+  if (rowDiff === 0) newDirection = "horizontal";
+  else if (colDiff === 0) newDirection = "vertical";
+  else if (Math.abs(rowDiff) === Math.abs(colDiff)) newDirection = "diagonal";
   else return; // Invalid direction
+
+  // If direction is newly determined, apply it
+  if (!direction) direction = newDirection;
+  if (direction !== newDirection) return; // Maintain a straight-line drag
 
   // Calculate step values
   const rowStep = Math.sign(rowDiff);
@@ -291,13 +295,13 @@ function dragOver(cell) {
   // Build new selection path
   let row = startRow;
   let col = startCol;
-  const newSelection = [];
-  
+  const newSelection = [startCell]; // Ensure start cell remains
+
   while (row !== currentRow || col !== currentCol) {
     row += rowStep;
     col += colStep;
     const nextCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (!nextCell || nextCell === keepStart) break;
+    if (!nextCell || nextCell === startCell) break;
     newSelection.push(nextCell);
   }
 
@@ -305,10 +309,11 @@ function dragOver(cell) {
   if (newSelection[newSelection.length - 1] !== cell) return;
 
   // Apply new selection
+  selectedCells.forEach(c => c.classList.remove("selected"));
   newSelection.forEach(c => c.classList.add("selected"));
-  selectedCells = [keepStart, ...newSelection];
-  cell.classList.add("selected");
+  selectedCells = newSelection;
 }
+
 
 function endDrag() {
   isDragging = false;
