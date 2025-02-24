@@ -11,6 +11,7 @@ let score = 0; // Added score tracking
 let comboMultiplier = 1; // Combo multiplier
 let comboTimeLeft = 0; // Time left for current combo
 let comboInterval = null; // Combo timer interval
+const gridSize = 15; // Defines the size of the grid (15x15)
 
 // Initialize the game
 document.addEventListener("DOMContentLoaded", initializeGame);
@@ -258,99 +259,51 @@ function startDrag(cell) {
 function dragOver(cell) {
   if (!isDragging) return;
 
-  // Check for backtracking
-  const existingIndex = selectedCells.indexOf(cell);
-  if (existingIndex > -1) {
-    const removedCells = selectedCells.splice(existingIndex + 1);
-    removedCells.forEach(c => c.classList.remove("selected"));
-    return;
-  }
+  // Clear previous selections while maintaining start cell
+  const keepStart = selectedCells[0];
+  selectedCells.forEach(c => c.classList.remove("selected"));
+  selectedCells = [keepStart];
 
-  // Determine direction if not set
-  if (!direction) {
-    const startRow = parseInt(startCell.dataset.row);
-    const startCol = parseInt(startCell.dataset.col);
-    const currentRow = parseInt(cell.dataset.row);
-    const currentCol = parseInt(cell.dataset.col);
-    
-    const rowDiff = currentRow - startRow;
-    const colDiff = currentCol - startCol;
-    
-    if (rowDiff === 0) direction = "horizontal";
-    else if (colDiff === 0) direction = "vertical";
-    else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
-    else return; // Invalid initial direction
-  }
-
-  // Validate movement direction
-  if (!isValidDirection(cell)) return;
-
-  // Get last valid cell in the current path
-  const lastValidCell = selectedCells[selectedCells.length - 1];
-  
-  // Find all cells between last valid cell and current cell
-  const missingCells = getMissingCells(lastValidCell, cell);
-  
-  // Validate entire missing path segment
-  const isValidSegment = missingCells.every(missingCell => 
-    isValidDirection(missingCell, lastValidCell)
-  );
-
-  if (!isValidSegment) return;
-
- // CORRECTED CODE
-missingCells.forEach(missingCell => {
-  if (!selectedCells.includes(missingCell)) {
-    missingCell.classList.add("selected"); // Removed extra )
-    selectedCells.push(missingCell);
-  }
-});
-
-// Add current cell
-cell.classList.add("selected"); // Removed extra )
-selectedCells.push(cell);
-}
-
-// Helper: Validate movement continues in set direction
-function isValidDirection(cell, referenceCell = selectedCells[selectedCells.length - 1]) {
-  const refRow = parseInt(referenceCell.dataset.row);
-  const refCol = parseInt(referenceCell.dataset.col);
+  // Calculate relative position to start cell
+  const startRow = parseInt(keepStart.dataset.row);
+  const startCol = parseInt(keepStart.dataset.col);
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
-  switch(direction) {
-    case "horizontal":
-      return currentRow === refRow;
-    case "vertical":
-      return currentCol === refCol;
-    case "diagonal":
-      return Math.abs(currentRow - refRow) === Math.abs(currentCol - refCol);
-    default:
-      return false;
-  }
-}
+  // Determine valid direction
+  const rowDiff = currentRow - startRow;
+  const colDiff = currentCol - startCol;
+  
+  let direction;
+  if (rowDiff === 0) direction = "horizontal";
+  else if (colDiff === 0) direction = "vertical";
+  else if (Math.abs(rowDiff) === Math.abs(colDiff)) direction = "diagonal";
+  else return; // Invalid direction
 
-function getMissingCells(lastCell, currentCell) {
-  let missingCells = [];
-  const lastRow = parseInt(lastCell.dataset.row);
-  const lastCol = parseInt(lastCell.dataset.col);
-  const currentRow = parseInt(currentCell.dataset.row);
-  const currentCol = parseInt(currentCell.dataset.col);
+  // Calculate step values
+  const rowStep = Math.sign(rowDiff);
+  const colStep = Math.sign(colDiff);
 
-  const rowStep = currentRow > lastRow ? 1 : currentRow < lastRow ? -1 : 0;
-  const colStep = currentCol > lastCol ? 1 : currentCol < lastCol ? -1 : 0;
-
-  let row = lastRow + rowStep;
-  let col = lastCol + colStep;
-
+  // Build new selection path
+  let row = startRow;
+  let col = startCol;
+  const newSelection = [];
+  
   while (row !== currentRow || col !== currentCol) {
-    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (cell) missingCells.push(cell);
     row += rowStep;
     col += colStep;
+    const nextCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (!nextCell || nextCell === keepStart) break;
+    newSelection.push(nextCell);
   }
 
-  return missingCells;
+  // Validate complete path
+  if (newSelection[newSelection.length - 1] !== cell) return;
+
+  // Apply new selection
+  newSelection.forEach(c => c.classList.add("selected"));
+  selectedCells = [keepStart, ...newSelection];
+  cell.classList.add("selected");
 }
 
 function endDrag() {
@@ -398,7 +351,7 @@ function checkForWord() {
 }
 
 // ========================
-// Mobile Support
+// Mobile Support (Updated Touch Logic)
 // ========================
 
 function addTouchSupport() {
@@ -419,7 +372,12 @@ function handleTouchMove(e) {
   e.preventDefault();
   const touch = e.touches[0];
   const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (target?.classList.contains("cell")) dragOver(target);
+  if (target?.classList.contains("cell")) {
+    // Only process if moving to new cell
+    if (target !== selectedCells[selectedCells.length - 1]) {
+      dragOver(target);
+    }
+  }
 }
 
 function handleTouchEnd() {
