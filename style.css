@@ -13,11 +13,11 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* Options Button */
+/* Options Button -  */
 #options-btn {
-    position: fixed !important;
+    position: fixed; /* Keeps the button fixed */
     top: 10px;
-    right: 10px;
+    right: 10px; /* Changed from right to left */
     padding: 8px 12px;
     background: #333;
     color: white;
@@ -25,12 +25,13 @@ h1 {
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
-    z-index: 9999 !important;
+    z-index: 9999; /* Ensures it stays on top */
 }
 
 #options-btn:hover {
     background: #555;
 }
+
 
 /* Pop-up Menu */
 .popup {
@@ -261,18 +262,18 @@ h1 {
   cursor: pointer;
 }
 
-/* Timer */
+/* Timer - Now top right of the puzzle */
 #timer {
-  position: fixed !important;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  padding: 5px 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 9999 !important;
+    position: fixed; /* Keeps the timer fixed */
+    top: 60px; /* Adjust this if needed to align with the top of the puzzle */
+    right: 10px; /* Keep this or adjust to move closer/further from the right edge */
+    font-size: 24px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    z-index: 9999; /* Ensures it stays on top */
 }
 
 .puzzle-links {
@@ -295,17 +296,17 @@ h1 {
   text-decoration: none;
 }
 
-/* Combo Bar */
+/* Combo Meter - Placing above the puzzle */
 #combo-container {
-  position: fixed !important;
-  top: 60px; /* Below the timer */
-  left: 10px;
-  width: 200px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 9999 !important;
+    position: fixed; /* Keeps the combo meter fixed */
+    top: 60px; /* Adjust this based on the height of the timer if they overlap */
+    left: 10px; /* Aligns with the left edge of the page */
+    width: 200px; /* Adjust width as necessary */
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999; /* Ensures it stays on top */
 }
 
 #combo-bar {
