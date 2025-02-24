@@ -12,7 +12,58 @@ h1 {
   color: #333;
   margin-bottom: 10px;
 }
+/* Options Button */
+#options-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    background: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
 
+#options-btn:hover {
+    background: #555;
+}
+
+/* Pop-up Menu */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    z-index: 1000;
+}
+
+.popup-content {
+    text-align: center;
+}
+
+.close-btn {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Dark Mode */
+.dark-mode {
+    background: #121212;
+    color: white;
+}
+
+/* Font Sizes */
+.small-font { font-size: 14px; }
+.medium-font { font-size: 18px; }
+.large-font { font-size: 22px; }
 /* Grid */
 #wordsearch {
   display: grid;
