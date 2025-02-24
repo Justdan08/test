@@ -5,29 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2024 Musical Artist</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Prevent text selection during drag */
+    .no-select {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>2024 Musical Artist</h1>
-  <div id="score">Score: 0</div>
-  <div id="timer">0:00</div>
-  <div id="combo-container">
-  <div id="combo-bar"></div>
-  <div id="combo-text">Combo: 1x</div>
-</div>
-  <div id="wordsearch"></div>
-  <div id="word-list">
-    <div id="words"></div>
-  </div>
-  <button id="reset-button">Reset Game</button>
-    <div class="nav-links">
-    <a href="puzzle4.html">Next Puzzle</a>
-    <a href="index.html">Back to Menu</a>
-  </div>
-  
-  <!-- Blank word pool -->
-  <div id="word-pool" data-words='["CHARLI", "SABRINA", "KENDRICK", "LADYGAGA", "BRUNOMARS", "ARIANNA", "DJO", "LISA", "NOAHKAHAN", "HOZIER", "BEYONCE", "ABEL", "CHAPPELL", "JUNGKOOK", "FUTURE", "METRO", "TATEMCRAE", "LATTO" ]'></div>
+  <div class="container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <h1>2024 Musical Artist</h1>
+      <div id="score">Score: 0</div>
+      <div id="timer">0:00</div>
+      <div id="combo-container">
+        <div id="combo-bar"></div>
+        <div id="combo-text">Combo: 1x</div>
+      </div>
+      <button id="reset-button">Reset Game</button>
+    </div>
 
-<!-- Puzzle-specific settings -->
+    <!-- Puzzle Center -->
+    <div id="wordsearch"></div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div id="word-list">
+        <div id="words"></div>
+      </div>
+      <div class="nav-links">
+        <a href="puzzle4.html">Next Puzzle</a>
+        <a href="index.html">Back to Menu</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2024 Musical Artist word pool -->
+  <div id="word-pool" data-words='["CHARLI", "SABRINA", "KENDRICK", "LADYGAGA", "BRUNOMARS", "ARIANNA", "DJO", "LISA", "NOAHKAHAN", "HOZIER", "BEYONCE", "ABEL", "CHAPPELL", "JUNGKOOK", "FUTURE", "METRO", "TATEMCRAE", "LATTO"]'></div>
+
+  <!-- Puzzle-specific settings -->
   <script>
     const gridSize = 15;  // Defines the 15x15 grid size
   </script>
