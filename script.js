@@ -271,7 +271,11 @@ function dragOver(cell) {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   // Get row/col positions
+=======
+  // Calculate relative position to start cell
+>>>>>>> parent of b523a60 (Update script.js)
   const startRow = parseInt(startCell.dataset.row);
   const startCol = parseInt(startCell.dataset.col);
 =======
@@ -329,21 +333,19 @@ function isValidDirection(cell, referenceCell = selectedCells[selectedCells.leng
   const currentRow = parseInt(cell.dataset.row);
   const currentCol = parseInt(cell.dataset.col);
 
-  // Calculate direction deltas
+  // Determine valid direction
   const rowDiff = currentRow - startRow;
   const colDiff = currentCol - startCol;
-
-  // Determine movement direction
-  let newDirection = null;
+  
+  let newDirection;
   if (rowDiff === 0) newDirection = "horizontal";
   else if (colDiff === 0) newDirection = "vertical";
   else if (Math.abs(rowDiff) === Math.abs(colDiff)) newDirection = "diagonal";
-  else return; // Ignore invalid movements
+  else return; // Invalid direction
 
-  // Allow changing direction dynamically
-  if (!direction || newDirection !== direction) {
-    direction = newDirection;
-  }
+  // If direction is newly determined, apply it
+  if (!direction) direction = newDirection;
+  if (direction !== newDirection) return; // Maintain a straight-line drag
 
   // Calculate step values
   const rowStep = Math.sign(rowDiff);
@@ -352,17 +354,17 @@ function isValidDirection(cell, referenceCell = selectedCells[selectedCells.leng
   // Build new selection path
   let row = startRow;
   let col = startCol;
-  let newSelection = [startCell]; // Start cell remains selected
+  const newSelection = [startCell]; // Ensure start cell remains
 
   while (row !== currentRow || col !== currentCol) {
     row += rowStep;
     col += colStep;
     const nextCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-    if (!nextCell) break;
+    if (!nextCell || nextCell === startCell) break;
     newSelection.push(nextCell);
   }
 
-  // Ensure the last cell is the current cell to keep valid paths
+  // Validate complete path
   if (newSelection[newSelection.length - 1] !== cell) return;
 
   // Apply new selection
@@ -370,6 +372,7 @@ function isValidDirection(cell, referenceCell = selectedCells[selectedCells.leng
   newSelection.forEach(c => c.classList.add("selected"));
   selectedCells = newSelection;
 }
+
 
 function endDrag() {
   isDragging = false;
