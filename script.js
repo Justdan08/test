@@ -36,13 +36,9 @@ function stopTimer() {
 function updateTimerDisplay() {
   const minutes = Math.floor(secondsElapsed / 60);
   const seconds = secondsElapsed % 60;
-  const timerDisplay = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const timerDisplay = ${minutes}:${seconds.toString().padStart(2, "0")};
   document.getElementById("timer").textContent = timerDisplay;
 }
-
-// ========================
-// Combo Functions
-// ========================
 
 // ========================
 // Combo Functions
@@ -71,27 +67,10 @@ function updateComboBar() {
   const comboText = document.getElementById("combo-text");
 
   // Update bar width
-  comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
+  comboBar.style.width = ${(comboTimeLeft / 10) * 100}%;
 
   // Update combo text
-  comboText.textContent = `Combo: ${comboMultiplier}x`;
-
-  // Remove previous fire intensity classes
-  comboBar.classList.remove("fire-intensity-1", "fire-intensity-2", "fire-intensity-3");
-
-  // Apply fire intensity based on combo multiplier
-  if (comboMultiplier >= 4) {
-    comboBar.classList.add("fire-intensity-3"); // Most intense
-  } else if (comboMultiplier >= 2) {
-    comboBar.classList.add("fire-intensity-2"); // Moderate intensity
-  } else {
-    comboBar.classList.add("fire-intensity-1"); // Low intensity
-  }
-  // Update bar width
-  comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
-
-  // Update combo text
-  comboText.textContent = `Combo: ${comboMultiplier}x`;
+  comboText.textContent = Combo: ${comboMultiplier}x;
 }
 
 // ========================
@@ -99,7 +78,7 @@ function updateComboBar() {
 // ========================
 
 function updateScoreDisplay() {
-  document.getElementById("score").textContent = `Score: ${score}`;
+  document.getElementById("score").textContent = Score: ${score};
 }
 
 function calculatePoints(wordLength) {
@@ -227,11 +206,11 @@ function placeWord(word) {
     for (let i = 0; i < word.length; i++) {
       let cell;
       if (direction === "horizontal") {
-        cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+        cell = document.querySelector(.cell[data-row="${row}"][data-col="${col + i}"]);
       } else if (direction === "vertical") {
-        cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`);
+        cell = document.querySelector(.cell[data-row="${row + i}"][data-col="${col}"]);
       } else {
-        cell = document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+        cell = document.querySelector(.cell[data-row="${row + i}"][data-col="${col + i}"]);
       }
       cell.textContent = word[i];
     }
@@ -243,10 +222,10 @@ function placeWord(word) {
 function canPlaceWord(word, row, col, direction) {
   for (let i = 0; i < word.length; i++) {
     const cell = direction === "horizontal"
-      ? document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`)
+      ? document.querySelector(.cell[data-row="${row}"][data-col="${col + i}"])
       : direction === "vertical"
-      ? document.querySelector(`.cell[data-row="${row + i}"][data-col="${col}"]`)
-      : document.querySelector(`.cell[data-row="${row + i}"][data-col="${col + i}"]`);
+      ? document.querySelector(.cell[data-row="${row + i}"][data-col="${col}"])
+      : document.querySelector(.cell[data-row="${row + i}"][data-col="${col + i}"]);
 
     if (!cell || (cell.textContent !== "" && cell.textContent !== word[i])) {
       return false;
@@ -323,7 +302,7 @@ function dragOver(cell) {
   while (row !== currentRow || col !== currentCol) {
     row += rowStep;
     col += colStep;
-    const nextCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    const nextCell = document.querySelector(.cell[data-row="${row}"][data-col="${col}"]);
     if (!nextCell) break;
     newSelection.push(nextCell);
   }
@@ -371,7 +350,7 @@ function checkForWord() {
 
     if (foundWords.length === currentWords.length) {
       stopTimer();
-      alert(`Good Job Big Dog!\nFinal Score: ${score}`);
+      alert(Good Job Big Dog!\nFinal Score: ${score});
     }
   } else {
     selectedCells.forEach(cell => {
