@@ -13,26 +13,26 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* Options Button - Moved to where the Timer was (top right of the puzzle) */
+/* Options Button - Fixed to the top right of the page */
 #options-btn {
-    position: absolute;
-    top: 10px; /* Position adjusted to match the timer's previous position */
-    right: 10px; /* Top-right corner */
-    padding: 8px 12px;
-    background: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    z-index: 9999;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  background: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  z-index: 9999;
 }
 
 #options-btn:hover {
   background: #555;
 }
 
-/* Pop-up Menu */
+/* Additional styles for your site */
 .popup {
   display: none;
   position: fixed;
@@ -56,7 +56,13 @@ h1 {
   cursor: pointer;
 }
 
-/* Dark Mode */
+/* Font Size Buttons */
+.font-size-btn {
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
 .dark-mode {
   background: #121212;
   color: white;
@@ -74,12 +80,6 @@ h1 {
 .dark-mode #word-list .found {
   color: #ccc;
 }
-
-/* Font Sizes */
-.small-font { font-size: 14px; }
-.medium-font { font-size: 18px; }
-.large-font { font-size: 22px; }
-
 /* Grid */
 #wordsearch {
   display: grid;
@@ -259,18 +259,18 @@ h1 {
   cursor: pointer;
 }
 
-/* Timer - Moved to where the Options Button was (top left of the page) */
+/* Timer - Above the puzzle on the right */
 #timer {
-    position: absolute;
-    top: 10px; /* Position adjusted to match the options button's previous position */
-    left: 10px; /* Top-left corner */
-    font-size: 24px;
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
+  position: absolute;
+  top: -50px;
+  right: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
 }
 
 .puzzle-links {
@@ -293,17 +293,17 @@ h1 {
   text-decoration: none;
 }
 
-/* Combo Meter - Adjusted to match the new height of the Options Button */
+/* Combo Meter - Above the puzzle on the left */
 #combo-container {
-    position: absolute;
-    top: 10px; /* Adjusted to the same height as the options button and timer */
-    left: 220px; /* Adjust this value based on your layout to place it correctly */
-    width: 200px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
+  position: absolute;
+  top: -50px;
+  left: 10px;
+  width: 200px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
 }
 
 #combo-bar {
