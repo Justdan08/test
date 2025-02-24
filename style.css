@@ -167,6 +167,7 @@ h1 {
 }
 
 /* Combo Bar */
+/* Combo Bar */
 #combo-container {
   position: fixed;
   top: 60px; /* Below the timer */
@@ -185,33 +186,25 @@ h1 {
   transition: width 0.5s ease; /* Smooth animation */
 }
 
+#combo-fire {
+  height: 20px;
+  background-image: url('flame1.png'); /* Initial flame image */
+  background-size: cover;
+  animation: burn 1s infinite;
+}
+
+@keyframes burn {
+  0% { background-image: url('flame1.png'); }
+  50% { background-image: url('flame2.png'); }
+  100% { background-image: url('flame3.png'); }
+}
+
 #combo-text {
   font-size: 14px;
   font-weight: bold;
   text-align: center;
   margin-top: 5px;
 }
-/* Desktop Styles (min-width: 601px) */
-@media (min-width: 601px) {
-  #words {
-    width: 70% !important; /* Tighten words box */
-    margin: 20px auto !important;
-  }
-
-  #words div {
-    font-size: 1.1em !important; /* Increase font size */
-    padding: 2px !important;
-  }
-
-  #wordsearch {
-    max-width: 600px; /* Limit grid size */
-  }
-
-  .cell {
-    font-size: 16px; /* Larger letters */
-  }
-}
-
 /* Mobile Optimization */
 @media (max-width: 600px) {
   #wordsearch {
