@@ -268,6 +268,7 @@ function dragOver(cell) {
     return;
   }
 
+<<<<<<< HEAD
   // Determine direction if not set
   if (!direction) {
     const startRow = parseInt(startCell.dataset.row);
@@ -332,6 +333,27 @@ function isValidDirection(cell, referenceCell = selectedCells[selectedCells.leng
       return false;
   }
 }
+=======
+  // Calculate relative position to start cell
+  const startRow = parseInt(startCell.dataset.row);
+  const startCol = parseInt(startCell.dataset.col);
+  const currentRow = parseInt(cell.dataset.row);
+  const currentCol = parseInt(cell.dataset.col);
+
+  // Determine valid direction
+  const rowDiff = currentRow - startRow;
+  const colDiff = currentCol - startCol;
+  
+  let newDirection;
+  if (rowDiff === 0) newDirection = "horizontal";
+  else if (colDiff === 0) newDirection = "vertical";
+  else if (Math.abs(rowDiff) === Math.abs(colDiff)) newDirection = "diagonal";
+  else return; // Invalid direction
+
+  // If direction is newly determined, apply it
+  if (!direction) direction = newDirection;
+  if (direction !== newDirection) return; // Maintain a straight-line drag
+>>>>>>> parent of b523a60 (Update script.js)
 
 function getMissingCells(lastCell, currentCell) {
   let missingCells = [];
@@ -340,21 +362,44 @@ function getMissingCells(lastCell, currentCell) {
   const currentRow = parseInt(currentCell.dataset.row);
   const currentCol = parseInt(currentCell.dataset.col);
 
+<<<<<<< HEAD
   const rowStep = currentRow > lastRow ? 1 : currentRow < lastRow ? -1 : 0;
   const colStep = currentCol > lastCol ? 1 : currentCol < lastCol ? -1 : 0;
 
   let row = lastRow + rowStep;
   let col = lastCol + colStep;
+=======
+  // Build new selection path
+  let row = startRow;
+  let col = startCol;
+  const newSelection = [startCell]; // Ensure start cell remains
+>>>>>>> parent of b523a60 (Update script.js)
 
   while (row !== currentRow || col !== currentCol) {
     const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
     if (cell) missingCells.push(cell);
     row += rowStep;
     col += colStep;
+<<<<<<< HEAD
   }
 
   return missingCells;
+=======
+    const nextCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    if (!nextCell || nextCell === startCell) break;
+    newSelection.push(nextCell);
+  }
+
+  // Validate complete path
+  if (newSelection[newSelection.length - 1] !== cell) return;
+
+  // Apply new selection
+  selectedCells.forEach(c => c.classList.remove("selected"));
+  newSelection.forEach(c => c.classList.add("selected"));
+  selectedCells = newSelection;
+>>>>>>> parent of b523a60 (Update script.js)
 }
+
 
 function endDrag() {
   isDragging = false;
