@@ -13,69 +13,66 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* Options Button -  */
+/* Options Button */
 #options-btn {
-    position: absolute; /* Keeps the button fixed */
-    top: 10px;
-    right: 10px; /* Changed from right to left */
-    padding: 8px 12px;
-    background: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    z-index: 9999; /* Ensures it stays on top */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  background: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  z-index: 9999;
 }
 
 #options-btn:hover {
-    background: #555;
+  background: #555;
 }
-
 
 /* Pop-up Menu */
 .popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    z-index: 10000;
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  z-index: 10000;
 }
 
 .popup-content {
-    text-align: center;
+  text-align: center;
 }
 
 .close-btn {
-    float: right;
-    font-size: 24px;
-    cursor: pointer;
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-/* General dark mode adjustments */
+/* Dark Mode */
 .dark-mode {
   background: #121212;
-  color: white; /* Ensures general text is visible in dark mode */
+  color: white;
 }
 
-/* Specific dark mode adjustments for the puzzle grid */
 .dark-mode .cell {
-  background-color: #333; /* Darker cell background */
-  color: white; /* Light text for readability */
+  background-color: #333;
+  color: white;
 }
 
 .dark-mode .cell.selected {
-  background-color: rgba(255, 255, 255, 0.5); /* Lighter selection for visibility */
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Adjusting found words in word list for dark mode */
 .dark-mode #word-list .found {
-  color: #ccc; /* Lighter color for struck-through words */
+  color: #ccc;
 }
 
 /* Font Sizes */
@@ -87,10 +84,10 @@ h1 {
 #wordsearch {
   display: grid;
   gap: 2px;
-  margin: 20px auto; /* Center horizontally */
+  margin: 20px auto;
   max-width: 95%;
-  justify-content: center; /* Center grid columns */
-  grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
+  justify-content: center;
+  grid-template-columns: repeat(15, minmax(20px, 40px));
 }
 
 .cell {
@@ -102,20 +99,20 @@ h1 {
   justify-content: center;
   background-color: white;
   user-select: none;
-  opacity: 0; /* Start invisible */
-  animation: fadeIn 0.6s ease-out forwards; /* Fade-in animation */
-  animation-delay: calc((var(--row) + var(--col)) * 0.03s); /* Staggered delay */
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-delay: calc((var(--row) + var(--col)) * 0.03s);
 }
 
 .cell.selected {
-  background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
+  background-color: rgba(73, 132, 184, 0.5);
 }
 
 /* Fade-in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px); /* Optional slight vertical movement */
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -195,37 +192,37 @@ h1 {
 /* Mobile Optimization */
 @media (max-width: 600px) {
   #wordsearch {
-    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
-    margin: 10px auto; /* Reduce top and bottom margin */
+    grid-template-columns: repeat(15, 6vw);
+    margin: 10px auto;
   }
 
   #word-list {
-    margin: 10px auto; /* Reduce margin around the words box */
-    padding: 5px 10px; /* Decrease vertical padding, keep horizontal padding */
-    width: 90%; /* Make the words box wider */
+    margin: 10px auto;
+    padding: 5px 10px;
+    width: 90%;
   }
 
   #words {
-    gap: 4px; /* Slightly reduce gap between words */
+    gap: 4px;
   }
 
   #words div {
-    font-size: 1em; /* Revert to original font size */
-    padding: 2px 0; /* Reduce vertical padding between words */
+    font-size: 1em;
+    padding: 2px 0;
   }
 
   .nav-links {
-    margin-top: 10px; /* Reduce space above navigation links */
+    margin-top: 10px;
   }
 
   /* Adjust combo bar for mobile */
   #combo-container {
-    top: 50px; /* Move higher on mobile */
-    width: 150px; /* Smaller width for mobile */
+    top: 50px;
+    width: 150px;
   }
 
   #combo-text {
-    font-size: 12px; /* Smaller text for mobile */
+    font-size: 12px;
   }
 
   /* Reduce overall padding on the body */
@@ -236,18 +233,18 @@ h1 {
   /* Adjust the layout of the puzzle and words box */
   .container {
     flex-direction: column;
-    gap: 10px; /* Reduce gap between puzzle and words box */
+    gap: 10px;
   }
 
   .right-panel {
-    order: -1; /* Keep words box above the puzzle */
-    margin-bottom: 10px; /* Add a small gap below the words box */
+    order: -1;
+    margin-bottom: 10px;
   }
 
   /* Remove scroll functionality from the words box */
   #words {
-    max-height: none; /* Remove height limit */
-    overflow-y: visible; /* Remove scroll */
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -264,16 +261,16 @@ h1 {
 
 /* Timer - Now top right of the puzzle */
 #timer {
-    position: absolute; /* Keeps the timer fixed */
-    top: -50px; /* Adjust this if needed to align with the top of the puzzle */
-    right: 10px; /* Keep this or adjust to move closer/further from the right edge */
+    position: absolute;
+    top: -50px;
+    right: 10px;
     font-size: 24px;
     font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    background-color: rgba(255, 255, 255, 0.8);
     padding: 5px 10px;
     border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    z-index: 9999; /* Ensures it stays on top */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
 }
 
 .puzzle-links {
@@ -298,22 +295,22 @@ h1 {
 
 /* Combo Meter - Placing above the puzzle */
 #combo-container {
-    position: absolute; /* Keeps the combo meter fixed */
-    top: -50px; /* Adjust this based on the height of the timer if they overlap */
-    left: 10px; /* Aligns with the left edge of the page */
-    width: 200px; /* Adjust width as necessary */
+    position: absolute;
+    top: -50px;
+    left: 10px;
+    width: 200px;
     background-color: rgba(255, 255, 255, 0.8);
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 9999; /* Ensures it stays on top */
+    z-index: 9999;
 }
 
 #combo-bar {
   height: 10px;
-  background-color: #4CAF50; /* Green for progress */
+  background-color: #4CAF50;
   width: 0%;
-  transition: width 0.5s ease; /* Smooth animation */
+  transition: width 0.5s ease;
 }
 
 #combo-text {
@@ -326,32 +323,32 @@ h1 {
 /* Desktop Styles (min-width: 601px) */
 @media (min-width: 601px) {
   #words {
-    width: 70% !important; /* Tighten words box */
-    margin: 20px auto !important;
+    width: 70%;
+    margin: 20px auto;
   }
 
   #words div {
-    font-size: 1.1em !important; /* Increase font size */
-    padding: 2px !important;
+    font-size: 1.1em;
+    padding: 2px;
   }
 
   #wordsearch {
-    max-width: 600px; /* Limit grid size */
+    max-width: 600px;
   }
 
   .cell {
-    font-size: 16px; /* Larger letters */
+    font-size: 16px;
   }
 }
 
 /* Mobile Optimization */
 @media (max-width: 600px) {
   #wordsearch {
-    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
+    grid-template-columns: repeat(15, 6vw);
   }
 
   body {
-    padding: 5px; /* Reduce padding on small screens */
+    padding: 5px;
   }
 
   .cell {
@@ -366,11 +363,11 @@ h1 {
 
   /* Adjust combo bar for mobile */
   #combo-container {
-    top: 50px; /* Move higher on mobile */
-    width: 150px; /* Smaller width for mobile */
+    top: 50px;
+    width: 150px;
   }
 
   #combo-text {
-    font-size: 12px; /* Smaller text for mobile */
+    font-size: 12px;
   }
 }
