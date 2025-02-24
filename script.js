@@ -242,6 +242,69 @@ function fillRandomLetters() {
     }
   });
 }
+// Your existing script logic (grid setup, puzzle logic, etc.)
+
+// Elements for combo and flame animation
+let comboMeterText = document.getElementById('combo-text');
+let comboBar = document.getElementById('combo-bar');
+let combo = 0;
+let flame = document.createElement('div');
+flame.id = 'flame'; // Create the flame element
+
+// Append the flame to the combo container
+comboBar.appendChild(flame);
+
+// Function to increase combo and update the meter
+function increaseCombo() {
+  combo++;
+  comboMeterText.innerText = `Combo: ${combo}x`;
+
+  // Adjust combo bar width based on combo level (optional visual effect)
+  comboBar.style.width = `${combo * 10}%`; // This will grow the bar as combo increases
+  
+  // Adjust flame intensity based on the combo level
+  adjustFlameIntensity(combo);
+}
+
+// Function to adjust flame intensity and appearance based on combo level
+function adjustFlameIntensity(combo) {
+  let intensityLevel = Math.min(Math.floor(combo / 5), 5); // Limits intensity to 5 levels
+  
+  // Adjust flame size based on intensity level
+  let size = 50 + intensityLevel * 10;  // Increase size for each level
+  let animationDuration = 1 - intensityLevel * 0.1;  // Decrease animation duration for faster flicker
+  
+  // Update flame size and animation speed
+  flame.style.width = `${size}px`;
+  flame.style.height = `${size}px`;
+  flame.style.animationDuration = `${animationDuration}s`;
+
+  // Change the flame color intensity based on combo level
+  if (intensityLevel === 1) {
+    flame.style.background = 'linear-gradient(to top, #ff4500, #ff6347, #ff8c00)';
+  } else if (intensityLevel === 2) {
+    flame.style.background = 'linear-gradient(to top, #ff5500, #ff7b1c, #ff9900)';
+  } else if (intensityLevel === 3) {
+    flame.style.background = 'linear-gradient(to top, #ff0000, #ff5500, #ff8c00)';
+  } else if (intensityLevel === 4) {
+    flame.style.background = 'linear-gradient(to top, #ff2200, #ff4400, #ff6700)';
+  } else if (intensityLevel === 5) {
+    flame.style.background = 'linear-gradient(to top, #cc0000, #e60000, #ff5500)';
+  }
+}
+
+// Button click event or game event to simulate combo increase (this can be hooked to game logic)
+document.getElementById('reset-button').addEventListener('click', function() {
+  combo = 0; // Reset combo
+  comboMeterText.innerText = `Combo: ${combo}x`;
+  comboBar.style.width = '0%'; // Reset combo bar width
+  flame.style.width = '50px'; // Reset flame size
+  flame.style.height = '50px';
+  flame.style.animationDuration = '1s'; // Reset flame animation speed
+  flame.style.background = 'linear-gradient(to top, #ff4500, #ff6347, #ff8c00)'; // Reset flame color
+});
+
+// Add other game logic or event listeners as needed
 
 // ========================
 // User Interaction (Updated Drag Logic)
@@ -359,6 +422,7 @@ function checkForWord() {
   }
   selectedCells = [];
 }
+
 
 // ========================
 // Mobile Support (Updated Touch Logic)
