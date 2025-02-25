@@ -115,6 +115,35 @@ h1 {
     display: none;
 }
 
+/* Combo Meter Styles */
+#combo-container {
+    position: absolute;
+    right: 10px;
+    top: 100px;
+    width: 200px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+#combo-bar {
+    width: 100%;
+    height: 15px;
+    background-color: #4CAF50;
+    transition: width 0.5s linear;
+    border-radius: 5px;
+}
+
+#combo-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+
 /* Style for options container */
 #options-container {
     position: fixed;
