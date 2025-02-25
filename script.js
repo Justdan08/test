@@ -103,24 +103,33 @@ function toggleOptionsMenu() {
 // Timer Functions
 // ========================
 
-function startTimer() {
-  timerInterval = setInterval(() => {
-    secondsElapsed++;
-    updateTimerDisplay();
-  }, 1000); // Update every second
-}
+let timeLeft = 300; // Example starting time in seconds (5 minutes)
+let timerInterval; // Global reference to avoid multiple intervals
 
+function startTimer() {
+    clearInterval(timerInterval); // Prevent multiple intervals from stacking
+    timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+        } else {
+            clearInterval(timerInterval);
+            alert("Time's up!");
+        }
+    }, 1000);
+}
 function stopTimer() {
   clearInterval(timerInterval);
 }
 
 function updateTimerDisplay() {
-  const minutes = Math.floor(secondsElapsed / 60);
-  const seconds = secondsElapsed % 60;
-  const timerDisplay = `${minutes}:${seconds.toString().padStart(1, "0")}`;
-  document.getElementById("timer").textContent = timerDisplay;
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
+// Start timer when page loads
+startTimer();
 // ========================
 // Combo Functions
 // ========================
