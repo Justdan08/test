@@ -231,6 +231,41 @@ h1 {
     background: #222;
     color: #fff;
 }
+/* Apply dark mode to the entire body */
+.dark-mode {
+  background-color: #222;
+  color: white;
+}
+
+/* Apply dark mode to word search grid */
+.dark-mode #wordsearch .cell {
+  background-color: #444;
+  color: white;
+  border: 1px solid #888;
+}
+
+/* Apply dark mode to the word list */
+.dark-mode #word-list {
+  color: white;
+}
+
+/* Apply dark mode to selected words */
+.dark-mode .cell.selected {
+  background-color: rgba(150, 150, 150, 0.7); /* Lighter shade for visibility */
+}
+
+/* Dark mode for timer, combo bar, and buttons */
+.dark-mode #timer,
+.dark-mode #combo-container,
+.dark-mode #reset-button {
+  background-color: rgba(50, 50, 50, 0.8);
+  color: white;
+}
+
+/* Dark mode for navigation links */
+.dark-mode .nav-links a {
+  color: #bbb;
+}
 
 /* Word Found Styles */
 .original-style {
