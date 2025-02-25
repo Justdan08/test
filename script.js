@@ -59,12 +59,16 @@ function createOptionsMenu() {
     document.getElementById('options-button').addEventListener('click', toggleOptionsMenu);
 }
 
-// Function to toggle dark mode
 function toggleDarkMode() {
-    const body = document.body;
-    body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
 }
+
+// Load dark mode setting from storage
+if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark-mode");
+}
+
 
 // Function to set solved word display mode
 function changeSolvedWordStyle(style) {
