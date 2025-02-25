@@ -96,25 +96,16 @@ function toggleOptionsMenu() {
 // Timer Functions
 // ========================
 
-// Add this with your game state variables
-let timerInterval = null;
-
-// Update your timer functions:
 function startTimer() {
-  // Clear any existing timer first
-  if (timerInterval) clearInterval(timerInterval);
-  
   timerInterval = setInterval(() => {
     secondsElapsed++;
     updateTimerDisplay();
-  }, 1000);
+  }, 1000); // Update every second
 }
 
 function stopTimer() {
   clearInterval(timerInterval);
-  timerInterval = null;
 }
-
 
 function updateTimerDisplay() {
   const minutes = Math.floor(secondsElapsed / 60);
