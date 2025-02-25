@@ -281,6 +281,12 @@ function initializeGame() {
     wordsBox.appendChild(wordElement);
   });
 
+    // set grid size
+    if (typeof gridSize === 'undefined') {
+    var gridSize = 15;
+}
+
+
   // Append the words box to the words container
   wordsContainer.appendChild(wordsBox);
 
