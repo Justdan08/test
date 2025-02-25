@@ -119,34 +119,84 @@ function updateTimerDisplay() {
 // Combo Functions
 // ========================
 
-function startComboTimer() {
-  comboTimeLeft = 10; // Reset combo timer to 10 seconds
-  updateComboBar();
+let comboMultiplier = 1;
+let comboTimer;
+let comboActive = false;
 
-  if (comboInterval) clearInterval(comboInterval); // Clear existing interval
-
-  comboInterval = setInterval(() => {
-    comboTimeLeft--;
-    updateComboBar();
-
-    if (comboTimeLeft <= 0) {
-      clearInterval(comboInterval);
-      comboMultiplier = 1; // Reset combo multiplier
-      updateComboBar();
+function startCombo() {
+    if (comboActive) {
+        comboMultiplier++;
+    } else {
+        comboMultiplier = 1;
+        comboActive = true;
+        updateComboMeter();
     }
-  }, 1000); // Update every second
+    document.getElementById("combo-text").textContent = `Combo: ${comboMultiplier}x`;
+
+    // Reset combo timer
+    clearTimeout(comboTimer);
+    let comboBar = document.getElementById("combo-bar");
+    comboBar.style.width = "100%";
+
+    // Gradually decrease the combo bar width
+    let duration = 5000; // 5 seconds to reset
+    let startTime = Date.now();
+
+    function decreaseBar() {
+        let elapsedTime = Date.now() - startTime;
+        let progress = elapsedTime / duration;
+        comboBar.style.width = `${100 - progress * 100}%`;
+
+        if (progress < 1) {
+            requestAnimationFrame(decreaseBar);
+        } else {
+            endCombo();
+        }
+    }
+
+    requestAnimationFrame(decreaseBar);
+
+    // End combo after duration
+    comboTimer = setTimeout(endCombo, duration);
 }
 
-function updateComboBar() {
-  const comboBar = document.getElementById("combo-bar");
-  const comboText = document.getElementById("combo-text");
-
-  // Update bar width
-  comboBar.style.width = `${(comboTimeLeft / 10) * 100}%`;
-
-  // Update combo text
-  comboText.textContent = `Combo: ${comboMultiplier}x`;
+function endCombo() {
+    comboActive = false;
+    comboMultiplier = 1;
+    document.getElementById("combo-text").textContent = "Combo: 1x";
+    document.getElementById("combo-bar").style.width = "0%";
 }
+
+// Example: Call `startCombo()` when a word is found
+function checkForWord() {
+    const selectedWord = selectedCells.map(cell => cell.textContent).join("");
+    if (currentWords.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+        foundWords.push(selectedWord);
+        selectedCells.forEach(cell => {
+            if (!cell.classList.contains("found")) {
+                cell.classList.add("found");
+            }
+            cell.classList.remove("selected");
+        });
+
+        document.querySelectorAll("#words div").forEach(el => {
+            if (el.textContent === selectedWord) el.classList.add("found");
+        });
+
+        startCombo(); // Trigger the combo meter when a word is found
+
+        if (foundWords.length === currentWords.length) {
+            stopTimer();
+            alert("Good Job Big Dog!");
+        }
+    } else {
+        selectedCells.forEach(cell => {
+            cell.classList.remove("selected");
+        });
+    }
+    selectedCells = [];
+}
+
 
 // ========================
 // Score Functions
