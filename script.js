@@ -20,8 +20,16 @@ document.getElementById("reset-button").addEventListener("click", resetGame);
 
 // Ensure settings apply on load
 document.addEventListener('DOMContentLoaded', () => {
-    initializeGame(); // Ensure this function exists
+    if (typeof initializeGame === 'function') {
+        initializeGame(); // Ensure the game starts
+    } else {
+        console.error("initializeGame() function not found.");
+    }
+
     updateSolvedWordStyle();
+    updateHighlightColor();
+});
+
 
     // Apply saved dark mode setting
     if (localStorage.getItem('darkMode') === 'true') {
