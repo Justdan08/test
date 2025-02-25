@@ -32,6 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create options menu
     createOptionsMenu();
 });
+document.addEventListener("DOMContentLoaded", function () {
+    const colorPicker = document.getElementById("color-picker");
+
+    if (colorPicker) {  // Ensure the element exists before running
+        colorPicker.addEventListener("input", function () {
+            const selectedColor = colorPicker.value;
+            document.querySelectorAll(".cell").forEach(cell => {
+                cell.style.borderColor = selectedColor;
+            });
+        });
+    }
+});
 
 // Create and add options menu
 function createOptionsMenu() {
