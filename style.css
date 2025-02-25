@@ -13,11 +13,18 @@ h1 {
   margin-bottom: 10px;
 }
 
+/* Define highlight color variable */
+:root {
+    --highlight-color: rgba(73, 132, 184, 0.5); /* Default blue */
+}
+
 /* Grid */
 #wordsearch {
+  position: relative;
   display: grid;
   gap: 2px;
   margin: 20px auto; /* Center horizontally */
+  margin-top: 50px; /* Ensure the puzzle does not overlap the fixed elements */
   max-width: 95%;
   justify-content: center; /* Center grid columns */
   grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
@@ -32,25 +39,10 @@ h1 {
   justify-content: center;
   background-color: white;
   user-select: none;
-  opacity: 0; /* Start invisible */
-  animation: fadeIn 0.6s ease-out forwards; /* Fade-in animation */
-  animation-delay: calc((var(--row) + var(--col)) * 0.03s); /* Staggered delay */
 }
 
 .cell.selected {
-  background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
-}
-
-/* Fade-in animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px); /* Optional slight vertical movement */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background-color: var(--highlight-color); /* Use dynamic highlight color */
 }
 
 /* Word List */
@@ -68,118 +60,56 @@ h1 {
   color: #888;
 }
 
-/* Updated CSS */
-.container {
-  display: flex;
-  gap: 30px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
+/* Buttons & Links */
+#reset-button {
+  margin: 15px auto;
+  padding: 10px 20px;
+  background-color: #4984B8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.left-panel {
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* Position Timer at the top-left above the puzzle grid */
+#timer {
+    position: absolute;
+    top: 10px;
+    left: 20px; /* Adjusted for alignment */
+    font-size: 24px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.right-panel {
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  height: fit-content;
+/* Ensure the puzzle container is positioned correctly */
+#wordsearch {
+    position: relative;
+    margin-top: 60px; /* Ensuring space for timer and combo meter */
 }
 
-#words {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.puzzle-links {
+  margin: 20px;
 }
 
-#words div {
-  font-size: 1.1em;
-  padding: 4px 0;
-  white-space: nowrap;
+.puzzle-link {
+  display: block;
+  margin: 10px;
+  padding: 10px;
+  background-color: #4984B8;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
 }
 
-.nav-links {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 20px;
+.nav-links a {
+  margin: 0 10px;
+  color: #4984B8;
+  text-decoration: none;
 }
 
-/* Desktop Layout */
-@media (min-width: 901px) {
-  #word-list {
-    height: calc(100vh - 160px);
-    overflow-y: auto;
-  }
-}
-
-/* Mobile Layout */
-/* Mobile Optimization */
-@media (max-width: 600px) {
-  #wordsearch {
-    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
-    margin: 10px auto; /* Reduce top and bottom margin */
-  }
-
-  #word-list {
-    margin: 10px auto; /* Reduce margin around the words box */
-    padding: 5px 10px; /* Decrease vertical padding, keep horizontal padding */
-    width: 90%; /* Make the words box wider */
-  }
-
-  #words {
-    gap: 4px; /* Slightly reduce gap between words */
-  }
-
-  #words div {
-    font-size: 1em; /* Revert to original font size */
-    padding: 2px 0; /* Reduce vertical padding between words */
-  }
-
-  .nav-links {
-    margin-top: 10px; /* Reduce space above navigation links */
-  }
-
-  /* Adjust combo bar for mobile */
-  #combo-container {
-    top: 50px; /* Move higher on mobile */
-    width: 150px; /* Smaller width for mobile */
-  }
-
-  #combo-text {
-    font-size: 12px; /* Smaller text for mobile */
-  }
-
-  /* Reduce overall padding on the body */
-  body {
-    padding: 5px;
-  }
-
-  /* Adjust the layout of the puzzle and words box */
-  .container {
-    flex-direction: column;
-    gap: 10px; /* Reduce gap between puzzle and words box */
-  }
-
-  .right-panel {
-    order: -1; /* Keep words box above the puzzle */
-    margin-bottom: 10px; /* Add a small gap below the words box */
-  }
-
-  /* Remove scroll functionality from the words box */
-  #words {
-    max-height: none; /* Remove height limit */
-    overflow-y: visible; /* Remove scroll */
-  }
-}
 /* Hide options menu initially */
 .hidden {
     display: none;
@@ -229,102 +159,29 @@ h1 {
 .bold-style {
     font-weight: bold;
     text-decoration: line-through;
-    color: black;
+    color: black; /* Keeps text black */
 }
 
 .highlight-style {
-    background-color: rgba(73, 132, 184, 0.5); /* The existing blue color from your CSS */
+    background-color: var(--highlight-color); /* Use dynamic highlight color */
     color: black;
 }
 
-/* Buttons & Links */
-#reset-button {
-  margin: 15px auto;
-  padding: 10px 20px;
-  background-color: #4984B8;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
 }
 
-#timer {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  padding: 5px 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+.dark-mode .cell {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-color: #ffffff;
 }
 
-.puzzle-links {
-  margin: 20px;
-}
-
-.puzzle-link {
-  display: block;
-  margin: 10px;
-  padding: 10px;
-  background-color: #4984B8;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
-.nav-links a {
-  margin: 0 10px;
-  color: #4984B8;
-  text-decoration: none;
-}
-
-/* Combo Bar */
-#combo-container {
-  position: fixed;
-  top: 60px; /* Below the timer */
-  left: 10px;
-  width: 200px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-#combo-bar {
-  height: 10px;
-  background-color: #4CAF50; /* Green for progress */
-  width: 0%;
-  transition: width 0.5s ease; /* Smooth animation */
-}
-
-#combo-text {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 5px;
-}
-
-/* Desktop Styles (min-width: 601px) */
-@media (min-width: 601px) {
-  #words {
-    width: 70% !important; /* Tighten words box */
-    margin: 20px auto !important;
-  }
-
-  #words div {
-    font-size: 1.1em !important; /* Increase font size */
-    padding: 2px !important;
-  }
-
-  #wordsearch {
-    max-width: 600px; /* Limit grid size */
-  }
-
-  .cell {
-    font-size: 16px; /* Larger letters */
-  }
+.dark-mode button {
+    background-color: #444;
+    color: white;
 }
 
 /* Mobile Optimization */
@@ -345,15 +202,5 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  /* Adjust combo bar for mobile */
-  #combo-container {
-    top: 50px; /* Move higher on mobile */
-    width: 150px; /* Smaller width for mobile */
-  }
-
-  #combo-text {
-    font-size: 12px; /* Smaller text for mobile */
   }
 }
