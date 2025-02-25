@@ -180,6 +180,73 @@ h1 {
     overflow-y: visible; /* Remove scroll */
   }
 }
+/* Dark Mode */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .cell {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.dark-mode #options-menu {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.dark-mode button {
+    background-color: #444;
+    color: white;
+}
+
+/* Options Menu */
+#options-menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#options-menu button {
+    display: block;
+    margin: 5px 0;
+    padding: 8px;
+    background-color: #4984B8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#options-menu button:hover {
+    background-color: #3a6e9e;
+}
+
+/* Solved Word Styles */
+.original-style {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.bold-style {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.highlight-style {
+    background-color: yellow;
+    color: black;
+}
+
 /* Buttons & Links */
 #reset-button {
   margin: 15px auto;
