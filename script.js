@@ -35,22 +35,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Create and add options menu
 function createOptionsMenu() {
-    const menu = document.createElement('div');
-    menu.id = 'options-menu';
-    menu.innerHTML = `
-        <button id="dark-mode-toggle">Toggle Dark Mode</button>
-        <h3>Word Found Display:</h3>
-        <button id="style-original">Original</button>
-        <button id="style-bold">Bold</button>
-        <button id="style-highlighted">Highlighted</button>
+    const container = document.createElement('div');
+    container.id = 'options-container';
+    container.innerHTML = `
+        <button id="options-button">☰</button>
+        <div id="options-menu" class="hidden">
+            <button id="dark-mode-toggle">Toggle Dark Mode</button>
+            <h3>Word Found Display:</h3>
+            <button id="style-original">Original</button>
+            <button id="style-bold">Bold</button>
+            <button id="style-highlighted">Highlighted</button>
+        </div>
     `;
-    document.body.appendChild(menu);
+    document.body.appendChild(container);
 
     // Add event listeners after menu is added to DOM
     document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
     document.getElementById('style-original').addEventListener('click', () => changeSolvedWordStyle('original'));
     document.getElementById('style-bold').addEventListener('click', () => changeSolvedWordStyle('bold'));
     document.getElementById('style-highlighted').addEventListener('click', () => changeSolvedWordStyle('highlighted'));
+    document.getElementById('options-button').addEventListener('click', toggleOptionsMenu);
 }
 
 // Function to toggle dark mode
@@ -82,6 +86,12 @@ function updateSolvedWordStyle() {
         }
     });
 }
+
+// Function to toggle options menu visibility
+function toggleOptionsMenu() {
+    document.getElementById('options-menu').classList.toggle('hidden');
+}
+
 
 // ========================
 // Timer Functions
