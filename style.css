@@ -38,8 +38,9 @@ h1 {
 }
 
 .cell.selected {
-  background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
+    background-color: var(--trace-color, rgba(73, 132, 184, 0.5));
 }
+
 
 /* Fade-in animation */
 @keyframes fadeIn {
