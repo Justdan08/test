@@ -17,6 +17,81 @@ document.addEventListener("DOMContentLoaded", initializeGame);
 
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
+// script.js
+
+// Ensure settings apply on load
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame(); // Ensure this function exists
+    updateSolvedWordStyle();
+
+    // Apply saved dark mode setting
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // Create options menu
+    createOptionsMenu();
+});
+
+// Create and add options menu
+function createOptionsMenu() {
+    const container = document.createElement('div');
+    container.id = 'options-container';
+    container.innerHTML = `
+        <button id="options-button">☰</button>
+        <div id="options-menu" class="hidden">
+            <button id="dark-mode-toggle">Toggle Dark Mode</button>
+            <h3>Word Found Display:</h3>
+            <button id="style-original">Original</button>
+            <button id="style-bold">Bold</button>
+            <button id="style-highlighted">Highlighted</button>
+        </div>
+    `;
+    document.body.appendChild(container);
+
+    // Add event listeners after menu is added to DOM
+    document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+    document.getElementById('style-original').addEventListener('click', () => changeSolvedWordStyle('original'));
+    document.getElementById('style-bold').addEventListener('click', () => changeSolvedWordStyle('bold'));
+    document.getElementById('style-highlighted').addEventListener('click', () => changeSolvedWordStyle('highlighted'));
+    document.getElementById('options-button').addEventListener('click', toggleOptionsMenu);
+}
+
+// Function to toggle dark mode
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+}
+
+// Function to set solved word display mode
+function changeSolvedWordStyle(style) {
+    localStorage.setItem('solvedWordStyle', style);
+    updateSolvedWordStyle();
+}
+
+// Apply styles to found words
+function updateSolvedWordStyle() {
+    const words = document.querySelectorAll('.found');
+    const style = localStorage.getItem('solvedWordStyle') || 'original';
+    
+    words.forEach(word => {
+        word.classList.remove('bold-style', 'highlight-style', 'original-style');
+        if (style === 'bold') {
+            word.classList.add('bold-style');
+        } else if (style === 'highlighted') {
+            word.classList.add('highlight-style');
+        } else {
+            word.classList.add('original-style');
+        }
+    });
+}
+
+// Function to toggle options menu visibility
+function toggleOptionsMenu() {
+    document.getElementById('options-menu').classList.toggle('hidden');
+}
+
 
 // ========================
 // Timer Functions
