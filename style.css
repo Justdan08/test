@@ -249,7 +249,7 @@ h1 {
 }
 
 #timer {
-  position: fixed;
+  position: static;
   top: 10px;
   right: 10px;
   font-size: 24px;
@@ -282,7 +282,7 @@ h1 {
 
 /* Combo Bar */
 #combo-container {
-  position: fixed;
+  position: static;
   top: 60px; /* Below the timer */
   left: 10px;
   width: 200px;
