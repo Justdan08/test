@@ -97,31 +97,42 @@ function toggleOptionsMenu() {
     document.getElementById('options-menu').classList.toggle('hidden');
 }
 
-const colorPicker = document.getElementById("color-picker");
 
-// Load saved color from local storage
+// Dark Mode Toggle
+const darkModeToggle = document.getElementById("dark-mode-toggle");
+darkModeToggle.addEventListener("change", () => {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+});
+
+if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark-mode");
+}
+
+// Color Picker
+const colorPicker = document.getElementById("color-picker");
 const savedColor = localStorage.getItem("traceColor");
 if (savedColor) {
     document.documentElement.style.setProperty("--trace-color", savedColor);
     colorPicker.value = savedColor;
 }
 
-// Update color when user selects a new one
 colorPicker.addEventListener("input", (event) => {
     const newColor = event.target.value;
     document.documentElement.style.setProperty("--trace-color", newColor);
     localStorage.setItem("traceColor", newColor);
 });
 
+
 // ========================
 // Timer Functions
 // ========================
 
-let timeLeft = 300; // Example starting time in seconds (5 minutes)
-let timerInterval; // Global reference to avoid multiple intervals
+let timeLeft = 300;
+let timerInterval;
 
 function startTimer() {
-    clearInterval(timerInterval); // Prevent multiple intervals from stacking
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
@@ -132,9 +143,6 @@ function startTimer() {
         }
     }, 1000);
 }
-function stopTimer() {
-  clearInterval(timerInterval);
-}
 
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -142,8 +150,8 @@ function updateTimerDisplay() {
     document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
-// Start timer when page loads
 startTimer();
+
 // ========================
 // Combo Functions
 // ========================
