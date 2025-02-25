@@ -175,6 +175,12 @@ function initializeGame() {
   updateTimerDisplay();
   updateComboBar();
 
+  // Get the word pool and set up the game...
+  // [Keep all your existing initialization code]
+
+  // Start the timer after everything is set up
+  startTimer();
+}
   // Get the word pool from the HTML
   const wordPoolElement = document.getElementById("word-pool");
   const wordPool = JSON.parse(wordPoolElement.dataset.words);
