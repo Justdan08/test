@@ -5,6 +5,7 @@ let isDragging = false;
 let startCell = null;
 let direction = null;
 let currentWords = []; // Stores the 15 randomly selected words
+let timerInterval = null; // Timer interval
 let secondsElapsed = 0; // Total seconds elapsed
 let score = 0; // Added score tracking
 let comboMultiplier = 1; // Combo multiplier
@@ -30,9 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create options menu
     createOptionsMenu();
-    
 });
-
 
 // Create and add options menu
 function createOptionsMenu() {
@@ -58,16 +57,12 @@ function createOptionsMenu() {
     document.getElementById('options-button').addEventListener('click', toggleOptionsMenu);
 }
 
+// Function to toggle dark mode
 function toggleDarkMode() {
-    document.body.classList.toggle("dark-mode");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
 }
-
-// Load dark mode setting from storage
-if (localStorage.getItem("darkMode") === "true") {
-    document.body.classList.add("dark-mode");
-}
-
 
 // Function to set solved word display mode
 function changeSolvedWordStyle(style) {
@@ -98,59 +93,27 @@ function toggleOptionsMenu() {
 }
 
 
-// Dark Mode Toggle
-const darkModeToggle = document.getElementById("dark-mode-toggle");
-darkModeToggle.addEventListener("change", () => {
-    document.body.classList.toggle("dark-mode");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
-});
-
-if (localStorage.getItem("darkMode") === "true") {
-    document.body.classList.add("dark-mode");
-}
-
-// Color Picker
-const colorPicker = document.getElementById("color-picker");
-const savedColor = localStorage.getItem("traceColor");
-if (savedColor) {
-    document.documentElement.style.setProperty("--trace-color", savedColor);
-    colorPicker.value = savedColor;
-}
-
-colorPicker.addEventListener("input", (event) => {
-    const newColor = event.target.value;
-    document.documentElement.style.setProperty("--trace-color", newColor);
-    localStorage.setItem("traceColor", newColor);
-});
-
-
 // ========================
 // Timer Functions
 // ========================
 
-let timeLeft = 300;
-let timerInterval;
-
 function startTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        if (timeLeft > 0) {
-            timeLeft--;
-            updateTimerDisplay();
-        } else {
-            clearInterval(timerInterval);
-            alert("Time's up!");
-        }
-    }, 1000);
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    updateTimerDisplay();
+  }, 1000); // Update every second
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
 }
 
 function updateTimerDisplay() {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const minutes = Math.floor(secondsElapsed / 60);
+  const seconds = secondsElapsed % 60;
+  const timerDisplay = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  document.getElementById("timer").textContent = timerDisplay;
 }
-
-startTimer();
 
 // ========================
 // Combo Functions
@@ -528,15 +491,3 @@ function resetGame() {
   stopTimer();
   initializeGame();
 }
-document.addEventListener("DOMContentLoaded", function () {
-    const colorPicker = document.getElementById("color-picker");
-
-    if (colorPicker) {  // Ensure the element exists before running
-        colorPicker.addEventListener("input", function () {
-            const selectedColor = colorPicker.value;
-            document.querySelectorAll(".cell").forEach(cell => {
-                cell.style.borderColor = selectedColor;
-            });
-        });
-    }
-});
