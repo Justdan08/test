@@ -122,22 +122,119 @@ h1 {
 }
 
 /* Mobile Layout */
-@media (max-width: 900px) {
+/* Mobile Optimization */
+@media (max-width: 600px) {
+  #wordsearch {
+    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
+    margin: 10px auto; /* Reduce top and bottom margin */
+  }
+
+  #word-list {
+    margin: 10px auto; /* Reduce margin around the words box */
+    padding: 5px 10px; /* Decrease vertical padding, keep horizontal padding */
+    width: 90%; /* Make the words box wider */
+  }
+
+  #words {
+    gap: 4px; /* Slightly reduce gap between words */
+  }
+
+  #words div {
+    font-size: 1em; /* Revert to original font size */
+    padding: 2px 0; /* Reduce vertical padding between words */
+  }
+
+  .nav-links {
+    margin-top: 10px; /* Reduce space above navigation links */
+  }
+
+  /* Adjust combo bar for mobile */
+  #combo-container {
+    top: 50px; /* Move higher on mobile */
+    width: 150px; /* Smaller width for mobile */
+  }
+
+  #combo-text {
+    font-size: 12px; /* Smaller text for mobile */
+  }
+
+  /* Reduce overall padding on the body */
+  body {
+    padding: 5px;
+  }
+
+  /* Adjust the layout of the puzzle and words box */
   .container {
     flex-direction: column;
-  }
-  
-  .left-panel, .right-panel {
-    width: 100% !important;
+    gap: 10px; /* Reduce gap between puzzle and words box */
   }
 
   .right-panel {
-    order: -1;
+    order: -1; /* Keep words box above the puzzle */
+    margin-bottom: 10px; /* Add a small gap below the words box */
   }
-  
-  .nav-links {
-    margin-top: 20px;
+
+  /* Remove scroll functionality from the words box */
+  #words {
+    max-height: none; /* Remove height limit */
+    overflow-y: visible; /* Remove scroll */
   }
+}
+/* Hide options menu initially */
+.hidden {
+    display: none;
+}
+
+/* Style for options container */
+#options-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+/* Style for the menu button */
+#options-button {
+    background: #4984B8;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Style for the menu */
+#options-menu {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
+}
+
+/* Dark mode adjustments */
+.dark-mode #options-menu {
+    background: #222;
+    color: #fff;
+}
+
+/* Word Found Styles */
+.original-style {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.bold-style {
+    font-weight: bold;
+    text-decoration: line-through;
+    color: black;
+}
+
+.highlight-style {
+    background-color: rgba(73, 132, 184, 0.5); /* The existing blue color from your CSS */
+    color: black;
 }
 
 /* Buttons & Links */
