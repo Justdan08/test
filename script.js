@@ -98,6 +98,21 @@ function toggleOptionsMenu() {
     document.getElementById('options-menu').classList.toggle('hidden');
 }
 
+const colorPicker = document.getElementById("color-picker");
+
+// Load saved color from local storage
+const savedColor = localStorage.getItem("traceColor");
+if (savedColor) {
+    document.documentElement.style.setProperty("--trace-color", savedColor);
+    colorPicker.value = savedColor;
+}
+
+// Update color when user selects a new one
+colorPicker.addEventListener("input", (event) => {
+    const newColor = event.target.value;
+    document.documentElement.style.setProperty("--trace-color", newColor);
+    localStorage.setItem("traceColor", newColor);
+});
 
 // ========================
 // Timer Functions
