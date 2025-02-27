@@ -217,21 +217,67 @@ h1 {
     color: #fff;
 }
 
+/* style.css */
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode .cell {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+.dark-mode #words-box {
+    border-color: #666;
+    background-color: #333;
+}
+
+.dark-mode .puzzle-link,
+.dark-mode .nav-links a {
+    color: #88b7ff;
+}
+
+.dark-mode #combo-container,
+.dark-mode #timer {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+}
+
+.dark-mode #reset-button {
+    background-color: #4a6da7;
+    color: #fff;
+}
+
+.dark-mode .highlight-style {
+    background-color: rgba(136, 183, 255, 0.3) !important;
+}
+
 /* Word Found Styles */
 .original-style {
     text-decoration: line-through;
     color: #888;
 }
 
+/* Add these to your CSS */
 .bold-style {
-    font-weight: bold;
+    font-weight: 900 !important;
     text-decoration: line-through;
-    color: black;
 }
 
 .highlight-style {
-    background-color: rgba(73, 132, 184, 0.5); /* The existing blue color from your CSS */
-    color: black;
+    background-color: rgba(73, 132, 184, 0.5) !important;
+    color: inherit !important;
+}
+
+.original-style {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.dark-mode .original-style {
+    color: #aaa !important;
 }
 
 /* Buttons & Links */

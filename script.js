@@ -113,6 +113,12 @@ function initializeGame() {
     updateTimerDisplay();
     updateComboBar();
 
+// Apply saved styles on new game
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+    updateSolvedWordStyle();
+
     // Get the word pool from the HTML
     const wordPoolElement = document.getElementById("word-pool");
     const wordPool = JSON.parse(wordPoolElement.dataset.words);
@@ -351,6 +357,7 @@ function checkForWord() {
             }
             cell.classList.remove("selected");
         });
+  updateSolvedWordStyle()
 
         document.querySelectorAll("#words div").forEach(el => {
             if (el.textContent === selectedWord) el.classList.add("found");
@@ -458,20 +465,29 @@ function changeSolvedWordStyle(style) {
 }
 
 function updateSolvedWordStyle() {
-    const words = document.querySelectorAll(".found");
-    const style = localStorage.getItem("solvedWordStyle") || "original";
+    const words = document.querySelectorAll('.found');
+    const style = localStorage.getItem('solvedWordStyle') || 'original';
+    
     words.forEach(word => {
-        word.classList.remove("bold-style", "highlight-style", "original-style");
-        if (style === "bold") {
-            word.classList.add("bold-style");
-        } else if (style === "highlighted") {
-            word.classList.add("highlight-style");
+        // First remove existing puzzle cell styles
+        word.classList.remove('bold-style', 'highlight-style', 'original-style');
+        
+        // Then apply selected style
+        if (style === 'bold') {
+            word.classList.add('bold-style');
+        } else if (style === 'highlighted') {
+            word.classList.add('highlight-style');
         } else {
-            word.classList.add("original-style");
+            word.classList.add('original-style');
         }
     });
-}
 
+    // Also update word list styles
+    document.querySelectorAll('#words div.found').forEach(word => {
+        word.classList.remove('bold-style', 'highlight-style', 'original-style');
+        word.classList.add(`${style}-style`);
+    });
+}
 function toggleOptionsMenu() {
     document.getElementById("options-menu").classList.toggle("hidden");
 }
