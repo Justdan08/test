@@ -23,6 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // Reset button
 document.getElementById("reset-button").addEventListener("click", resetGame);
 
+// Sound effects
+const correctSound = new Audio('sounds/correct.wav'); // Path to your sound file
+
 // ========================
 // Timer Functions (Fixed)
 // ========================
@@ -339,6 +342,8 @@ function endDrag() {
 function checkForWord() {
     const selectedWord = selectedCells.map(cell => cell.textContent).join("");
     if (currentWords.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+	// Play success sound
+        playSound(correctSound);
         // Calculate and add score
         const wordScore = calculatePoints(selectedWord.length);
         score += wordScore;
@@ -348,6 +353,7 @@ function checkForWord() {
         if (comboTimeLeft > 0) {
             comboMultiplier += 0.25; // Increase combo multiplier
         }
+	foundWords.push(selectedWord);
         startComboTimer(); // Restart combo timer
 
         foundWords.push(selectedWord);
@@ -373,6 +379,13 @@ function checkForWord() {
         });
     }
     selectedCells = [];
+}
+function playSound(sound) {
+    sound.currentTime = 0; // Reset sound if already playing
+    sound.play().catch(error => {
+        // Handle browser autoplay policies
+        console.log('Sound playback prevented:', error);
+    });
 }
 
 // ========================
