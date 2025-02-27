@@ -1,66 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Match 3 Game</title>
-  <link rel="stylesheet" href="style2.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match 3 Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Scoreboard -->
-  <div class="scoreboard">
-    <div class="score">Score: <span id="score">0</span></div>
-    <div class="timer">Time: <span id="timer">10:00</span></div>
-  </div>
+    <!-- Scoreboard -->
+    <div class="score-container">
+        <div id="score">Score: 0</div>
+        <div id="timer">Time: 10:00</div>
+    </div>
 
-  <!-- Game Board -->
-  <div id="board"></div>
+    <!-- Game Board -->
+    <div id="board"></div>
 
-  <!-- Gem Level Progress Bars -->
-  <div class="levels">
-    <div class="level-track ruby">
-      <span class="label">Ruby Lvl <span id="lvl-ruby">0</span></span>
-      <div class="progress"><div class="fill" id="xp-ruby"></div></div>
+    <!-- Multiplier Display -->
+    <div id="multiplier">Multiplier: x1
+        <div id="multiplier-bar"></div>
     </div>
-    <div class="level-track sapphire">
-      <span class="label">Sapphire Lvl <span id="lvl-sapphire">0</span></span>
-      <div class="progress"><div class="fill" id="xp-sapphire"></div></div>
-    </div>
-    <div class="level-track emerald">
-      <span class="label">Emerald Lvl <span id="lvl-emerald">0</span></span>
-      <div class="progress"><div class="fill" id="xp-emerald"></div></div>
-    </div>
-    <div class="level-track topaz">
-      <span class="label">Topaz Lvl <span id="lvl-topaz">0</span></span>
-      <div class="progress"><div class="fill" id="xp-topaz"></div></div>
-    </div>
-    <div class="level-track diamond">
-      <span class="label">Diamond Lvl <span id="lvl-diamond">0</span></span>
-      <div class="progress"><div class="fill" id="xp-diamond"></div></div>
-    </div>
-  </div>
 
-  <!-- Multiplier Progress Bar -->
-  <div class="multiplier-track">
-    <span class="label">Multiplier</span>
-    <div class="progress"><div class="fill" id="mult-fill"></div></div>
-    <span class="mult-value" id="mult-value">0/20</span>
-  </div>
+    <!-- Game Over Screen -->
+    <div id="game-over" style="display: none;"></div>
 
-  <!-- Game Over Overlay (hidden by default) -->
-  <div id="game-over">
-    <div class="game-over-content">
-      <h2>Time's Up!</h2>
-      <p>Your Score: <span id="final-score">0</span></p>
-      <div class="high-scores">
-        <h3>High Scores</h3>
-        <ol id="high-scores-list"></ol>
-      </div>
-      <button id="restart">Play Again</button>
-    </div>
-  </div>
+    <script src="script.js"></script>
 
-  <script src="game.js"></script>
 </body>
 </html>
