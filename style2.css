@@ -1,189 +1,99 @@
-/* Basic page styling */
+/* General styles */
 body {
-  font-family: sans-serif;
-  margin: 0;
-  background: #fff;
-}
-.scoreboard, .levels, .multiplier-track {
-  width: 80vmin;
-  margin: 10px auto;
-}
-.scoreboard {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.2em;
-  color: #0b3a50;
-}
-#timer {
-  font-weight: bold;
-}
-.levels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-.level-track {
-  flex: 1 1 100px;
-  font-size: 0.9em;
-  color: #0b3a50;
-}
-.level-track .label {
-  display: block;
-  margin-bottom: 3px;
-}
-.progress {
-  background: #ddd;
-  border-radius: 4px;
-  width: 100%;
-  height: 8px;
-  overflow: hidden;
-}
-.progress .fill {
-  height: 100%;
-  width: 0;
-}
-.level-track.ruby .fill      { background: #e74c3c; }   /* Red */
-.level-track.sapphire .fill  { background: #3498db; }   /* Blue */
-.level-track.emerald .fill   { background: #2ecc71; }   /* Green */
-.level-track.topaz .fill     { background: #f1c40f; }   /* Yellow */
-.level-track.diamond .fill   { background: #fff; border: 1px solid #ccc; box-sizing: border-box; }
-.multiplier-track {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #0b3a50;
-}
-.multiplier-track .label {
-  font-weight: bold;
-}
-.multiplier-track .progress {
-  flex: 1;
-  height: 10px;
-}
-.multiplier-track .fill {
-  background: #1779a6;
-  width: 0;
-}
-.multiplier-track.active .fill {
-  background: gold;  /* Turns gold when 20/20 levels achieved (x2 active) */
-}
-.multiplier-track .mult-value {
-  min-width: 60px;
-  text-align: right;
-  font-weight: bold;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #a3d9f2; /* Light blue */
+    margin: 0;
+    padding: 0;
 }
 
-/* Board styling */
+/* Scoreboard */
+.score-container {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.5em;
+    color: #0b3a50;
+    margin: 10px 0;
+}
+
+/* Game Board */
 #board {
-  width: 80vmin;
-  height: 80vmin;
-  margin: 20px auto;
-  background: #a3d9f2;               /* very soft blue background */
-  border: 5px solid #0b3a50;         /* dark blue outline with rounding */
-  border-radius: 10px;
-  position: relative;
-  touch-action: none;               /* prevent touch scrolling on the game area */
+    position: relative;
+    width: 360px; /* 9x9 grid with 40px per cell */
+    height: 360px;
+    border: 5px solid #0b3a50;
+    background-color: #1779a6; /* Medium blue */
+    display: inline-block;
+    margin: 20px auto;
+    border-radius: 10px;
 }
+
+/* Multiplier Bar */
+#multiplier {
+    margin: 10px auto;
+    font-size: 1.2em;
+    color: #0b3a50;
+    position: relative;
+}
+
+#multiplier-bar {
+    width: 0%;
+    height: 10px;
+    background-color: #2ecc71; /* Green */
+    transition: width 0.3s;
+    margin-top: 5px;
+}
+
+/* Gems */
 .gem {
-  position: absolute;
-  width: calc(100% / 9);
-  height: calc(100% / 9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: none;
-  user-select: none;
-  transition: top 0.3s ease, left 0.3s ease;  /* smooth movement animations */
-}
-.gem .shape {
-  width: 80%;
-  height: 80%;
-}
-.gem.ruby .shape {
-  background: #e74c3c;                             /* red square (Ruby) */
-}
-.gem.sapphire .shape {
-  background: #3498db;
-  border-radius: 50%;                              /* blue circle (Sapphire) */
-}
-.gem.emerald .shape {
-  background: #2ecc71;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 
-                     50% 100%, 0% 75%, 0% 25%);    /* green hexagon (Emerald) */
-}
-.gem.topaz .shape {
-  background: #f1c40f;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);   /* yellow triangle (Topaz) */
-}
-.gem.diamond .shape {
-  background: #fff;
-  border: 2px solid #ccc;
-  box-sizing: border-box;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 
-                     0% 50%);                       /* white diamond shape (Diamond) */
-}
-.gem.remove {
-  opacity: 0;
-  transform: scale(0.5);
-  transition: opacity 0.2s, transform 0.2s;         /* fade-out/shrink animation when removed */
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    transition: top 0.3s, left 0.3s;
+    border-radius: 5px;
 }
 
-/* Grid lines (medium blue) */
-.line {
-  position: absolute;
-  background: #1779a6;
-  pointer-events: none;  /* lines won't block touches */
-}
-.vert-line {
-  width: 2px;
-  height: 100%;
-  top: 0;
-  transform: translateX(-50%);
-}
-.horiz-line {
-  height: 2px;
-  width: 100%;
-  left: 0;
-  transform: translateY(-50%);
-}
+/* Different Colors for Gems */
+.gem.type-0 { background-color: #e74c3c; }  /* Red */
+.gem.type-1 { background-color: #3498db; }  /* Blue */
+.gem.type-2 { background-color: #f1c40f; }  /* Yellow */
+.gem.type-3 { background-color: #2ecc71; }  /* Green */
+.gem.type-4 { background-color: #9b59b6; }  /* Purple */
+.gem.type-5 { background-color: #e67e22; }  /* Orange */
 
-/* Game Over Overlay */
+/* Game Over Screen */
 #game-over {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
 }
-.game-over-content {
-  background: #f9f9f9;
-  color: #333;
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  max-width: 80%;
-  text-align: center;
+
+#game-over h2 {
+    margin-top: 0;
 }
-.game-over-content h2 {
-  margin-top: 0;
+
+#game-over ol {
+    padding-left: 20px;
 }
-.high-scores ol {
-  margin: 0;
-  padding-left: 20px;
-  text-align: left;
+
+#game-over button {
+    background: #0b3a50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
 }
-#restart {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background: #0b3a50;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 1em;
-  cursor: pointer;
-}
-#restart:hover {
-  background: #09425e;
+
+#game-over button:hover {
+    background: #09425e;
 }
