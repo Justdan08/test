@@ -7,8 +7,6 @@ const rows = 8;
 const cols = 8;
 const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
 const BASE_POINT = 10;
-const LEVEL_UP_XP = 100;
-const MULTI_THRESHOLD = gemTypes.length;
 const GAME_TIME = 180; // 3 minutes (180 seconds)
 
 // --------------------------
@@ -17,13 +15,7 @@ const GAME_TIME = 180; // 3 minutes (180 seconds)
 let board = [];
 let cellElements = [];
 let score = 0;
-let multiplier = 1;
-let multiProgress = 0;
-let cash = 0;
 let selectedCell = null;
-let gemStats = {};
-let upgradeLevels = {};
-let achievements = {};
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
 
@@ -33,10 +25,8 @@ let touchStartCell = null;
 // --------------------------
 // DOM Element References
 // --------------------------
-let scoreElem, cashElem, multiElem, multiFillElem, timerElem;
-let shopModal;
-let shopItemsElems = {};
-let gemBarElems = {};
+let scoreElem, timerElem;
+let gameBoardElem;
 
 // --------------------------
 // Timer Functions
@@ -63,37 +53,39 @@ function updateTimerDisplay() {
 // Game Functions
 // --------------------------
 function generateBoard() {
-  let newBoard = Array.from({ length: rows }, () => Array(cols).fill(null));
+  board = Array.from({ length: rows }, () => Array(cols).fill(null));
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
-      if (j >= 2 && newBoard[i][j-1] === newBoard[i][j-2]) {
-        available = available.filter(type => type !== newBoard[i][j-1]);
-      }
-      if (i >= 2 && newBoard[i-1][j] === newBoard[i-2][j]) {
-        available = available.filter(type => type !== newBoard[i-1][j]);
-      }
-      newBoard[i][j] = available[Math.floor(Math.random() * available.length)];
+      board[i][j] = available[Math.floor(Math.random() * available.length)];
     }
   }
-  return newBoard;
 }
 
 function renderBoard() {
+  gameBoardElem.innerHTML = "";
+  cellElements = Array.from({ length: rows }, () => Array(cols));
+
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      cellElements[i][j].className = "gem " + board[i][j];
-      if (!cellElements[i][j].querySelector(".shape")) {
-        const shape = document.createElement("div");
-        shape.className = "shape";
-        cellElements[i][j].appendChild(shape);
-      }
+      const cell = document.createElement("div");
+      cell.className = `gem ${board[i][j]}`;
+      cell.dataset.row = i;
+      cell.dataset.col = j;
+
+      const shape = document.createElement("div");
+      shape.className = "shape";
+      cell.appendChild(shape);
+
+      cell.addEventListener("click", () => handleCellSelect(i, j));
+      gameBoardElem.appendChild(cell);
+      cellElements[i][j] = cell;
     }
   }
 }
 
 // --------------------------
-// Smooth Swap & Fall Animation
+// Swap Animation
 // --------------------------
 function animateSwap(cell1, cell2) {
   return new Promise(resolve => {
@@ -116,8 +108,11 @@ function animateSwap(cell1, cell2) {
   });
 }
 
+// --------------------------
+// Swap Handling
+// --------------------------
 async function attemptSwap(r1, c1, r2, c2) {
-  if (!isValidSwap(r1, c1, r2, c2)) return false;
+  if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
 
   let cell1 = cellElements[r1][c1];
   let cell2 = cellElements[r2][c2];
@@ -127,10 +122,6 @@ async function attemptSwap(r1, c1, r2, c2) {
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   renderBoard();
   return true;
-}
-
-function isValidSwap(r1, c1, r2, c2) {
-  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
 }
 
 // --------------------------
@@ -159,7 +150,7 @@ function handleCellSelect(row, col) {
 }
 
 // --------------------------
-// Touch Drag Handling for Mobile
+// Drag-to-Swap for Mobile
 // --------------------------
 function handleTouchStart(e) {
   const cell = e.target.closest(".gem");
@@ -191,40 +182,35 @@ function handleTouchEnd() {
 // Game Initialization
 // --------------------------
 function initGame() {
-  loadPersistentData();
   scoreElem = document.getElementById("score");
-  cashElem = document.getElementById("cash");
-  multiElem = document.getElementById("multiplier");
-  multiFillElem = document.getElementById("multiplierFill");
   timerElem = document.getElementById("timer");
-  const boardDiv = document.getElementById("gameBoard");
+  gameBoardElem = document.getElementById("gameBoard");
 
-  boardDiv.innerHTML = "";
-  board = generateBoard();
-  cellElements = Array.from({ length: rows }, () => Array(cols));
-
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      const cell = document.createElement("div");
-      cell.className = "gem " + board[i][j];
-      cell.dataset.row = i;
-      cell.dataset.col = j;
-      const shape = document.createElement("div");
-      shape.className = "shape";
-      cell.appendChild(shape);
-
-      cell.addEventListener("click", () => handleCellSelect(i, j));
-      boardDiv.appendChild(cell);
-      cellElements[i][j] = cell;
-    }
-  }
-
-  boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
-  boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
-  boardDiv.addEventListener("touchend", handleTouchEnd);
-
-  startTimer();
+  generateBoard();
   renderBoard();
+  startTimer();
+
+  gameBoardElem.addEventListener("touchstart", handleTouchStart, { passive: false });
+  gameBoardElem.addEventListener("touchmove", handleTouchMove, { passive: false });
+  gameBoardElem.addEventListener("touchend", handleTouchEnd);
+}
+
+// --------------------------
+// End Game
+// --------------------------
+function endGame() {
+  alert(`Game Over! Final Score: ${score}`);
+  startNewGame();
+}
+
+// --------------------------
+// Start New Game
+// --------------------------
+function startNewGame() {
+  score = 0;
+  scoreElem.textContent = score;
+  startTimer();
+  initGame();
 }
 
 // --------------------------
