@@ -47,76 +47,71 @@
     <h2>Inquiry Form</h2>
 
     <label for="callerName">Caller Name:</label>
-    <input type="text" id="callerName">
+    <input type="text" id="callerName" tabindex="1">
 
     <label for="phone">Phone Number:</label>
-    <input type="text" id="phone">
+    <input type="text" id="phone" tabindex="2">
 
     <label for="patientName">Patient Name (if different):</label>
-    <input type="text" id="patientName">
+    <input type="text" id="patientName" tabindex="3">
 
     <label for="treatment">Treatment Type:</label>
-    <input type="text" id="treatment">
+    <input type="text" id="treatment" tabindex="4">
 
     <label for="substances">Substances Used:</label>
-    <input type="text" id="substances">
+    <input type="text" id="substances" tabindex="5">
 
     <label for="mentalHealth">Mental Health Diagnosis:</label>
-    <input type="text" id="mentalHealth">
+    <input type="text" id="mentalHealth" tabindex="6">
 
     <label for="priorTreatment">Prior Treatment:</label>
-    <select id="priorTreatment">
+    <select id="priorTreatment" tabindex="7">
+        <option value="">(Select)</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
     </select>
 
     <label for="medicalIssues">Medical Issues:</label>
-    <input type="text" id="medicalIssues">
+    <input type="text" id="medicalIssues" tabindex="8">
 
     <label for="legalIssues">Legal Issues:</label>
-    <input type="text" id="legalIssues">
+    <input type="text" id="legalIssues" tabindex="9">
 
     <label for="insurance">Insurance Type:</label>
-    <input type="text" id="insurance">
+    <input type="text" id="insurance" tabindex="10">
 
     <label for="address">Patient Address:</label>
-    <textarea id="address"></textarea>
+    <textarea id="address" tabindex="11"></textarea>
 
     <label for="dob">Date of Birth:</label>
-    <input type="date" id="dob">
+    <input type="date" id="dob" tabindex="12">
 
-    <button onclick="generateText()">Generate & Copy</button>
+    <button onclick="generateText()" tabindex="13">Generate & Copy</button>
 
     <div class="output" id="outputText"></div>
 
     <script>
         function generateText() {
-            const callerName = document.getElementById("callerName").value;
-            const phone = document.getElementById("phone").value;
-            const patientName = document.getElementById("patientName").value;
-            const treatment = document.getElementById("treatment").value;
-            const substances = document.getElementById("substances").value;
-            const mentalHealth = document.getElementById("mentalHealth").value;
-            const priorTreatment = document.getElementById("priorTreatment").value;
-            const medicalIssues = document.getElementById("medicalIssues").value;
-            const legalIssues = document.getElementById("legalIssues").value;
-            const insurance = document.getElementById("insurance").value;
-            const address = document.getElementById("address").value;
-            const dob = document.getElementById("dob").value;
+            const fields = {
+                "Caller Name": document.getElementById("callerName").value,
+                "Phone": document.getElementById("phone").value,
+                "Patient Name": document.getElementById("patientName").value,
+                "Treatment Type": document.getElementById("treatment").value,
+                "Substances Used": document.getElementById("substances").value,
+                "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
+                "Prior Treatment": document.getElementById("priorTreatment").value,
+                "Medical Issues": document.getElementById("medicalIssues").value,
+                "Legal Issues": document.getElementById("legalIssues").value,
+                "Insurance Type": document.getElementById("insurance").value,
+                "Patient Address": document.getElementById("address").value,
+                "Date of Birth": document.getElementById("dob").value
+            };
 
-            const formattedText = 
-`Caller Name: ${callerName}
-Phone: ${phone}
-Patient Name: ${patientName || "N/A"}
-Treatment Type: ${treatment}
-Substances Used: ${substances || "None"}
-Mental Health Diagnosis: ${mentalHealth || "None"}
-Prior Treatment: ${priorTreatment}
-Medical Issues: ${medicalIssues || "None"}
-Legal Issues: ${legalIssues || "None"}
-Insurance Type: ${insurance}
-Patient Address: ${address || "N/A"}
-Date of Birth: ${dob || "N/A"}`;
+            // Filter out blank fields
+            const formattedText = Object.entries(fields)
+                .filter(([_, value]) => value.trim() !== "") // Remove empty values
+                .map(([key, value]) => `${key}: ${value}`) // Format key-value pairs
+                .join("\n");
 
             document.getElementById("outputText").textContent = formattedText;
 
