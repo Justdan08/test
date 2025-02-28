@@ -99,6 +99,7 @@ function generateBoard() {
 function renderBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
+      // Since board[i][j] is already a string, use it directly.
       const typeName = board[i][j];
       cellElements[i][j].className = "gem " + typeName;
       if (!cellElements[i][j].querySelector(".shape")) {
@@ -397,6 +398,7 @@ function handleTouchMove(e) {
     }
   }
 }
+
 function handleTouchEnd() {
   touchStartCell = null;
 }
@@ -436,7 +438,7 @@ function endGame() {
 }
 
 // --------------------------
-// Start New Game Function
+// Start New Game
 // --------------------------
 function startNewGame() {
   clearInterval(timerInterval);
@@ -467,8 +469,8 @@ function startNewGame() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const cell = document.createElement("div");
-      const typeIndex = board[i][j];
-      const typeName = gemTypes[typeIndex];
+      // Use board[i][j] directly as typeName since generateBoard produces strings.
+      const typeName = board[i][j];
       cell.className = "gem " + typeName;
       cell.dataset.row = i;
       cell.dataset.col = j;
@@ -512,7 +514,7 @@ function purchaseUpgrade(type) {
 }
 
 // --------------------------
-// Reset Gem Stats (Defined Once)
+// Reset Gem Stats
 // --------------------------
 function resetGemStats() {
   gemStats = {};
@@ -566,8 +568,7 @@ window.addEventListener("load", () => {
 
   document.getElementById("newGameBtn").addEventListener("click", startNewGame);
   document.getElementById("restartBtn").addEventListener("click", startNewGame);
-
-  // Add shop button to game over modal if not already present
+  
   const gameOverContent = document.getElementById("gameOverContent");
   if (gameOverContent && !document.getElementById("shopBtnModal")) {
     const shopButton = document.createElement("button");
@@ -581,9 +582,9 @@ window.addEventListener("load", () => {
   }
 
   startNewGame();
-  
-});
+
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
   boardDiv.addEventListener("touchend", handleTouchEnd);
+});
