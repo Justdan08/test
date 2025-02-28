@@ -92,6 +92,25 @@ async function animateFall(oldPos, newPos) {
     }, 410);
   });
 }
+// --------------------------
+// Modified Game Functions
+// --------------------------
+async function attemptSwap(r1, c1, r2, c2) {
+  if (animating) return false;
+  if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
+
+  // Store original positions
+  const originalBoard = JSON.parse(JSON.stringify(board));
+  
+  // Perform tentative swap
+  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+  const initialMatches = findMatches();
+
+  if (initialMatches.length === 0) {
+    // Invalid swap - animate back
+    animating = true;
+    const cell1 = cellElements[r1][c1];
+    const cell2 = cellElements[r2][c2];
   await animateSwap(cell1, cell2);
   renderBoard();
   await processMatches();
