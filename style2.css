@@ -97,6 +97,12 @@ body {
 .gem.amethyst .shape { background: #9b59b6; /* custom shape as desired */ }
 .gem.diamond .shape { background: #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
 
+.gem.ruby { background-color: #e74c3c; }
+.gem.sapphire { background-color: #3498db; }
+.gem.emerald { background-color: #2ecc71; }
+.gem.amber { background-color: #f1c40f; }
+.gem.amethyst { background-color: #9b59b6; }
+.gem.diamond { background-color: #fff; }
 
 /* Shop modal overlay */
 #shopModal {
