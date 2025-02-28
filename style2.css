@@ -20,7 +20,6 @@ body {
   max-width: 520px;
   margin: 10px auto;
   text-align: center;
-  padding: 0 10px;
 }
 
 #infoTop {
@@ -54,69 +53,8 @@ body {
   width: 0%;
 }
 
-#gemBarsContainer {
-  margin: 10px auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
-
-.gem-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.gem-label {
-  font-size: 0.85em;
-  margin-bottom: 2px;
-}
-
-.xp-bar {
-  background: #444;
-  width: 100px;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.xp-fill {
-  height: 100%;
-  width: 0%;
-}
-
-/* You can adjust the fill colors as needed */
-.gem-bar.ruby .xp-fill      { background: red; }
-.gem-bar.sapphire .xp-fill  { background: blue; }
-.gem-bar.emerald .xp-fill   { background: green; }
-.gem-bar.amber .xp-fill     { background: orange; }
-.gem-bar.amethyst .xp-fill  { background: purple; }
-.gem-bar.diamond .xp-fill   { background: #fff; }
-
-/* Buttons */
-#buttons {
-  margin-top: 10px;
-}
-
-#buttons button {
-  padding: 8px 16px;
-  margin: 0 5px;
-  font-size: 1em;
-  border: none;
-  border-radius: 5px;
-  background: #007BFF;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-#buttons button:hover {
-  background: #005FBB;
-}
-
 /* --------------------------
-   Game Board & Gem Styles
+   Fixing Game Board Layout
 -------------------------- */
 #gameBoard {
   display: grid;
@@ -124,72 +62,65 @@ body {
   grid-template-rows: repeat(8, 60px);
   grid-gap: 2px;
   padding: 2px;
-  margin: 20px auto;  /* Center the board */
+  margin: 20px auto;  /* Ensure Centering */
   background: #333;
   width: fit-content;
+  touch-action: none;  /* Allow touch dragging */
 }
 
-/* Outer gem cell: just a container */
+/* --------------------------
+   Gem Styling Fixes
+-------------------------- */
 .gem {
   position: relative;
   width: 60px;
   height: 60px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-in-out;
+  touch-action: none;  /* Prevents touch glitches */
 }
 
-/* Optional: highlight selected gem */
-.gem.selected {
-  box-shadow: 0 0 0 3px #fff;
-}
-
-/* Inner shape element for custom styling.
-   We remove default border-radius to allow custom shapes. */
+/* Fix: Remove border-radius to allow different shapes */
 .gem .shape {
   width: 90%;
   height: 90%;
-  margin: 5%;
-  /* Default: no border radius so that we can override per gem type */
-  border-radius: 0;
 }
 
-/* Custom shapes for each gem type */
-/* Ruby: Square (no border-radius) */
+/* Unique shapes */
 .gem.ruby .shape {
   background: #e74c3c;
 }
 
-/* Sapphire: Circle */
 .gem.sapphire .shape {
   background: #3498db;
   border-radius: 50%;
 }
 
-/* Emerald: Hexagon */
 .gem.emerald .shape {
   background: #2ecc71;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
-/* Amber: Triangle */
 .gem.amber .shape {
   background: #f1c40f;
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
-/* Amethyst: Pentagon */
 .gem.amethyst .shape {
   background: #9b59b6;
   clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
 }
 
-/* Diamond: Diamond shape */
 .gem.diamond .shape {
   background: #fff;
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 /* --------------------------
-   Shop Modal Styles
+   Shop Modal Fixes
 -------------------------- */
 #shopModal {
   position: fixed;
