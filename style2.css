@@ -139,15 +139,6 @@ body {
   justify-content: center;
   z-index: 100;
 }
-/* Add animation styles */
-.gem.falling {
-  transition: all 0.4s ease-in-out;
-}
-
-/* Hide shop button initially */
-#shopBtn {
-  display: none;
-}
 .hidden {
   display: none !important;
 }
