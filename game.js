@@ -25,8 +25,7 @@ let touchStartCell = null;
 // --------------------------
 // DOM Element References
 // --------------------------
-let scoreElem, timerElem;
-let gameBoardElem;
+let scoreElem, timerElem, gameBoardElem;
 
 // --------------------------
 // Timer Functions
@@ -85,27 +84,90 @@ function renderBoard() {
 }
 
 // --------------------------
-// Swap Animation
+// Match Detection & Clearing
 // --------------------------
-function animateSwap(cell1, cell2) {
-  return new Promise(resolve => {
-    cell1.style.transition = "transform 0.2s ease-in-out";
-    cell2.style.transition = "transform 0.2s ease-in-out";
+function findMatches() {
+  let matches = [];
 
-    const rect1 = cell1.getBoundingClientRect();
-    const rect2 = cell2.getBoundingClientRect();
+  // Check horizontal matches
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols - 2; j++) {
+      if (board[i][j] && board[i][j] === board[i][j + 1] && board[i][j] === board[i][j + 2]) {
+        matches.push({ row: i, col: j });
+        matches.push({ row: i, col: j + 1 });
+        matches.push({ row: i, col: j + 2 });
+      }
+    }
+  }
 
-    cell1.style.transform = `translate(${rect2.left - rect1.left}px, ${rect2.top - rect1.top}px)`;
-    cell2.style.transform = `translate(${rect1.left - rect2.left}px, ${rect1.top - rect2.top}px)`;
+  // Check vertical matches
+  for (let j = 0; j < cols; j++) {
+    for (let i = 0; i < rows - 2; i++) {
+      if (board[i][j] && board[i][j] === board[i + 1][j] && board[i][j] === board[i + 2][j]) {
+        matches.push({ row: i, col: j });
+        matches.push({ row: i + 1, col: j });
+        matches.push({ row: i + 2, col: j });
+      }
+    }
+  }
 
-    setTimeout(() => {
-      cell1.style.transition = "";
-      cell2.style.transition = "";
-      cell1.style.transform = "";
-      cell2.style.transform = "";
-      resolve();
-    }, 200);
+  return matches;
+}
+
+function clearMatches() {
+  let matches = findMatches();
+  if (matches.length === 0) return false;
+
+  matches.forEach(({ row, col }) => {
+    board[row][col] = null;
+    cellElements[row][col].classList.add("disappearing");
   });
+
+  score += matches.length * BASE_POINT;
+  scoreElem.textContent = score;
+
+  setTimeout(() => {
+    applyGravity();
+  }, 200);
+
+  return true;
+}
+
+// --------------------------
+// Applying Gravity
+// --------------------------
+function applyGravity() {
+  for (let j = 0; j < cols; j++) {
+    let emptySpots = 0;
+    for (let i = rows - 1; i >= 0; i--) {
+      if (board[i][j] === null) {
+        emptySpots++;
+      } else if (emptySpots > 0) {
+        board[i + emptySpots][j] = board[i][j];
+        board[i][j] = null;
+      }
+    }
+  }
+  fillEmptySpaces();
+}
+
+// --------------------------
+// Spawning New Gems
+// --------------------------
+function fillEmptySpaces() {
+  for (let j = 0; j < cols; j++) {
+    for (let i = 0; i < rows; i++) {
+      if (board[i][j] === null) {
+        board[i][j] = gemTypes[Math.floor(Math.random() * gemTypes.length)];
+      }
+    }
+  }
+  renderBoard();
+  setTimeout(() => {
+    if (clearMatches()) {
+      setTimeout(applyGravity, 300);
+    }
+  }, 200);
 }
 
 // --------------------------
@@ -114,13 +176,16 @@ function animateSwap(cell1, cell2) {
 async function attemptSwap(r1, c1, r2, c2) {
   if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
 
-  let cell1 = cellElements[r1][c1];
-  let cell2 = cellElements[r2][c2];
-
-  await animateSwap(cell1, cell2);
-
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   renderBoard();
+
+  setTimeout(() => {
+    if (!clearMatches()) {
+      [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+      renderBoard();
+    }
+  }, 300);
+
   return true;
 }
 
@@ -150,35 +215,6 @@ function handleCellSelect(row, col) {
 }
 
 // --------------------------
-// Drag-to-Swap for Mobile
-// --------------------------
-function handleTouchStart(e) {
-  const cell = e.target.closest(".gem");
-  if (!cell) return;
-  const row = parseInt(cell.dataset.row);
-  const col = parseInt(cell.dataset.col);
-  touchStartCell = { row, col };
-}
-
-function handleTouchMove(e) {
-  if (!touchStartCell) return;
-  const touch = e.touches[0];
-  const targetCell = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (!targetCell || !targetCell.classList.contains("gem")) return;
-
-  const row = parseInt(targetCell.dataset.row);
-  const col = parseInt(targetCell.dataset.col);
-
-  if (attemptSwap(touchStartCell.row, touchStartCell.col, row, col)) {
-    touchStartCell = null;
-  }
-}
-
-function handleTouchEnd() {
-  touchStartCell = null;
-}
-
-// --------------------------
 // Game Initialization
 // --------------------------
 function initGame() {
@@ -189,10 +225,6 @@ function initGame() {
   generateBoard();
   renderBoard();
   startTimer();
-
-  gameBoardElem.addEventListener("touchstart", handleTouchStart, { passive: false });
-  gameBoardElem.addEventListener("touchmove", handleTouchMove, { passive: false });
-  gameBoardElem.addEventListener("touchend", handleTouchEnd);
 }
 
 // --------------------------
@@ -201,16 +233,6 @@ function initGame() {
 function endGame() {
   alert(`Game Over! Final Score: ${score}`);
   startNewGame();
-}
-
-// --------------------------
-// Start New Game
-// --------------------------
-function startNewGame() {
-  score = 0;
-  scoreElem.textContent = score;
-  startTimer();
-  initGame();
 }
 
 // --------------------------
