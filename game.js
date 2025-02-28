@@ -263,13 +263,13 @@ function shuffleBoard() {
 function renderBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // Use the gem type name directly for the class
+      // Set class "gem" plus the gem type (e.g., "ruby")
       cellElements[i][j].className = "gem " + board[i][j];
     }
   }
 }
 
-// Attempt to swap two gems and process matches and cascades
+// Attempt to swap two gems and process matches/cascades
 function attemptSwap(r1, c1, r2, c2) {
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   let matches = findMatches();
@@ -486,6 +486,6 @@ function purchaseUpgrade(type) {
 }
 
 // --------------------------
-// Initialize on Page Load
+// Initialization on Page Load
 // --------------------------
-initGame();
+window.addEventListener("load", initGame);
