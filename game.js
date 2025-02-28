@@ -8,14 +8,14 @@ const cols = 8;
 const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
 const BASE_POINT = 10;
 const LEVEL_UP_XP = 100;
-const MULTI_THRESHOLD = 20;   // Total gem level-ups to increase global multiplier
-const GAME_TIME = 180;        // 3 minutes in seconds
+const MULTI_THRESHOLD = 20; // Increase global multiplier every 20 gem level-ups
+const GAME_TIME = 180;      // 3 minutes in seconds
 
 // --------------------------
 // Game State Variables
 // --------------------------
 let board = [];            // 2D array holding gem type names (e.g., "ruby")
-let cellElements = [];     // 2D array of DOM elements for each board cell
+let cellElements = [];     // 2D array of DOM elements for each cell
 let score = 0;
 let multiplier = 1;
 let multiProgress = 0;     // Count toward next multiplier increase
@@ -25,7 +25,7 @@ let gemStats = {};         // Per-game gem XP and level, e.g., gemStats["ruby"] 
 let upgradeLevels = {};    // Permanent upgrades for each gem type (persisted)
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
-let animating = false;     // Flag to prevent overlapping animations
+let animating = false;     // Prevent overlapping animations
 
 // For mobile drag
 let touchStartCell = null;
@@ -86,11 +86,9 @@ function generateBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
-      // Avoid immediate horizontal triple
       if (j >= 2 && board[i][j-1] === board[i][j-2]) {
         available = available.filter(type => type !== board[i][j-1]);
       }
-      // Avoid immediate vertical triple
       if (i >= 2 && board[i-1][j] === board[i-2][j]) {
         available = available.filter(type => type !== board[i-1][j]);
       }
@@ -103,7 +101,6 @@ function renderBoard() {
     for (let j = 0; j < cols; j++) {
       const typeName = board[i][j];
       cellElements[i][j].className = "gem " + typeName;
-      // Ensure inner "shape" exists for custom styling
       if (!cellElements[i][j].querySelector(".shape")) {
         const shape = document.createElement("div");
         shape.className = "shape";
@@ -145,7 +142,6 @@ function animateFalling(oldPositions) {
 // --------------------------
 function findMatches() {
   let toRemove = Array.from({ length: rows }, () => Array(cols).fill(false));
-  // Horizontal matches
   for (let i = 0; i < rows; i++) {
     let runLength = 1;
     for (let j = 1; j < cols; j++) {
@@ -166,7 +162,6 @@ function findMatches() {
       }
     }
   }
-  // Vertical matches
   for (let j = 0; j < cols; j++) {
     let runLength = 1;
     for (let i = 1; i < rows; i++) {
@@ -202,23 +197,19 @@ async function processMatches() {
   while (true) {
     let matches = findMatches();
     if (matches.length === 0) break;
-    // Record positions for falling animation
     let oldPositions = {};
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         oldPositions[`${i},${j}`] = cellElements[i][j].offsetTop;
       }
     }
-    // Animate removal of matched gems
     let removalPromises = matches.map(pos => animateRemoval(cellElements[pos.r][pos.c]));
     await Promise.all(removalPromises);
-    // Clear matched gems from board
     matches.forEach(pos => {
       board[pos.r][pos.c] = null;
     });
     score += matches.length * BASE_POINT;
     scoreElem.textContent = score;
-    // Apply gravity and fill empty spaces
     dropGems();
     fillEmptySpaces();
     renderBoard();
@@ -406,7 +397,6 @@ function handleTouchMove(e) {
     }
   }
 }
-
 function handleTouchEnd() {
   touchStartCell = null;
 }
@@ -427,13 +417,11 @@ function startTimer() {
     }
   }, 1000);
 }
-
 function updateTimerDisplay() {
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
   timerElem.textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
-
 function endGame() {
   clearInterval(timerInterval);
   const earned = Math.floor(score * 0.02);
@@ -448,7 +436,7 @@ function endGame() {
 }
 
 // --------------------------
-// Start New Game
+// Start New Game Function
 // --------------------------
 function startNewGame() {
   clearInterval(timerInterval);
@@ -508,7 +496,6 @@ function openShop() {
   }
   shopModal.classList.remove("hidden");
 }
-
 function purchaseUpgrade(type) {
   const currentLevel = upgradeLevels[type] || 0;
   const cost = 150 * Math.pow(2, currentLevel);
@@ -522,6 +509,20 @@ function purchaseUpgrade(type) {
   shopItemsElems[type].costSpan.textContent = 150 * Math.pow(2, upgradeLevels[type]);
   cashElem.textContent = cash;
   savePersistentData();
+}
+
+// --------------------------
+// Reset Gem Stats (Defined Once)
+// --------------------------
+function resetGemStats() {
+  gemStats = {};
+  for (let type of gemTypes) {
+    gemStats[type] = { level: 0, xp: 0 };
+    if (gemBarElems[type]) {
+      gemBarElems[type].levelText.textContent = "1";
+      gemBarElems[type].fill.style.width = "0%";
+    }
+  }
 }
 
 // --------------------------
@@ -565,7 +566,7 @@ window.addEventListener("load", () => {
 
   document.getElementById("newGameBtn").addEventListener("click", startNewGame);
   document.getElementById("restartBtn").addEventListener("click", startNewGame);
-  
+
   // Add shop button to game over modal if not already present
   const gameOverContent = document.getElementById("gameOverContent");
   if (gameOverContent && !document.getElementById("shopBtnModal")) {
