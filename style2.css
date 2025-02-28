@@ -11,6 +11,7 @@ body {
   font-family: Arial, sans-serif;
   background: #222;
   color: #fff;
+  text-align: center;
 }
 
 /* --------------------------
@@ -67,9 +68,7 @@ body {
   width: fit-content;
   touch-action: none;
 }
-/* --------------------------
-   Gem Styling Fixes
--------------------------- */
+
 /* --------------------------
    Gem Styling & Animations
 -------------------------- */
@@ -81,7 +80,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease-in-out; /* Smooth Swap Animation */
+  transition: transform 0.2s ease-in-out;
+  touch-action: none;
 }
 
 .gem .shape {
@@ -100,7 +100,9 @@ body {
   100% { transform: scale(1); }
 }
 
-/* Unique shapes */
+/* --------------------------
+   Custom Gem Shapes
+-------------------------- */
 .gem.ruby .shape {
   background: #e74c3c;
 }
@@ -197,8 +199,5 @@ body {
   }
   #multiplierBar {
     width: 90%;
-  }
-  .xp-bar {
-    width: 80px;
   }
 }
