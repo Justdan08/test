@@ -164,7 +164,7 @@ body {
 }
 
 /* --------------------------
-   Shop Modal
+   Shop & Game Over Modals
 -------------------------- */
 #shopModal, #gameOverModal {
   position: fixed;
