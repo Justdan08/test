@@ -1,145 +1,136 @@
-/* Basic page styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background: #f9f9f9;
-}
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-p {
-  text-align: center;
-  color: #555;
+// Get references to key elements
+const fileTitleInput = document.getElementById('fileTitle');
+const titleInput = document.getElementById('titleInput');
+const h1Input = document.getElementById('h1Input');
+const link1Option = document.getElementById('link1Option');
+const link1HrefInput = document.getElementById('link1Href');
+const link2Option = document.getElementById('link2Option');
+const link2HrefInput = document.getElementById('link2Href');
+const newWordInput = document.getElementById('newWord');
+const addWordBtn = document.getElementById('addWordBtn');
+const wordPoolDisplay = document.getElementById('wordPoolDisplay');
+const finishBtn = document.getElementById('finishBtn');
+const outputModal = document.getElementById('outputModal');
+const finalCodeTextarea = document.getElementById('finalCode');
+const downloadBtn = document.getElementById('downloadBtn');
+const closeModalBtn = document.getElementById('closeModal');
+
+// Array to hold words for the pool
+let wordsArray = [];
+
+// Update the word pool display (formatted as "WORD", "WORD", "WORD", …)
+function updateWordPoolDisplay() {
+  const formatted = wordsArray.map(word => `"${word}"`).join(", ");
+  wordPoolDisplay.textContent = formatted;
 }
 
-/* Form styling */
-form {
-  max-width: 600px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 15px 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-form h2 {
-  margin-top: 20px;
-  font-size: 1.1em;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 5px;
-}
-label {
-  display: block;
-  margin: 10px 0 5px;
-  font-weight: bold;
-}
-input[type="text"],
-select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  font-size: 0.9em;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
-input[type="text"]:focus,
-select:focus {
-  outline: none;
-  border-color: #888;
-}
-button {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 1em;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-}
-#addWordBtn {
-  background: #3498db;
-  color: #fff;
-}
-#addWordBtn:hover {
-  background: #2980b9;
-}
-#finishBtn {
-  background: #2ecc71;
-  color: #fff;
-  width: 100%;
-}
-#finishBtn:hover {
-  background: #27ae60;
-}
-
-/* Word pool display */
-.word-pool-display {
-  margin-top: 10px;
-  padding: 8px;
-  background: #efefef;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  min-height: 20px;
-  font-family: monospace;
-}
-
-/* Modal styles */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  /* Center content */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  width: 90%;
-  max-width: 600px;
-  border-radius: 5px;
-}
-.modal-content h2 {
-  margin-top: 0;
-}
-#finalCode {
-  width: 100%;
-  height: 300px;
-  box-sizing: border-box;
-  font-family: monospace;
-  font-size: 0.9em;
-  white-space: pre;
-  margin: 10px 0;
-}
-.modal-buttons {
-  text-align: right;
-}
-.modal-buttons button {
-  margin-left: 5px;
-  padding: 8px 12px;
-  font-size: 0.9em;
-}
-#downloadBtn {
-  background: #2ecc71;
-  color: #fff;
-}
-#downloadBtn:hover {
-  background: #27ae60;
-}
-#closeModal {
-  background: #ccc;
-}
-#closeModal:hover {
-  background: #b3b3b3;
-}
-
-/* Responsive tweaks */
-@media (max-width: 600px) {
-  button {
-    font-size: 0.9em;
+// Add word button event: add word to the array and update display
+addWordBtn.addEventListener('click', () => {
+  const word = newWordInput.value.trim();
+  if (word !== "") {
+    wordsArray.push(word.toUpperCase());
+    updateWordPoolDisplay();
+    newWordInput.value = "";
+    newWordInput.focus();
   }
-}
+});
+
+// When drop-down selection changes, check for "Once more with feeling!"
+link1Option.addEventListener('change', function() {
+  if (link1Option.value === "once") {
+    link1HrefInput.value = "puzzle1.HTML";
+    link1HrefInput.disabled = true;
+  } else {
+    link1HrefInput.disabled = false;
+    link1HrefInput.value = "";
+  }
+});
+
+link2Option.addEventListener('change', function() {
+  if (link2Option.value === "once") {
+    link2HrefInput.value = "puzzle1.HTML";
+    link2HrefInput.disabled = true;
+  } else {
+    link2HrefInput.disabled = false;
+    link2HrefInput.value = "";
+  }
+});
+
+// Finish button event: generate the final HTML code with full structure
+finishBtn.addEventListener('click', () => {
+  const pageTitle = titleInput.value.trim() || 'Marvel Word Search';
+  const h1Text = h1Input.value.trim() || 'Marvel';
+  
+  // For Link 1: use default href if input is empty
+  const link1DefaultHref = link1Option.selectedOptions[0].getAttribute('data-default-href');
+  const link1Text = link1Option.selectedOptions[0].textContent;
+  const link1Href = link1HrefInput.value.trim() || link1DefaultHref;
+  
+  // For Link 2: use default href if input is empty
+  const link2DefaultHref = link2Option.selectedOptions[0].getAttribute('data-default-href');
+  const link2Text = link2Option.selectedOptions[0].textContent;
+  const link2Href = link2HrefInput.value.trim() || link2DefaultHref;
+  
+  // Convert the words array to JSON string for the data-words attribute
+  const wordsJSON = JSON.stringify(wordsArray);
+  
+  // Construct the final HTML string (using your full template)
+  let htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageTitle}</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>${h1Text}</h1>
+  <div id="options-container"></div>
+  <div id="score">Score: 0</div>
+  <div id="timer">0:00</div>
+  <div id="combo-container">
+    <div id="combo-bar"></div>
+    <div id="combo-text">Combo: 1x</div>
+  </div>
+  <div id="wordsearch"></div>
+  <div id="word-list">
+    <div id="words"></div>
+    <button id="reset-button">Reset Game</button>
+    <div class="nav-links">
+      <a href="${link1Href}">${link1Text}</a>
+      <a href="${link2Href}">${link2Text}</a>
+    </div>
+  </div>
+
+  <!-- Marvel word pool -->
+  <div id="word-pool" data-words='${wordsJSON}'></div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>`;
+  
+  // Display the generated HTML in the modal textarea
+  finalCodeTextarea.value = htmlContent;
+  outputModal.style.display = 'flex';
+});
+
+// Download the generated HTML file using the File Title field (or default filename)
+downloadBtn.addEventListener('click', () => {
+  const content = finalCodeTextarea.value;
+  const blob = new Blob([content], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const fileTitle = fileTitleInput.value.trim() || "word-search-puzzle.html";
+  a.href = url;
+  a.download = fileTitle;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// Close the modal popup
+closeModalBtn.addEventListener('click', () => {
+  outputModal.style.display = 'none';
+});
