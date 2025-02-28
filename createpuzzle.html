@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Search Puzzle Generator</title>
+  <link rel="stylesheet" href="style3.css" />
+</head>
+<body>
+
+  <h1>Word Search Puzzle Generator</h1>
+  <p>Fill in the fields below to customize your word search puzzle page.</p>
+
+  <form id="puzzleForm">
+    <!-- Page Title Field -->
+    <label for="titleInput">Page Title:</label>
+    <input type="text" id="titleInput" placeholder="e.g., My Puzzle Page Title" />
+
+    <!-- Main Heading Field -->
+    <label for="h1Input">Main Heading (H1):</label>
+    <input type="text" id="h1Input" placeholder="e.g., Word Search Puzzle" />
+
+    <!-- Navigation Links Fields -->
+    <h2>Navigation Links</h2>
+    <label for="link1Text">Previous Puzzle Link Text:</label>
+    <input type="text" id="link1Text" placeholder="e.g., Previous Puzzle" />
+    <label for="link1Href">Previous Puzzle Link URL:</label>
+    <input type="text" id="link1Href" placeholder="e.g., puzzle1.html" />
+
+    <label for="link2Text">Next Puzzle Link Text:</label>
+    <input type="text" id="link2Text" placeholder="e.g., Next Puzzle" />
+    <label for="link2Href">Next Puzzle Link URL:</label>
+    <input type="text" id="link2Href" placeholder="e.g., puzzle3.html" />
+
+    <!-- Word Pool Name Field -->
+    <h2>Word List</h2>
+    <label for="poolName">Word Pool Name:</label>
+    <input type="text" id="poolName" placeholder="e.g., Words to Find" />
+
+    <!-- Dynamic Word List Inputs -->
+    <div class="word-input-area">
+      <input type="text" id="newWord" placeholder="Enter a word" />
+      <button type="button" id="addWordBtn">Add Word</button>
+    </div>
+    <ul id="wordsList"><!-- Word items will appear here --></ul>
+
+    <!-- Finish Button -->
+    <button type="button" id="finishBtn">Finish</button>
+  </form>
+
+  <!-- Modal Popup for Output -->
+  <div id="outputModal" class="modal">
+    <div class="modal-content">
+      <h2>Your Generated HTML</h2>
+      <p>Copy the code below or click Download to save the file.</p>
+      <textarea id="finalCode" readonly></textarea>
+      <div class="modal-buttons">
+        <button id="downloadBtn">Download HTML file</button>
+        <button id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="create.js"></script>
+</body>
+</html>
