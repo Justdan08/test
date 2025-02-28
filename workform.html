@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inquiry Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Inquiry Form</h2>
+
+    <label for="callerName">Caller Name:</label>
+    <input type="text" id="callerName">
+
+    <label for="phone">Phone Number:</label>
+    <input type="text" id="phone">
+
+    <label for="patientName">Patient Name (if different):</label>
+    <input type="text" id="patientName">
+
+    <label for="treatment">Treatment Type:</label>
+    <input type="text" id="treatment">
+
+    <label for="substances">Substances Used:</label>
+    <input type="text" id="substances">
+
+    <label for="mentalHealth">Mental Health Diagnosis:</label>
+    <input type="text" id="mentalHealth">
+
+    <label for="priorTreatment">Prior Treatment:</label>
+    <select id="priorTreatment">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
+
+    <label for="medicalIssues">Medical Issues:</label>
+    <input type="text" id="medicalIssues">
+
+    <label for="legalIssues">Legal Issues:</label>
+    <input type="text" id="legalIssues">
+
+    <label for="insurance">Insurance Type:</label>
+    <input type="text" id="insurance">
+
+    <label for="address">Patient Address:</label>
+    <textarea id="address"></textarea>
+
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob">
+
+    <button onclick="generateText()">Generate & Copy</button>
+
+    <div class="output" id="outputText"></div>
+
+    <script>
+        function generateText() {
+            const callerName = document.getElementById("callerName").value;
+            const phone = document.getElementById("phone").value;
+            const patientName = document.getElementById("patientName").value;
+            const treatment = document.getElementById("treatment").value;
+            const substances = document.getElementById("substances").value;
+            const mentalHealth = document.getElementById("mentalHealth").value;
+            const priorTreatment = document.getElementById("priorTreatment").value;
+            const medicalIssues = document.getElementById("medicalIssues").value;
+            const legalIssues = document.getElementById("legalIssues").value;
+            const insurance = document.getElementById("insurance").value;
+            const address = document.getElementById("address").value;
+            const dob = document.getElementById("dob").value;
+
+            const formattedText = 
+`Caller Name: ${callerName}
+Phone: ${phone}
+Patient Name: ${patientName || "N/A"}
+Treatment Type: ${treatment}
+Substances Used: ${substances || "None"}
+Mental Health Diagnosis: ${mentalHealth || "None"}
+Prior Treatment: ${priorTreatment}
+Medical Issues: ${medicalIssues || "None"}
+Legal Issues: ${legalIssues || "None"}
+Insurance Type: ${insurance}
+Patient Address: ${address || "N/A"}
+Date of Birth: ${dob || "N/A"}`;
+
+            document.getElementById("outputText").textContent = formattedText;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(formattedText).then(() => {
+                alert("Text copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy text:", err);
+            });
+        }
+    </script>
+
+</body>
+</html>
