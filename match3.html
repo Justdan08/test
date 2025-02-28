@@ -4,65 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Match 3 Game</title>
-  <link rel="stylesheet" href="style2.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Top bar with score, cash, and timer -->
-  <div class="topbar">
-    <div class="score-cash">
-      Score: <span id="score">0</span><br />
-      Cash: $<span id="cash">0</span>
+  <div id="header">
+    <div id="infoTop">
+      <div id="scoreDisplay">Score: <span id="score">0</span></div>
+      <div id="cashDisplay">Cash: $<span id="cash">0</span></div>
     </div>
-    <div class="timer">
-      Time: <span id="timer">5:00</span>
-    </div>
-  </div>
-
-  <!-- Level and XP bar -->
-  <div class="level-bar">
-    Level: <span id="level">1</span>
-    <div class="xp-bar">
-      <div class="xp-progress"></div>
-    </div>
-  </div>
-
-  <!-- Game board -->
-  <div class="board" id="board"></div>
-
-  <!-- Game Over Modal -->
-  <div id="gameover-modal" class="modal">
-    <div class="modal-content">
-      <h2>Game Over</h2>
-      <p id="final-score"></p>
-      <p id="final-level"></p>
-      <p id="cash-earned"></p>
-      <p id="achievements-earned"></p>
-      <div class="modal-buttons">
-        <button id="open-shop">Shop</button>
-        <button id="open-achievements">Achievements</button>
-        <button id="play-again">Play Again</button>
+    <div id="multiplierContainer">
+      <div id="multiplierLabel">Multiplier: x<span id="multiplier">1</span></div>
+      <div id="multiplierBar" class="xp-bar">
+        <div id="multiplierFill" class="xp-fill"></div>
       </div>
     </div>
-  </div>
-
-  <!-- Shop Modal -->
-  <div id="shop-modal" class="modal">
-    <div class="modal-content">
-      <h2>Shop - Upgrades</h2>
-      <ul id="upgrade-list"><!-- Upgrade items injected here --></ul>
-      <button id="close-shop">Close</button>
+    <div id="gemBarsContainer">
+      <div class="gem-bar ruby">
+        <div class="gem-label"><span class="gem-name">Ruby</span> Lvl <span class="gem-level">1</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+      <div class="gem-bar sapphire">
+        <div class="gem-label"><span class="gem-name">Sapphire</span> Lvl <span class="gem-level">1</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+      <div class="gem-bar emerald">
+        <div class="gem-label"><span class="gem-name">Emerald</span> Lvl <span class="gem-level">1</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+      <div class="gem-bar amber">
+        <div class="gem-label"><span class="gem-name">Amber</span> Lvl <span class="gem-level">1</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+      <div class="gem-bar amethyst">
+        <div class="gem-label"><span class="gem-name">Amethyst</span> Lvl <span class="gem-level">1</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+      <div class="gem-bar diamond">
+        <div class="gem-label"><span class="gem-name">Diamond</span> Lvl <span class="gem-level">1</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+    </div>
+    <div id="buttons">
+      <button id="newGameBtn">New Game</button>
+      <button id="shopBtn">Shop</button>
     </div>
   </div>
-
-  <!-- Achievements Modal -->
-  <div id="achievements-modal" class="modal">
-    <div class="modal-content">
-      <h2>Achievements</h2>
-      <ul id="achievements-list"><!-- Achievements list injected here --></ul>
-      <button id="close-achievements">Close</button>
+  <div id="gameBoard"></div>
+  <div id="shopModal" class="hidden">
+    <div id="shopContent">
+      <h2>Shop</h2>
+      <ul id="shopItems">
+        <li class="shop-item" data-type="ruby">Ruby Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="sapphire">Sapphire Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="emerald">Emerald Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="amber">Amber Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="amethyst">Amethyst Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="diamond">Diamond Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+      </ul>
+      <button id="closeShop">Close</button>
     </div>
   </div>
-
-  <script src="game.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
