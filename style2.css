@@ -89,12 +89,6 @@ body {
 .gem.selected {
   box-shadow: 0 0 0 3px #fff;
 }
-.gem.ruby { background-color: #e74c3c; }
-.gem.sapphire { background-color: #3498db; }
-.gem.emerald { background-color: #2ecc71; }
-.gem.amber { background-color: #f1c40f; }
-.gem.amethyst { background-color: #9b59b6; }
-.gem.diamond { background-color: #fff; }
 
 .gem.ruby .shape { background: #e74c3c; }         /* Ruby: square or custom shape */
 .gem.sapphire .shape { background: #3498db; border-radius: 50%; }  /* Sapphire: circle */
