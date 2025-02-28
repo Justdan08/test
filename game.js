@@ -21,7 +21,7 @@ let multiplier = 1;
 let multiProgress = 0;     // Count toward next multiplier increase
 let cash = 0;
 let selectedCell = null;   // For click-to-swap { row, col }
-let gemStats = {};         // Per-game gem XP and level (e.g., gemStats["ruby"] = { level: 0, xp: 0 })
+let gemStats = {};         // Per-game gem XP and level, e.g., gemStats["ruby"] = { level: 0, xp: 0 }
 let upgradeLevels = {};    // Permanent upgrades for each gem type (persisted)
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
@@ -37,7 +37,7 @@ let scoreElem, cashElem, multiElem, multiFillElem, timerElem;
 let gameBoardElem;
 let shopModal, gameOverModal;
 let finalScoreElem, earnedCashElem;
-let gemBarElems = {};      // For each gem type's XP bar (from header)
+let gemBarElems = {};      // For each gem type's XP bar in the header
 let shopItemsElems = {};   // For shop upgrade items
 
 // --------------------------
@@ -99,12 +99,11 @@ function generateBoard() {
   }
 }
 function renderBoard() {
-  // Render board into the gameBoard element based on board array
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const typeName = board[i][j];
       cellElements[i][j].className = "gem " + typeName;
-      // Ensure each cell has a child with class "shape" for custom styling
+      // Ensure inner "shape" exists for custom styling
       if (!cellElements[i][j].querySelector(".shape")) {
         const shape = document.createElement("div");
         shape.className = "shape";
@@ -203,7 +202,7 @@ async function processMatches() {
   while (true) {
     let matches = findMatches();
     if (matches.length === 0) break;
-    // Record current top positions for falling animation
+    // Record positions for falling animation
     let oldPositions = {};
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
@@ -338,10 +337,8 @@ function animateSwap(cell1, cell2) {
 async function attemptSwap(r1, c1, r2, c2) {
   if (animating) return false;
   if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
-  // Tentative swap in board data
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   if (findMatches().length === 0) {
-    // No match: swap back
     [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
     return false;
   }
@@ -450,6 +447,9 @@ function endGame() {
   savePersistentData();
 }
 
+// --------------------------
+// Start New Game
+// --------------------------
 function startNewGame() {
   clearInterval(timerInterval);
   shopModal.classList.add("hidden");
@@ -461,8 +461,8 @@ function startNewGame() {
   score = 0;
   multiplier = 1;
   multiProgress = 0;
-  scoreElem.textContent = 0;
-  multiElem.textContent = 1;
+  scoreElem.textContent = "0";
+  multiElem.textContent = "1";
   multiFillElem.style.width = "0%";
   resetGemStats();
   board = generateBoard();
@@ -529,6 +529,8 @@ function purchaseUpgrade(type) {
 // --------------------------
 window.addEventListener("load", () => {
   loadPersistentData();
+  
+  // Get references to UI elements
   scoreElem = document.getElementById("score");
   cashElem = document.getElementById("cash");
   timerElem = document.getElementById("timer");
@@ -556,7 +558,6 @@ window.addEventListener("load", () => {
     item.addEventListener("click", () => purchaseUpgrade(type));
   });
 
-  // Check if shopBtn exists before adding event listener
   const shopBtn = document.getElementById("shopBtn");
   if (shopBtn) {
     shopBtn.addEventListener("click", openShop);
