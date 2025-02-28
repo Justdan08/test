@@ -1,99 +1,130 @@
-/* General styles */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #a3d9f2; /* Light blue */
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  background: #222;
+  color: #fff;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-/* Scoreboard */
-.score-container {
-    display: flex;
-    justify-content: space-around;
-    font-size: 1.5em;
-    color: #0b3a50;
-    margin: 10px 0;
+.topbar {
+  width: 90vmin;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 1rem;
 }
-
-/* Game Board */
-#board {
-    position: relative;
-    width: 360px; /* 9x9 grid with 40px per cell */
-    height: 360px;
-    border: 5px solid #0b3a50;
-    background-color: #1779a6; /* Medium blue */
-    display: inline-block;
-    margin: 20px auto;
-    border-radius: 10px;
+.score-cash, .timer {
+  text-align: left;
 }
-
-/* Multiplier Bar */
-#multiplier {
-    margin: 10px auto;
-    font-size: 1.2em;
-    color: #0b3a50;
-    position: relative;
+.timer {
+  text-align: right;
 }
-
-#multiplier-bar {
-    width: 0%;
-    height: 10px;
-    background-color: #2ecc71; /* Green */
-    transition: width 0.3s;
-    margin-top: 5px;
+.level-bar {
+  width: 90vmin;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px 0 10px;
+  font-size: 0.9rem;
 }
-
-/* Gems */
+.level-bar .xp-bar {
+  flex: 1;
+  height: 10px;
+  background: #555;
+  border: 1px solid #888;
+  margin-left: 10px;
+  position: relative;
+}
+.level-bar .xp-progress {
+  background: #0f0;
+  height: 100%;
+  width: 0%;
+}
+.board {
+  position: relative;
+  width: 90vmin;
+  height: 90vmin;
+  max-width: 600px;
+  max-height: 600px;
+  background: #000;
+  overflow: hidden;
+  touch-action: none;
+}
 .gem {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    transition: top 0.3s, left 0.3s;
-    border-radius: 5px;
+  position: absolute;
+  width: 12.5%;
+  height: 12.5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  user-select: none;
+  transition: top 0.3s, left 0.3s, opacity 0.3s, transform 0.3s;
 }
-
-/* Different Colors for Gems */
-.gem.type-0 { background-color: #e74c3c; }  /* Red */
-.gem.type-1 { background-color: #3498db; }  /* Blue */
-.gem.type-2 { background-color: #f1c40f; }  /* Yellow */
-.gem.type-3 { background-color: #2ecc71; }  /* Green */
-.gem.type-4 { background-color: #9b59b6; }  /* Purple */
-.gem.type-5 { background-color: #e67e22; }  /* Orange */
-
-/* Game Over Screen */
-#game-over {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    width: 300px;
+.gem.heart    { color: red; }
+.gem.diamond  { color: #00aaff; }
+.gem.star     { color: gold; }
+.gem.circle   { color: #cc44cc; }
+.gem.square   { color: #44dd44; }
+.gem.triangle { color: #ff8833; }
+.gem.remove {
+  opacity: 0;
+  transform: scale(0.5);
 }
-
-#game-over h2 {
-    margin-top: 0;
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
 }
-
-#game-over ol {
-    padding-left: 20px;
+.modal-content {
+  background: #333;
+  padding: 20px;
+  border: 2px solid #555;
+  border-radius: 5px;
+  text-align: center;
+  max-width: 80%;
 }
-
-#game-over button {
-    background: #0b3a50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
+.modal-content h2 {
+  margin-top: 0;
 }
-
-#game-over button:hover {
-    background: #09425e;
+.modal-buttons {
+  margin-top: 15px;
+}
+.modal-buttons button {
+  margin: 0 10px;
+  padding: 5px 10px;
+}
+#upgrade-list {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  margin-bottom: 15px;
+}
+#upgrade-list li {
+  margin: 8px 0;
+}
+#upgrade-list button {
+  margin-left: 10px;
+}
+#achievements-list {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+#achievements-list li.unlocked::before {
+  content: "✔ ";
+  color: #0f0;
+}
+#achievements-list li.locked {
+  color: #888;
 }
