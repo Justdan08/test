@@ -54,6 +54,122 @@ function loadPersistentData() {
 }
 
 // --------------------------
+// Animation Functions (NEW)
+// --------------------------
+async function animateRemoval(cell) {
+  return new Promise(resolve => {
+    cell.style.transition = "all 0.3s ease-in-out";
+    cell.style.opacity = "0";
+    cell.style.transform = "scale(0)";
+    setTimeout(() => {
+      cell.style.transition = "";
+      resolve();
+    }, 300);
+  });
+}
+async function animateFall(oldPos, newPos) {
+  return new Promise(resolve => {
+    const cell = cellElements[newPos.r][newPos.c];
+    const oldCell = cellElements[oldPos.r][oldPos.c];
+    
+    // Clone for animation
+    const clone = oldCell.cloneNode(true);
+    clone.style.position = "absolute";
+    clone.style.left = `${oldCell.offsetLeft}px`;
+    clone.style.top = `${oldCell.offsetTop}px`;
+    document.getElementById("gameBoard").appendChild(clone);
+
+    // Animate to new position
+    setTimeout(() => {
+      clone.style.transition = "all 0.4s ease-in-out";
+      clone.style.left = `${cell.offsetLeft}px`;
+      clone.style.top = `${cell.offsetTop}px`;
+    }, 10);
+
+    setTimeout(() => {
+      clone.remove();
+      resolve();
+    }, 410);
+  });
+}
+  await animateSwap(cell1, cell2);
+  renderBoard();
+  await processMatches();
+  animating = false;
+  return true;
+}
+
+async function processMatches() {
+  while (true) {
+    let toRemove = findMatches();
+    if (toRemove.length === 0) break;
+
+    // Animate removal
+    animating = true;
+    const removalPromises = [];
+    const removedCells = new Set();
+    
+    // Mark matched gems
+    toRemove.forEach(pos => {
+      removedCells.add(`${pos.r}-${pos.c}`);
+      removalPromises.push(animateRemoval(cellElements[pos.r][pos.c]));
+    });
+
+    await Promise.all(removalPromises);
+    
+    // Clear matched gems
+    toRemove.forEach(pos => {
+      board[pos.r][pos.c] = null;
+    });
+    // Drop gems with animation
+    const fallAnimations = [];
+    dropGems();
+    
+    // Track falling gems
+    for (let j = 0; j < cols; j++) {
+      let writeRow = rows - 1;
+      for (let i = rows - 1; i >= 0; i--) {
+        if (board[i][j] !== null) {
+          if (i !== writeRow) {
+            fallAnimations.push(animateFall(
+              { r: i, c: j },
+              { r: writeRow, c: j }
+            ));
+          }
+          writeRow--;
+        }
+      }
+    }
+
+    fillEmptySpaces();
+    await Promise.all(fallAnimations);
+    renderBoard();
+// --------------------------
+// Modified Shop Handling
+// --------------------------
+function endGame() {
+  clearInterval(timerInterval);
+  const earned = Math.floor(score * 0.02);
+  cash += earned;
+  
+  finalScoreElem.textContent = score;
+  earnedCashElem.textContent = earned;
+  cashElem.textContent = cash;
+  
+  // Show game over with shop access
+  gameOverModal.classList.remove("hidden");
+  savePersistentData();
+  
+  // Remove shop button from header
+  document.getElementById("shopBtn").style.display = "none";
+}
+
+function startNewGame() {
+  // Reset UI elements
+  document.getElementById("shopBtn").style.display = "inline-block";
+  // ... (rest of existing startNewGame logic) ...
+}
+// --------------------------
 // Game Functions
 // --------------------------
 
@@ -581,6 +697,20 @@ window.addEventListener("load", () => {
       levelSpan: item.querySelector(".up-level"),
       costSpan: item.querySelector(".up-cost")
     };
+     // Modified shop button handling
+  document.getElementById("shopBtn").addEventListener("click", openShop);
+  document.getElementById("shopBtn").style.display = "none"; // Hide by default
+
+  // Add shop button to game over modal
+  const gameOverContent = document.getElementById("gameOverContent");
+  const shopButton = document.createElement("button");
+  shopButton.textContent = "Shop";
+  shopButton.addEventListener("click", () => {
+    gameOverModal.classList.add("hidden");
+    openShop();
+  });
+  gameOverContent.insertBefore(shopButton, document.getElementById("restartBtn"));
+});
     item.addEventListener("click", () => purchaseUpgrade(type));
   });
   // Button event listeners
