@@ -94,6 +94,14 @@ body {
 .gem.amethyst { background-color: #9b59b6; }
 .gem.diamond { background-color: #fff; }
 
+.gem.ruby .shape { background: #e74c3c; }         /* Ruby: square or custom shape */
+.gem.sapphire .shape { background: #3498db; border-radius: 50%; }  /* Sapphire: circle */
+.gem.emerald .shape { background: #2ecc71; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+.gem.amber .shape { background: #f1c40f; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.gem.amethyst .shape { background: #9b59b6; /* custom shape as desired */ }
+.gem.diamond .shape { background: #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+
+
 /* Shop modal overlay */
 #shopModal {
   position: fixed;
