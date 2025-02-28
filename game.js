@@ -581,7 +581,8 @@ window.addEventListener("load", () => {
   }
 
   startNewGame();
-
+  
+});
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
