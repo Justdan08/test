@@ -1,28 +1,43 @@
-/* General Styles */
-body {
+/* --------------------------
+   Global & Reset Styles
+-------------------------- */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: Arial, sans-serif;
-  color: #fff;
-  background: #222;
+  padding: 0;
 }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #222;
+  color: #fff;
+}
+
+/* --------------------------
+   Header & UI Elements
+-------------------------- */
 #header {
   max-width: 520px;
   margin: 10px auto;
   text-align: center;
+  padding: 0 10px;
 }
+
 #infoTop {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
 }
-#infoTop div {
-  padding: 0 10px;
-}
+
 #multiplierContainer {
-  margin-top: 10px;
+  margin: 10px auto;
 }
+
 #multiplierLabel {
   margin-bottom: 4px;
+  font-size: 1.1em;
 }
+
 #multiplierBar {
   background: #444;
   width: 80%;
@@ -32,24 +47,32 @@ body {
   border-radius: 5px;
   overflow: hidden;
 }
+
 #multiplierFill {
   background: #0f0;
   height: 100%;
   width: 0%;
 }
+
 #gemBarsContainer {
-  margin-top: 10px;
-  padding: 0 10px;
+  margin: 10px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
+
 .gem-bar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin: 4px 0;
 }
+
 .gem-label {
-  font-size: 0.9em;
+  font-size: 0.85em;
+  margin-bottom: 2px;
 }
+
 .xp-bar {
   background: #444;
   width: 100px;
@@ -57,54 +80,117 @@ body {
   border-radius: 4px;
   overflow: hidden;
 }
+
 .xp-fill {
   height: 100%;
   width: 0%;
 }
-/* Gem XP bar fill colors by type */
-.gem-bar.ruby .xp-fill { background: red; }
-.gem-bar.sapphire .xp-fill { background: blue; }
-.gem-bar.emerald .xp-fill { background: green; }
-.gem-bar.amber .xp-fill { background: orange; }
-.gem-bar.amethyst .xp-fill { background: purple; }
-.gem-bar.diamond .xp-fill { background: #fff; }
-/* Game board and gems */
+
+/* You can adjust the fill colors as needed */
+.gem-bar.ruby .xp-fill      { background: red; }
+.gem-bar.sapphire .xp-fill  { background: blue; }
+.gem-bar.emerald .xp-fill   { background: green; }
+.gem-bar.amber .xp-fill     { background: orange; }
+.gem-bar.amethyst .xp-fill  { background: purple; }
+.gem-bar.diamond .xp-fill   { background: #fff; }
+
+/* Buttons */
+#buttons {
+  margin-top: 10px;
+}
+
+#buttons button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  background: #007BFF;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#buttons button:hover {
+  background: #005FBB;
+}
+
+/* --------------------------
+   Game Board & Gem Styles
+-------------------------- */
 #gameBoard {
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
   grid-gap: 2px;
   padding: 2px;
-  margin: 10px auto;
+  margin: 20px auto;  /* Center the board */
   background: #333;
+  width: fit-content;
 }
-#gameBoard { margin: 10px auto; }
 
+/* Outer gem cell: just a container */
 .gem {
+  position: relative;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
   cursor: pointer;
 }
+
+/* Optional: highlight selected gem */
 .gem.selected {
   box-shadow: 0 0 0 3px #fff;
 }
 
-.gem.ruby .shape { background: #e74c3c; }         /* Ruby: square or custom shape */
-.gem.sapphire .shape { background: #3498db; border-radius: 50%; }  /* Sapphire: circle */
-.gem.emerald .shape { background: #2ecc71; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
-.gem.amber .shape { background: #f1c40f; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-.gem.amethyst .shape { background: #9b59b6; /* custom shape as desired */ }
-.gem.diamond .shape { background: #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+/* Inner shape element for custom styling.
+   We remove default border-radius to allow custom shapes. */
+.gem .shape {
+  width: 90%;
+  height: 90%;
+  margin: 5%;
+  /* Default: no border radius so that we can override per gem type */
+  border-radius: 0;
+}
 
-.gem.ruby { background-color: #e74c3c; }
-.gem.sapphire { background-color: #3498db; }
-.gem.emerald { background-color: #2ecc71; }
-.gem.amber { background-color: #f1c40f; }
-.gem.amethyst { background-color: #9b59b6; }
-.gem.diamond { background-color: #fff; }
+/* Custom shapes for each gem type */
+/* Ruby: Square (no border-radius) */
+.gem.ruby .shape {
+  background: #e74c3c;
+}
 
-/* Shop modal overlay */
+/* Sapphire: Circle */
+.gem.sapphire .shape {
+  background: #3498db;
+  border-radius: 50%;
+}
+
+/* Emerald: Hexagon */
+.gem.emerald .shape {
+  background: #2ecc71;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Amber: Triangle */
+.gem.amber .shape {
+  background: #f1c40f;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+/* Amethyst: Pentagon */
+.gem.amethyst .shape {
+  background: #9b59b6;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+/* Diamond: Diamond shape */
+.gem.diamond .shape {
+  background: #fff;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* --------------------------
+   Shop Modal Styles
+-------------------------- */
 #shopModal {
   position: fixed;
   top: 0; left: 0;
@@ -115,9 +201,11 @@ body {
   justify-content: center;
   z-index: 100;
 }
+
 .hidden {
   display: none !important;
 }
+
 #shopContent {
   background: #fff;
   color: #000;
@@ -126,28 +214,36 @@ body {
   width: 90%;
   max-width: 400px;
 }
+
 #shopContent h2 {
   text-align: center;
   margin-top: 0;
 }
+
 #shopItems {
   list-style: none;
   padding: 0;
   margin: 10px 0;
 }
+
 .shop-item {
   padding: 5px 0;
   cursor: pointer;
 }
+
 .shop-item:hover {
   background: #eee;
 }
+
 #closeShop {
   display: block;
-  margin: 10px auto 0 auto;
+  margin: 10px auto 0;
   padding: 5px 15px;
 }
-/* Responsive for smaller screens */
+
+/* --------------------------
+   Responsive Adjustments
+-------------------------- */
 @media (max-width: 400px) {
   #gameBoard {
     grid-template-columns: repeat(8, 40px);
