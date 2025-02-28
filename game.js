@@ -8,7 +8,7 @@ const cols = 8;
 const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
 const BASE_POINT = 10;
 const LEVEL_UP_XP = 100;
-const MULTI_THRESHOLD = 20; // e.g., every 20 gem level-ups increases multiplier
+const MULTI_THRESHOLD = 20; // e.g., every 20 gem level-ups increases global multiplier
 const GAME_TIME = 180;      // 3 minutes in seconds
 
 // --------------------------
@@ -25,7 +25,7 @@ let gemStats = {};         // Per-game XP and level for each gem type, e.g., gem
 let upgradeLevels = {};    // Permanent upgrades for each gem type (persisted)
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
-let animating = false;     // Prevent overlapping animations
+let animating = false;     // Flag to prevent overlapping animations
 
 // For mobile drag
 let touchStartCell = null;
@@ -49,6 +49,7 @@ function savePersistentData() {
     localStorage.setItem("upgrade_" + type, upgradeLevels[type]);
   }
 }
+
 function loadPersistentData() {
   cash = parseInt(localStorage.getItem("cash")) || 0;
   for (let type of gemTypes) {
@@ -72,6 +73,7 @@ function startTimer() {
     }
   }, 1000);
 }
+
 function updateTimerDisplay() {
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
@@ -79,18 +81,18 @@ function updateTimerDisplay() {
 }
 
 // --------------------------
-// Puzzle Board Functions
+// Board Generation & Rendering
 // --------------------------
 function generateBoard() {
   board = Array.from({ length: rows }, () => Array(cols).fill(null));
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
-      // Avoid horizontal triple
+      // Avoid immediate horizontal triple
       if (j >= 2 && board[i][j-1] === board[i][j-2]) {
         available = available.filter(type => type !== board[i][j-1]);
       }
-      // Avoid vertical triple
+      // Avoid immediate vertical triple
       if (i >= 2 && board[i-1][j] === board[i-2][j]) {
         available = available.filter(type => type !== board[i-1][j]);
       }
@@ -100,12 +102,11 @@ function generateBoard() {
 }
 
 function renderBoard() {
-  // Re-render the board from our board data
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const typeName = board[i][j];
       cellElements[i][j].className = "gem " + typeName;
-      // Ensure inner shape exists for custom styling
+      // Ensure the inner "shape" exists for custom styling
       if (!cellElements[i][j].querySelector(".shape")) {
         const shape = document.createElement("div");
         shape.className = "shape";
@@ -127,7 +128,7 @@ function animateFalling(oldPositions) {
       const diff = oldTop - newTop;
       if (diff !== 0) {
         cell.style.transform = `translateY(${diff}px)`;
-        cell.offsetHeight; // force reflow
+        cell.offsetHeight; // Force reflow
         cell.style.transition = "transform 0.3s ease-out";
         cell.style.transform = "";
       }
@@ -147,7 +148,7 @@ function animateFalling(oldPositions) {
 // --------------------------
 function findMatches() {
   let toRemove = Array.from({ length: rows }, () => Array(cols).fill(false));
-  // Horizontal check
+  // Horizontal matches
   for (let i = 0; i < rows; i++) {
     let runLength = 1;
     for (let j = 1; j < cols; j++) {
@@ -168,7 +169,7 @@ function findMatches() {
       }
     }
   }
-  // Vertical check
+  // Vertical matches
   for (let j = 0; j < cols; j++) {
     let runLength = 1;
     for (let i = 1; i < rows; i++) {
@@ -204,6 +205,7 @@ function processMatches() {
   while (true) {
     let matches = findMatches();
     if (matches.length === 0) break;
+    // Record current positions for falling animation
     let oldPositions = {};
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
@@ -253,7 +255,7 @@ function fillEmptySpaces() {
   }
 }
 
-// Check for valid moves (for shuffling)
+// Check if any valid moves remain; if not, shuffle the board.
 function hasMoves() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
@@ -299,7 +301,7 @@ function shuffleBoard() {
 }
 
 // --------------------------
-// Swap Animation
+// Swap Animation & Handling
 // --------------------------
 function animateSwap(cell1, cell2) {
   return new Promise(resolve => {
@@ -319,16 +321,13 @@ function animateSwap(cell1, cell2) {
   });
 }
 
-// --------------------------
-// Swap & Interaction Handling
-// --------------------------
 async function attemptSwap(r1, c1, r2, c2) {
   if (animating) return false;
   if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
-  // Tentatively swap in data
+  // Tentative swap in board data
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   if (findMatches().length === 0) {
-    // No match, swap back
+    // No match: swap back
     [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
     return false;
   }
@@ -342,6 +341,9 @@ async function attemptSwap(r1, c1, r2, c2) {
   return true;
 }
 
+// --------------------------
+// Input Handling (Click & Touch)
+// --------------------------
 function handleCellSelect(row, col) {
   if (animating) return;
   if (selectedCell === null) {
@@ -364,9 +366,6 @@ function handleCellSelect(row, col) {
   }
 }
 
-// --------------------------
-// Touch Drag Handling for Mobile
-// --------------------------
 function handleTouchStart(e) {
   if (animating) return;
   e.preventDefault();
@@ -376,6 +375,7 @@ function handleTouchStart(e) {
   const c = parseInt(cell.dataset.col);
   touchStartCell = { row: r, col: c };
 }
+
 function handleTouchMove(e) {
   if (!touchStartCell) return;
   e.preventDefault();
@@ -391,6 +391,7 @@ function handleTouchMove(e) {
     touchStartCell = null;
   }
 }
+
 function handleTouchEnd() {
   touchStartCell = null;
 }
@@ -406,11 +407,13 @@ function endGame() {
   savePersistentData();
   showGameOverModal();
 }
+
 function showGameOverModal() {
   finalScoreElem.textContent = score;
   earnedCashElem.textContent = cash;
   gameOverModal.classList.remove("hidden");
 }
+
 function startNewGame() {
   clearInterval(timerInterval);
   selectedCell = null;
@@ -493,15 +496,15 @@ window.addEventListener("load", () => {
   gameOverModal = document.getElementById("gameOverModal");
   finalScoreElem = document.getElementById("finalScore");
   earnedCashElem = document.getElementById("earnedCash");
-  // Initialize gem XP bar elements
-  document.querySelectorAll(".gem-bar").forEach(barElem => {
-    const type = barElem.classList[1];
+  // Initialize gem XP bar elements from header
+  document.querySelectorAll(".gem-bar").forEach(bar => {
+    const type = bar.classList[1];
     gemBarElems[type] = {
-      levelText: barElem.querySelector(".gem-level"),
-      fill: barElem.querySelector(".xp-fill")
+      levelText: bar.querySelector(".gem-level"),
+      fill: bar.querySelector(".xp-fill")
     };
   });
-  // Initialize shop items event listeners
+  // Initialize shop item event listeners
   document.querySelectorAll(".shop-item").forEach(item => {
     const type = item.dataset.type;
     shopItemsElems[type] = {
@@ -522,8 +525,9 @@ window.addEventListener("load", () => {
   document.getElementById("restartBtn").addEventListener("click", () => {
     startNewGame();
   });
+  // Start the first game
   startNewGame();
-  // Set up touch event handlers
+  // Set up touch events for mobile drag-to-swap
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
