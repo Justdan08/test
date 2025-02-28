@@ -12,37 +12,43 @@
   <p>Fill in the fields below to customize your word search puzzle page.</p>
 
   <form id="puzzleForm">
+    <!-- File Title Field -->
+    <label for="fileTitle">File Title (for download):</label>
+    <input type="text" id="fileTitle" placeholder="e.g., my-puzzle.html" />
+
     <!-- Page Title Field -->
     <label for="titleInput">Page Title:</label>
-    <input type="text" id="titleInput" placeholder="e.g., My Puzzle Page Title" />
+    <input type="text" id="titleInput" placeholder="e.g., Marvel Word Search" />
 
     <!-- Main Heading Field -->
     <label for="h1Input">Main Heading (H1):</label>
-    <input type="text" id="h1Input" placeholder="e.g., Word Search Puzzle" />
+    <input type="text" id="h1Input" placeholder="e.g., Marvel" />
 
-    <!-- Navigation Links Fields -->
-    <h2>Navigation Links</h2>
-    <label for="link1Text">Previous Puzzle Link Text:</label>
-    <input type="text" id="link1Text" placeholder="e.g., Previous Puzzle" />
-    <label for="link1Href">Previous Puzzle Link URL:</label>
-    <input type="text" id="link1Href" placeholder="e.g., puzzle1.html" />
+    <!-- Navigation Link Options -->
+    <h2>Navigation Link Options</h2>
+    <label for="link1Option">Link 1:</label>
+    <select id="link1Option">
+      <option value="next" data-default-text="Next Puzzle" data-default-href="puzzle3.html">Next Puzzle</option>
+      <option value="back" data-default-text="Back to Menu" data-default-href="index.html">Back to Menu</option>
+    </select>
+    <label for="link1Href">Link 1 URL:</label>
+    <input type="text" id="link1Href" placeholder="Leave empty for default" />
 
-    <label for="link2Text">Next Puzzle Link Text:</label>
-    <input type="text" id="link2Text" placeholder="e.g., Next Puzzle" />
-    <label for="link2Href">Next Puzzle Link URL:</label>
-    <input type="text" id="link2Href" placeholder="e.g., puzzle3.html" />
+    <label for="link2Option">Link 2:</label>
+    <select id="link2Option">
+      <option value="next" data-default-text="Next Puzzle" data-default-href="puzzle3.html">Next Puzzle</option>
+      <option value="back" data-default-text="Back to Menu" data-default-href="index.html">Back to Menu</option>
+    </select>
+    <label for="link2Href">Link 2 URL:</label>
+    <input type="text" id="link2Href" placeholder="Leave empty for default" />
 
-    <!-- Word Pool Name Field -->
-    <h2>Word List</h2>
-    <label for="poolName">Word Pool Name:</label>
-    <input type="text" id="poolName" placeholder="e.g., Words to Find" />
-
-    <!-- Dynamic Word List Inputs -->
-    <div class="word-input-area">
-      <input type="text" id="newWord" placeholder="Enter a word" />
-      <button type="button" id="addWordBtn">Add Word</button>
-    </div>
-    <ul id="wordsList"><!-- Word items will appear here --></ul>
+    <!-- Word Pool Section -->
+    <h2>Word Pool</h2>
+    <label for="newWord">Add Word:</label>
+    <input type="text" id="newWord" placeholder="Enter a word" />
+    <button type="button" id="addWordBtn">Add Word</button>
+    <!-- This div will display the words in the format: "WORD", "WORD", ... -->
+    <div id="wordPoolDisplay" class="word-pool-display"></div>
 
     <!-- Finish Button -->
     <button type="button" id="finishBtn">Finish</button>
