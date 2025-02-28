@@ -136,29 +136,13 @@ body {
   width: 90%;
   height: 90%;
 }
-.gem.ruby .shape {
-  background: #e74c3c;
-}
-.gem.sapphire .shape {
-  background: #3498db;
-  border-radius: 50%;
-}
-.gem.emerald .shape {
-  background: #2ecc71;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-.gem.amber .shape {
-  background: #f1c40f;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-.gem.amethyst .shape {
-  background: #9b59b6;
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-}
-.gem.diamond .shape {
-  background: #fff;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
+.gem.ruby .shape { background: #e74c3c; }
+.gem.sapphire .shape { background: #3498db; border-radius: 50%; }
+.gem.emerald .shape { background: #2ecc71; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+.gem.amber .shape { background: #f1c40f; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.gem.amethyst .shape { background: #9b59b6; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+.gem.diamond .shape { background: #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+
 .gem.selected {
   box-shadow: 0 0 0 3px #fff;
 }
