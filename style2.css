@@ -1,130 +1,149 @@
+/* General Styles */
 body {
   margin: 0;
-  background: #222;
+  font-family: Arial, sans-serif;
   color: #fff;
-  font-family: sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: #222;
 }
-.topbar {
-  width: 90vmin;
-  max-width: 600px;
+#header {
+  max-width: 520px;
+  margin: 10px auto;
+  text-align: center;
+}
+#infoTop {
   display: flex;
   justify-content: space-between;
+}
+#infoTop div {
+  padding: 0 10px;
+}
+#multiplierContainer {
   margin-top: 10px;
-  font-size: 1rem;
 }
-.score-cash, .timer {
-  text-align: left;
+#multiplierLabel {
+  margin-bottom: 4px;
 }
-.timer {
-  text-align: right;
-}
-.level-bar {
-  width: 90vmin;
-  max-width: 600px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 5px 0 10px;
-  font-size: 0.9rem;
-}
-.level-bar .xp-bar {
-  flex: 1;
+#multiplierBar {
+  background: #444;
+  width: 80%;
+  max-width: 300px;
   height: 10px;
-  background: #555;
-  border: 1px solid #888;
-  margin-left: 10px;
-  position: relative;
+  margin: 0 auto;
+  border-radius: 5px;
+  overflow: hidden;
 }
-.level-bar .xp-progress {
+#multiplierFill {
   background: #0f0;
   height: 100%;
   width: 0%;
 }
-.board {
-  position: relative;
-  width: 90vmin;
-  height: 90vmin;
-  max-width: 600px;
-  max-height: 600px;
-  background: #000;
+#gemBarsContainer {
+  margin-top: 10px;
+  padding: 0 10px;
+}
+.gem-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+}
+.gem-label {
+  font-size: 0.9em;
+}
+.xp-bar {
+  background: #444;
+  width: 100px;
+  height: 8px;
+  border-radius: 4px;
   overflow: hidden;
-  touch-action: none;
+}
+.xp-fill {
+  height: 100%;
+  width: 0%;
+}
+/* Gem XP bar fill colors by type */
+.gem-bar.ruby .xp-fill { background: red; }
+.gem-bar.sapphire .xp-fill { background: blue; }
+.gem-bar.emerald .xp-fill { background: green; }
+.gem-bar.amber .xp-fill { background: orange; }
+.gem-bar.amethyst .xp-fill { background: purple; }
+.gem-bar.diamond .xp-fill { background: #fff; }
+/* Game board and gems */
+#gameBoard {
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  grid-template-rows: repeat(8, 60px);
+  grid-gap: 2px;
+  padding: 2px;
+  margin: 10px auto;
+  background: #333;
 }
 .gem {
-  position: absolute;
-  width: 12.5%;
-  height: 12.5%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  user-select: none;
-  transition: top 0.3s, left 0.3s, opacity 0.3s, transform 0.3s;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
 }
-.gem.heart    { color: red; }
-.gem.diamond  { color: #00aaff; }
-.gem.star     { color: gold; }
-.gem.circle   { color: #cc44cc; }
-.gem.square   { color: #44dd44; }
-.gem.triangle { color: #ff8833; }
-.gem.remove {
-  opacity: 0;
-  transform: scale(0.5);
+.gem.selected {
+  box-shadow: 0 0 0 3px #fff;
 }
-.modal {
-  display: none;
+/* Shop modal overlay */
+#shopModal {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7);
-  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
-.modal-content {
-  background: #333;
+.hidden {
+  display: none !important;
+}
+#shopContent {
+  background: #fff;
+  color: #000;
   padding: 20px;
-  border: 2px solid #555;
-  border-radius: 5px;
-  text-align: center;
-  max-width: 80%;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
 }
-.modal-content h2 {
+#shopContent h2 {
+  text-align: center;
   margin-top: 0;
 }
-.modal-buttons {
-  margin-top: 15px;
-}
-.modal-buttons button {
-  margin: 0 10px;
-  padding: 5px 10px;
-}
-#upgrade-list {
+#shopItems {
   list-style: none;
   padding: 0;
-  text-align: left;
-  margin-bottom: 15px;
+  margin: 10px 0;
 }
-#upgrade-list li {
-  margin: 8px 0;
+.shop-item {
+  padding: 5px 0;
+  cursor: pointer;
 }
-#upgrade-list button {
-  margin-left: 10px;
+.shop-item:hover {
+  background: #eee;
 }
-#achievements-list {
-  list-style: none;
-  padding: 0;
-  text-align: left;
-  max-height: 50vh;
-  overflow-y: auto;
-  margin-bottom: 15px;
+#closeShop {
+  display: block;
+  margin: 10px auto 0 auto;
+  padding: 5px 15px;
 }
-#achievements-list li.unlocked::before {
-  content: "✔ ";
-  color: #0f0;
-}
-#achievements-list li.locked {
-  color: #888;
+/* Responsive for smaller screens */
+@media (max-width: 400px) {
+  #gameBoard {
+    grid-template-columns: repeat(8, 40px);
+    grid-template-rows: repeat(8, 40px);
+  }
+  .gem {
+    width: 40px;
+    height: 40px;
+  }
+  #multiplierBar {
+    width: 90%;
+  }
+  .xp-bar {
+    width: 80px;
+  }
 }
