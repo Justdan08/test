@@ -1,573 +1,542 @@
-"use strict";
-const BOARD_SIZE = 8;
-const baseScore = 10;
-const baseXP = 10;
-const baseCash = 1;
-const upgradeFactor = 0.2; // each upgrade level adds +20% effect
-let scoreMultiplier = 1, xpMultiplier = 1, cashMultiplier = 1;
-let score = 0, level = 1, xp = 0, totalCash = 0;
-let timeRemaining = 300;
-let isProcessing = false, timeUp = false;
-let gameInterval = null;
-let board = []; // 2D array of {type, element, row, col}
+// Match 3 Game Script
 
-const boardElem = document.getElementById('board');
-const scoreElem = document.getElementById('score');
-const cashElem = document.getElementById('cash');
-const timerElem = document.getElementById('timer');
-const levelElem = document.getElementById('level');
-const xpProgressElem = document.querySelector('.xp-progress');
-const gameoverModal = document.getElementById('gameover-modal');
-const finalScoreElem = document.getElementById('final-score');
-const finalLevelElem = document.getElementById('final-level');
-const cashEarnedElem = document.getElementById('cash-earned');
-const achievementsEarnedElem = document.getElementById('achievements-earned');
-const shopModal = document.getElementById('shop-modal');
-const upgradeListElem = document.getElementById('upgrade-list');
-const achievementsModal = document.getElementById('achievements-modal');
-const achievementsListElem = document.getElementById('achievements-list');
+// Game configuration
+const rows = 8;
+const cols = 8;
+const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
+const BASE_POINT = 10;
+const LEVEL_UP_XP = 100; // XP needed for each gem level-up (constant per level)
+let MULTI_THRESHOLD = gemTypes.length; // total gem level-ups required to increase global multiplier by 1
 
-// Upgrades data (permanent upgrades)
-let upgrades = {
-  score: { level: 0, cost: 100, name: "Score Multiplier" },
-  cash:  { level: 0, cost: 100, name: "Cash Bonus" },
-  xp:    { level: 0, cost: 100, name: "XP Booster" }
-};
+// Game state variables
+let board = [];            // 2D array of gem types (string identifiers)
+let cellElements = [];     // 2D array of DOM elements for each board cell
+let score = 0;
+let multiplier = 1;
+let multiProgress = 0;     // progress (count of level-ups) toward next multiplier increase
+let cash = 0;
+let selectedCell = null;   // currently selected cell {row, col} or null
+// Gem mid-game stats: per gem type XP and level (resets each game)
+let gemStats = {};         // e.g. gemStats["ruby"] = { level: 0, xp: 0 }
+let upgradeLevels = {};    // permanent upgrade level for each gem type (persists via localStorage)
+let achievements = {};     // achievement unlock status (persisted via localStorage)
 
-// Achievements data
-let achievements = [
-  { id: 'firstMatch', name: 'First Steps', description: 'Make your first match', unlocked: false },
-  { id: 'match4',    name: 'Four of a Kind', description: 'Match 4 gems in one line', unlocked: false },
-  { id: 'match5',    name: 'Five in a Row', description: 'Match 5 gems in one line', unlocked: false },
-  { id: 'score1000', name: 'Scored 1,000', description: 'Score at least 1000 in a game', unlocked: false },
-  { id: 'score5000', name: 'Scored 5,000', description: 'Score at least 5000 in a game', unlocked: false },
-  { id: 'level5',    name: 'Level 5 Achieved', description: 'Reach level 5 in one game', unlocked: false },
-  { id: 'combo',     name: 'Combo Move', description: 'Clear multiple matches in one swap', unlocked: false }
-];
-let newAchvThisGame = [];
+// DOM element references
+let scoreElem, cashElem, multiElem, multiFillElem;
+let gemBarElems = {};      // references for each gem type's XP bar elements (level text and fill)
+let shopModal, shopItemsElems = {};
 
-// Load persistent data (cash, upgrades, achievements) from localStorage
-function loadPersistentData() {
-  const savedUpgrades = localStorage.getItem('upgrades');
-  if (savedUpgrades) {
-    const parsed = JSON.parse(savedUpgrades);
-    for (let key in upgrades) {
-      if (parsed[key] !== undefined) {
-        upgrades[key].level = parsed[key].level || 0;
-        upgrades[key].cost = parsed[key].cost || upgrades[key].cost;
+// Reset gemStats and update UI bars (for a new game)
+function resetGemStats() {
+  gemStats = {};
+  for (let type of gemTypes) {
+    gemStats[type] = { level: 0, xp: 0 };
+    // Reset each gem's XP bar UI
+    const bar = gemBarElems[type];
+    bar.levelText.textContent = 1;       // display level (base level 1)
+    bar.fill.style.width = "0%";        // empty XP bar
+  }
+}
+
+// Generate a new board with random gems, avoiding initial 3-in-a-row matches
+function generateBoard() {
+  const newBoard = Array.from({ length: rows }, () => Array(cols).fill(null));
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      // Choose a random gem type that doesn't form an immediate match
+      let available = gemTypes.slice();
+      // Check left two gems for a horizontal run
+      if (j >= 2 && newBoard[i][j-1] === newBoard[i][j-2]) {
+        const avoidType = newBoard[i][j-1];
+        available = available.filter(type => type !== avoidType);
       }
+      // Check above two gems for a vertical run
+      if (i >= 2 && newBoard[i-1][j] === newBoard[i-2][j]) {
+        const avoidType = newBoard[i-1][j];
+        available = available.filter(type => type !== avoidType);
+      }
+      // Randomly pick from remaining available types
+      const randIndex = Math.floor(Math.random() * available.length);
+      newBoard[i][j] = available[randIndex];
     }
   }
-  const savedCash = localStorage.getItem('cash');
-  totalCash = savedCash ? Number(savedCash) : 0;
-  const savedAch = localStorage.getItem('achievements');
-  if (savedAch) {
-    const parsedAch = JSON.parse(savedAch);
-    achievements.forEach(ach => {
-      if (parsedAch[ach.id]) ach.unlocked = true;
-    });
-  }
+  return newBoard;
 }
 
-// Save persistent data to localStorage
-function savePersistentData() {
-  const saveObj = {};
-  for (let key in upgrades) {
-    saveObj[key] = { level: upgrades[key].level, cost: upgrades[key].cost };
-  }
-  localStorage.setItem('upgrades', JSON.stringify(saveObj));
-  localStorage.setItem('cash', String(totalCash));
-  const achObj = {};
-  achievements.forEach(ach => achObj[ach.id] = ach.unlocked);
-  localStorage.setItem('achievements', JSON.stringify(achObj));
-}
-
-// Update multipliers based on upgrade levels
-function updateMultipliers() {
-  scoreMultiplier = 1 + upgrades.score.level * upgradeFactor;
-  xpMultiplier    = 1 + upgrades.xp.level * upgradeFactor;
-  cashMultiplier  = 1 + upgrades.cash.level * upgradeFactor;
-}
-
-// Create a gem element at (row, col) of a given type (0-5) and add to board
-function createGem(type, row, col, initialTopOffset = 0) {
-  const gem = document.createElement('div');
-  gem.classList.add('gem');
-  // Assign shape and symbol based on type
-  let shapeClass, symbol;
-  switch (type) {
-    case 0: shapeClass = 'heart';    symbol = '♥'; break;
-    case 1: shapeClass = 'diamond';  symbol = '♦'; break;
-    case 2: shapeClass = 'star';     symbol = '★'; break;
-    case 3: shapeClass = 'circle';   symbol = '●'; break;
-    case 4: shapeClass = 'square';   symbol = '■'; break;
-    case 5: shapeClass = 'triangle'; symbol = '▲'; break;
-    default: shapeClass = 'circle';  symbol = '●';
-  }
-  gem.classList.add(shapeClass);
-  gem.textContent = symbol;
-  const gemSize = boardElem.clientWidth / BOARD_SIZE;
-  gem.style.width = gemSize + 'px';
-  gem.style.height = gemSize + 'px';
-  gem.style.left = (col * gemSize) + 'px';
-  gem.style.top = (initialTopOffset !== 0) ? (-initialTopOffset * gemSize) + 'px' : (row * gemSize) + 'px';
-  gem.dataset.row = row;
-  gem.dataset.col = col;
-  // Attach pointer events for drag/swipe on this gem
-  gem.addEventListener('pointerdown', onPointerDown);
-  gem.addEventListener('pointermove', onPointerMove);
-  gem.addEventListener('pointerup', onPointerUp);
-  boardElem.appendChild(gem);
-  return gem;
-}
-
-// Initialize the board with random gems (no initial matches)
-function initBoard() {
-  board = [];
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    board[r] = new Array(BOARD_SIZE).fill(null);
-  }
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    for (let c = 0; c < BOARD_SIZE; c++) {
-      let type;
-      do {
-        type = Math.floor(Math.random() * 6);
-      } while (
-        (c >= 2 && board[r][c-1] && board[r][c-2] &&
-          board[r][c-1].type === type && board[r][c-2].type === type) ||
-        (r >= 2 && board[r-1][c] && board[r-2][c] &&
-          board[r-1][c].type === type && board[r-2][c].type === type)
-      );
-      const gemElem = createGem(type, r, c);
-      board[r][c] = { type: type, element: gemElem, row: r, col: c };
-    }
-  }
-}
-
-// Find all match-3 (or more) sets on the board, return list of positions to remove
+// Find all matches of 3+ identical gems in a row or column. Returns a list of positions to remove.
 function findMatches() {
-  let toRemove = Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(false));
-  // Check rows
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    let streakType = null, streakCount = 0;
-    for (let c = 0; c < BOARD_SIZE; c++) {
-      if (board[r][c] && board[r][c].type === streakType) {
-        streakCount++;
+  const toRemove = Array.from({ length: rows }, () => Array(cols).fill(false));
+  // Horizontal matches
+  for (let i = 0; i < rows; i++) {
+    let runLength = 1;
+    for (let j = 1; j < cols; j++) {
+      if (board[i][j] && board[i][j] === board[i][j-1]) {
+        runLength++;
       } else {
-        if (streakCount >= 3) {
-          for (let k = 1; k <= streakCount; k++) toRemove[r][c-k] = true;
+        if (runLength >= 3) {
+          // Mark this run for removal
+          for (let k = 1; k <= runLength; k++) {
+            toRemove[i][j-k] = true;
+          }
+          // Achievements: match of 4+ in a row
+          if (runLength >= 4) {
+            if (!achievements.match4 && runLength >= 4) {
+              achievements.match4 = true;
+              localStorage.setItem("achievements", JSON.stringify(achievements));
+              alert("Achievement Unlocked: Matched 4 in a row!");
+            }
+            if (!achievements.match5 && runLength >= 5) {
+              achievements.match5 = true;
+              localStorage.setItem("achievements", JSON.stringify(achievements));
+              alert("Achievement Unlocked: Matched 5 in a row!");
+            }
+          }
         }
-        streakType = board[r][c] ? board[r][c].type : null;
-        streakCount = board[r][c] ? 1 : 0;
+        runLength = 1;
       }
     }
-    if (streakCount >= 3) {
-      for (let k = 1; k <= streakCount; k++) {
-        toRemove[r][BOARD_SIZE - k] = true;
+    // Check end of row
+    if (runLength >= 3) {
+      for (let k = 0; k < runLength; k++) {
+        toRemove[i][cols-1-k] = true;
+      }
+      if (runLength >= 4) {
+        if (!achievements.match4 && runLength >= 4) {
+          achievements.match4 = true;
+          localStorage.setItem("achievements", JSON.stringify(achievements));
+          alert("Achievement Unlocked: Matched 4 in a row!");
+        }
+        if (!achievements.match5 && runLength >= 5) {
+          achievements.match5 = true;
+          localStorage.setItem("achievements", JSON.stringify(achievements));
+          alert("Achievement Unlocked: Matched 5 in a row!");
+        }
       }
     }
   }
-  // Check columns
-  for (let c = 0; c < BOARD_SIZE; c++) {
-    let streakType = null, streakCount = 0;
-    for (let r = 0; r < BOARD_SIZE; r++) {
-      if (board[r][c] && board[r][c].type === streakType) {
-        streakCount++;
+  // Vertical matches
+  for (let j = 0; j < cols; j++) {
+    let runLength = 1;
+    for (let i = 1; i < rows; i++) {
+      if (board[i][j] && board[i][j] === board[i-1][j]) {
+        runLength++;
       } else {
-        if (streakCount >= 3) {
-          for (let k = 1; k <= streakCount; k++) toRemove[r-k][c] = true;
+        if (runLength >= 3) {
+          for (let k = 1; k <= runLength; k++) {
+            toRemove[i-k][j] = true;
+          }
+          if (runLength >= 4) {
+            if (!achievements.match4 && runLength >= 4) {
+              achievements.match4 = true;
+              localStorage.setItem("achievements", JSON.stringify(achievements));
+              alert("Achievement Unlocked: Matched 4 in a column!");
+            }
+            if (!achievements.match5 && runLength >= 5) {
+              achievements.match5 = true;
+              localStorage.setItem("achievements", JSON.stringify(achievements));
+              alert("Achievement Unlocked: Matched 5 in a column!");
+            }
+          }
         }
-        streakType = board[r][c] ? board[r][c].type : null;
-        streakCount = board[r][c] ? 1 : 0;
+        runLength = 1;
       }
     }
-    if (streakCount >= 3) {
-      for (let k = 1; k <= streakCount; k++) {
-        toRemove[BOARD_SIZE - k][c] = true;
+    if (runLength >= 3) {
+      for (let k = 0; k < runLength; k++) {
+        toRemove[rows-1-k][j] = true;
+      }
+      if (runLength >= 4) {
+        if (!achievements.match4 && runLength >= 4) {
+          achievements.match4 = true;
+          localStorage.setItem("achievements", JSON.stringify(achievements));
+          alert("Achievement Unlocked: Matched 4 in a column!");
+        }
+        if (!achievements.match5 && runLength >= 5) {
+          achievements.match5 = true;
+          localStorage.setItem("achievements", JSON.stringify(achievements));
+          alert("Achievement Unlocked: Matched 5 in a column!");
+        }
       }
     }
   }
-  // Collect all marked cells
-  let removeList = [];
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    for (let c = 0; c < BOARD_SIZE; c++) {
-      if (toRemove[r][c] && board[r][c] !== null) {
-        removeList.push({ r, c });
+  // Compile list of positions to remove
+  const removals = [];
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (toRemove[i][j]) {
+        removals.push({ r: i, c: j });
       }
     }
   }
-  return removeList;
+  return removals;
 }
 
-// Remove matched gems with animation and update score, XP, cash
-function removeMatches(matches) {
-  if (matches.length === 0) return;
-  // Unlock achievements for first match, big matches, combos
-  if (matches.length > 0) unlockAchievement('firstMatch');
-  if (matches.length >= 4) unlockAchievement(matches.length >= 5 ? 'match5' : 'match4');
-  if (matches.length > 3) unlockAchievement('combo');
-  // Animate gems to remove
-  matches.forEach(({ r, c }) => {
-    const gemObj = board[r][c];
-    if (gemObj) gemObj.element.classList.add('remove');
-  });
-  // After animation, remove gems and update game state
-  setTimeout(() => {
-    matches.forEach(({ r, c }) => {
-      const gemObj = board[r][c];
-      if (gemObj) {
-        boardElem.removeChild(gemObj.element);
-        board[r][c] = null;
-        // Add score, XP, and cash for each gem removed
-        score += Math.floor(baseScore * scoreMultiplier);
-        xp   += Math.floor(baseXP * xpMultiplier);
-        totalCash += baseCash * cashMultiplier;
-      }
-    });
-    // Update UI for score, cash, and XP bar
-    scoreElem.textContent = score;
-    cashElem.textContent = Math.floor(totalCash);
-    handleXPandLevel();
-    // Let remaining gems fall into empty spaces
-    dropGems();
-  }, 300);
-}
-
-// Drop gems down to fill empty cells after removal
+// Apply gravity to drop gems down into empty spaces after removals
 function dropGems() {
-  const gemSize = boardElem.clientWidth / BOARD_SIZE;
-  // Store original row for each gem to calculate drop distance
-  board.forEach(row => row.forEach(gem => {
-    if (gem) gem.oldRow = gem.row;
-  }));
-  // Collapse each column from bottom
-  for (let c = 0; c < BOARD_SIZE; c++) {
-    let writeRow = BOARD_SIZE - 1;
-    for (let r = BOARD_SIZE - 1; r >= 0; r--) {
-      if (board[r][c] !== null) {
-        if (writeRow !== r) { 
-          board[writeRow][c] = board[r][c];
-          board[writeRow][c].row = writeRow;
-          board[r][c] = null;
+  for (let j = 0; j < cols; j++) {
+    let writeIndex = rows - 1;
+    for (let i = rows - 1; i >= 0; i--) {
+      if (board[i][j] !== null) {
+        board[writeIndex][j] = board[i][j];
+        writeIndex--;
+      }
+    }
+    // Set any remaining cells above to null (will be filled later)
+    for (let i = writeIndex; i >= 0; i--) {
+      board[i][j] = null;
+    }
+  }
+}
+
+// Fill empty cells (null) with new random gems (avoiding immediate matches on placement)
+function fillEmptySpaces() {
+  for (let j = 0; j < cols; j++) {
+    for (let i = 0; i < rows && board[i][j] === null; i++) {
+      let available = gemTypes.slice();
+      // Avoid creating vertical match with two gems below (since we're filling top-down after gravity)
+      if (i <= rows - 3 && board[i+1][j] === board[i+2][j]) {
+        const avoidType = board[i+1][j];
+        available = available.filter(type => type !== avoidType);
+      }
+      // Avoid creating horizontal match with two left neighbors
+      if (j >= 2 && board[i][j-1] === board[i][j-2]) {
+        const avoidType = board[i][j-1];
+        available = available.filter(type => type !== avoidType);
+      }
+      const randIndex = Math.floor(Math.random() * available.length);
+      board[i][j] = available[randIndex];
+    }
+  }
+}
+
+// Check if any valid moves remain (any adjacent swap leads to a match)
+function hasMoves() {
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (j < cols - 1) {
+        // Swap right neighbor
+        [board[i][j], board[i][j+1]] = [board[i][j+1], board[i][j]];
+        if (findMatches().length > 0) {
+          [board[i][j], board[i][j+1]] = [board[i][j+1], board[i][j]];
+          return true;
         }
-        writeRow--;
+        // Swap back
+        [board[i][j], board[i][j+1]] = [board[i][j+1], board[i][j]];
       }
-    }
-    // Mark any remaining cells at top as empty
-    for (let r = writeRow; r >= 0; r--) {
-      board[r][c] = null;
+      if (i < rows - 1) {
+        // Swap down neighbor
+        [board[i][j], board[i+1][j]] = [board[i+1][j], board[i][j]];
+        if (findMatches().length > 0) {
+          [board[i][j], board[i+1][j]] = [board[i+1][j], board[i][j]];
+          return true;
+        }
+        [board[i][j], board[i+1][j]] = [board[i+1][j], board[i][j]];
+      }
     }
   }
-  // Animate gems to their new positions
-  board.forEach(row => row.forEach(gem => {
-    if (gem) {
-      const distance = gem.row - gem.oldRow;
-      if (distance !== 0) {
-        gem.element.style.transitionDuration = (0.1 * Math.abs(distance)) + "s";
-      }
-      gem.element.style.top = (gem.row * gemSize) + 'px';
-      gem.element.dataset.row = gem.row;
-      gem.element.dataset.col = gem.col;
-    }
-  }));
-  // Determine longest drop duration
-  let maxDistance = 0;
-  board.forEach(row => row.forEach(gem => {
-    if (gem) {
-      const dist = Math.abs(gem.row - (gem.oldRow || gem.row));
-      if (dist > maxDistance) maxDistance = dist;
-    }
-  }));
-  const dropDuration = maxDistance * 100; // in ms (0.1s per cell)
-  setTimeout(() => {
-    // Fill new gems in blanks at top
-    fillBoard();
-  }, dropDuration + 50);
+  return false;
 }
 
-// Fill empty top cells with new random gems (dropping in from above)
-function fillBoard() {
-  const gemSize = boardElem.clientWidth / BOARD_SIZE;
-  for (let c = 0; c < BOARD_SIZE; c++) {
-    // Count empty cells at top of this column
-    let emptyCount = 0;
-    for (let r = 0; r < BOARD_SIZE && board[r][c] === null; r++) {
-      emptyCount++;
-    }
-    // Create new gems for these empty positions
-    for (let i = 0; i < emptyCount; i++) {
-      const r = i;
-      const type = Math.floor(Math.random() * 6);
-      const gemElem = createGem(type, r, c, 1); // spawn just above the board
-      board[r][c] = { type: type, element: gemElem, row: r, col: c };
-      // Animate gem falling into place
-      gemElem.style.transition = 'top 0.1s';
-      requestAnimationFrame(() => {
-        gemElem.style.top = (r * gemSize) + 'px';
-      });
+// Shuffle the board when no moves remain (randomly rearrange all gems, avoiding immediate matches)
+function shuffleBoard() {
+  // Gather all gems in a list
+  const gems = [];
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      gems.push(board[i][j]);
     }
   }
-  // After new gems have settled, check for new matches (cascade)
-  setTimeout(() => {
-    const newMatches = findMatches();
-    if (newMatches.length > 0) {
-      removeMatches(newMatches);
+  // Fisher-Yates shuffle
+  for (let k = gems.length - 1; k > 0; k--) {
+    const rand = Math.floor(Math.random() * (k + 1));
+    [gems[k], gems[rand]] = [gems[rand], gems[k]];
+  }
+  // Place shuffled gems back into board and ensure no immediate matches
+  for (let attempt = 0; attempt < 50; attempt++) {
+    let idx = 0;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        board[i][j] = gems[idx++];
+      }
+    }
+    if (findMatches().length === 0) break;
+    // If a match is found, shuffle again and retry
+    for (let k = gems.length - 1; k > 0; k--) {
+      const rand = Math.floor(Math.random() * (k + 1));
+      [gems[k], gems[rand]] = [gems[rand], gems[k]];
+    }
+  }
+  renderBoard();
+}
+
+// Update the DOM to reflect the current board state
+function renderBoard() {
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const cell = cellElements[i][j];
+      cell.className = "gem " + board[i][j];
+    }
+  }
+}
+
+// Attempt to swap the gem at (r1,c1) with the gem at (r2,c2). Returns true if a valid match resulted.
+function attemptSwap(r1, c1, r2, c2) {
+  // Swap positions in the board data
+  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+  const matches = findMatches();
+  if (matches.length === 0) {
+    // Invalid swap (no match) – swap back
+    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+    return false;
+  }
+  // Valid swap – remove matches and cascade
+  while (true) {
+    const toRemove = findMatches();
+    if (toRemove.length === 0) break;
+    // Mark all matched gems for removal and count removals by type
+    const removedByType = {};
+    for (const pos of toRemove) {
+      const gemType = board[pos.r][pos.c];
+      if (gemType) {
+        removedByType[gemType] = (removedByType[gemType] || 0) + 1;
+      }
+      board[pos.r][pos.c] = null;
+    }
+    // Process score, cash, and XP for each removed gem type
+    const currentMultiplier = multiplier;
+    for (const [type, count] of Object.entries(removedByType)) {
+      // Points: (base points + 5*level) * count * current multiplier
+      const gemLevel = gemStats[type].level;
+      const gemPointValue = BASE_POINT + 5 * gemLevel;
+      score += gemPointValue * count * currentMultiplier;
+      // Cash: +1 per gem removed (not affected by multiplier)
+      cash += count;
+      // XP: 10 XP per gem * count * (1 + upgradeLevel)
+      const xpGain = 10 * count * (1 + (upgradeLevels[type] || 0));
+      gemStats[type].xp += xpGain;
+      // Level-up gems as needed
+      while (gemStats[type].xp >= LEVEL_UP_XP) {
+        gemStats[type].xp -= LEVEL_UP_XP;
+        gemStats[type].level += 1;
+        // Update gem level display
+        const bar = gemBarElems[type];
+        bar.levelText.textContent = gemStats[type].level + 1; // display level (internal level+1)
+        bar.fill.style.width = "0%"; // reset bar (will update with remainder below)
+        // Increment global multiplier progress and update multiplier if threshold reached
+        multiProgress += 1;
+        if (multiProgress >= MULTI_THRESHOLD) {
+          multiProgress -= MULTI_THRESHOLD;
+          multiplier += 1;
+          multiElem.textContent = multiplier;
+          if (!achievements.multi5 && multiplier >= 5) {
+            achievements.multi5 = true;
+            localStorage.setItem("achievements", JSON.stringify(achievements));
+            alert("Achievement Unlocked: Multiplier x5 reached!");
+          }
+        }
+        // Update multiplier progress bar fill
+        const percent = Math.floor((multiProgress / MULTI_THRESHOLD) * 100);
+        multiFillElem.style.width = percent + "%";
+      }
+      // Update this gem type's XP bar fill (remaining progress toward next level)
+      const percent = Math.floor((gemStats[type].xp / LEVEL_UP_XP) * 100);
+      gemBarElems[type].fill.style.width = percent + "%";
+    }
+    // Update score and cash display
+    scoreElem.textContent = score;
+    cashElem.textContent = cash;
+    // Save cash after each scoring cascade (persistent currency)
+    localStorage.setItem("cash", cash);
+    // Drop gems down and fill new ones, then continue checking for new matches
+    dropGems();
+    fillEmptySpaces();
+  }
+  // Refresh the board UI after cascade
+  renderBoard();
+  // Check score-based achievement
+  if (!achievements.score1000 && score >= 1000) {
+    achievements.score1000 = true;
+    localStorage.setItem("achievements", JSON.stringify(achievements));
+    alert("Achievement Unlocked: Scored 1000 points!");
+  }
+  // If no moves remain, shuffle the board
+  if (!hasMoves()) {
+    shuffleBoard();
+  }
+  return true;
+}
+
+// Handle selection (click/tap) on a gem cell at (row, col)
+function handleCellSelect(row, col) {
+  if (selectedCell === null) {
+    // No gem currently selected – select this gem
+    selectedCell = { row, col };
+    cellElements[row][col].classList.add("selected");
+  } else {
+    const prev = selectedCell;
+    // Deselect if the same cell was tapped again
+    if (prev.row === row && prev.col === col) {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = null;
+      return;
+    }
+    const adjacent = Math.abs(prev.row - row) + Math.abs(prev.col - col) === 1;
+    if (adjacent) {
+      // Adjacent gem selected – attempt swap
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = null;
+      attemptSwap(prev.row, prev.col, row, col);
     } else {
-      // No more cascades; allow player input again or end game if time is up
-      isProcessing = false;
-      if (timeUp) endGame();
+      // Not adjacent – change the selection to this gem
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = { row, col };
+      cellElements[row][col].classList.add("selected");
     }
-  }, 150);
-}
-
-// Handle XP progress and level-ups during a game
-function handleXPandLevel() {
-  let levelUpOccurred = false;
-  while (xp >= level * 100) {
-    xp -= level * 100;
-    level++;
-    levelUpOccurred = true;
-  }
-  if (levelUpOccurred && level >= 5) {
-    unlockAchievement('level5');
-  }
-  levelElem.textContent = level;
-  const progressPercent = (xp / (level * 100)) * 100;
-  xpProgressElem.style.width = Math.min(progressPercent, 100) + '%';
-}
-
-// Unlock a specific achievement by id (if not already unlocked)
-function unlockAchievement(id) {
-  const ach = achievements.find(a => a.id === id);
-  if (ach && !ach.unlocked) {
-    ach.unlocked = true;
-    newAchvThisGame.push(ach.name);
-    // Persist achievement unlock
-    const savedAch = localStorage.getItem('achievements');
-    let achObj = savedAch ? JSON.parse(savedAch) : {};
-    achObj[id] = true;
-    localStorage.setItem('achievements', JSON.stringify(achObj));
   }
 }
 
-// Swap two adjacent gems (in data and visually)
-function swapGems(r1, c1, r2, c2) {
-  const gem1 = board[r1][c1];
-  const gem2 = board[r2][c2];
-  if (!gem1 || !gem2) return;
-  board[r1][c1] = gem2;
-  board[r2][c2] = gem1;
-  [gem1.row, gem2.row] = [gem2.row, gem1.row];
-  [gem1.col, gem2.col] = [gem2.col, gem1.col];
-  const gemSize = boardElem.clientWidth / BOARD_SIZE;
-  // Animate their positions swapping
-  gem1.element.style.top = (gem1.row * gemSize) + 'px';
-  gem1.element.style.left = (gem1.col * gemSize) + 'px';
-  gem2.element.style.top = (gem2.row * gemSize) + 'px';
-  gem2.element.style.left = (gem2.col * gemSize) + 'px';
-  gem1.element.dataset.row = gem1.row;
-  gem1.element.dataset.col = gem1.col;
-  gem2.element.dataset.row = gem2.row;
-  gem2.element.dataset.col = gem2.col;
-}
-
-// Attempt to swap gem at (r,c) in a given direction, then check and handle matches
-function trySwap(r, c, direction) {
-  if (isProcessing) return;
-  let dr = 0, dc = 0;
-  if (direction === 'left')  dc = -1;
-  if (direction === 'right') dc = 1;
-  if (direction === 'up')    dr = -1;
-  if (direction === 'down')  dr = 1;
-  const r2 = r + dr, c2 = c + dc;
-  if (r2 < 0 || r2 >= BOARD_SIZE || c2 < 0 || c2 >= BOARD_SIZE) return;
-  isProcessing = true;
-  swapGems(r, c, r2, c2);
-  // After swap animation, check for a match
-  setTimeout(() => {
-    const matches = findMatches();
-    if (matches.length === 0) {
-      // No match - swap back
-      swapGems(r2, c2, r, c);
-      setTimeout(() => { isProcessing = false; }, 300);
-    } else {
-      // Match found - remove them (cascade will handle setting isProcessing false)
-      removeMatches(matches);
-    }
-  }, 300);
-}
-
-// Start a new game round (reset dynamic values and timer)
-function startGame() {
-  score = 0;
-  level = 1;
-  xp = 0;
-  timeRemaining = 300;
-  timeUp = false;
-  isProcessing = false;
-  newAchvThisGame = [];
-  // Reset UI displays
-  scoreElem.textContent = score;
-  levelElem.textContent = level;
-  xpProgressElem.style.width = '0%';
-  boardElem.innerHTML = '';
-  // Build new board and apply multipliers from upgrades
-  initBoard();
-  updateMultipliers();
-  cashElem.textContent = Math.floor(totalCash);
-  // Start countdown timer
-  timerElem.textContent = formatTime(timeRemaining);
-  if (gameInterval) clearInterval(gameInterval);
-  gameInterval = setInterval(() => {
-    timeRemaining--;
-    if (timeRemaining < 0) timeRemaining = 0;
-    timerElem.textContent = formatTime(timeRemaining);
-    if (timeRemaining <= 0) {
-      clearInterval(gameInterval);
-      timeUp = true;
-      if (!isProcessing) {
-        endGame();
-      }
-    }
-  }, 1000);
-}
-
-// Format seconds as M:SS (e.g., 4:05)
-function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return m + ':' + (s < 10 ? '0' + s : s);
-}
-
-// Handle end-of-game: show Game Over modal and persist data
-function endGame() {
-  if (gameInterval) clearInterval(gameInterval);
-  // Compute cash earned this round
-  let startCash = Number(localStorage.getItem('cash')) || 0;
-  let cashEarned = totalCash - startCash;
-  if (cashEarned < 0) cashEarned = 0;
-  // Update persistent cash total
-  localStorage.setItem('cash', String(totalCash));
-  // Populate Game Over modal info
-  finalScoreElem.textContent = `Final Score: ${score}`;
-  finalLevelElem.textContent = `Level Reached: ${level}`;
-  cashEarnedElem.textContent = `Cash Earned: ${Math.floor(cashEarned)}`;
-  achievementsEarnedElem.textContent = newAchvThisGame.length > 0 
-    ? `Achievements Unlocked: ${newAchvThisGame.join(', ')}` 
-    : `Achievements Unlocked: None`;
-  // Show Game Over modal
-  gameoverModal.style.display = 'flex';
-}
-
-// Pointer event handling for drag/swipe moves
-let activePointerId = null;
-let dragStartX = 0, dragStartY = 0;
-let originRow = 0, originCol = 0;
-function onPointerDown(e) {
-  if (isProcessing || activePointerId !== null) return;
-  activePointerId = e.pointerId;
-  e.target.setPointerCapture(e.pointerId);
-  dragStartX = e.clientX;
-  dragStartY = e.clientY;
-  originRow = Number(e.target.dataset.row);
-  originCol = Number(e.target.dataset.col);
-}
-function onPointerMove(e) {
-  if (e.pointerId !== activePointerId) return;
-  if (isProcessing) return;
-  const dx = e.clientX - dragStartX;
-  const dy = e.clientY - dragStartY;
-  const gemSize = boardElem.clientWidth / BOARD_SIZE;
-  const threshold = gemSize * 0.3;
-  let direction = null;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
-    direction = dx > 0 ? 'right' : 'left';
-  } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
-    direction = dy > 0 ? 'down' : 'up';
-  }
-  if (direction) {
-    trySwap(originRow, originCol, direction);
-    isProcessing = true;
-  }
-}
-function onPointerUp(e) {
-  if (e.pointerId === activePointerId) {
-    activePointerId = null;
-  }
-}
-
-// Modal button event listeners
-document.getElementById('open-shop').addEventListener('click', () => {
-  gameoverModal.style.display = 'none';
-  buildUpgradeList();
-  shopModal.style.display = 'flex';
-});
-document.getElementById('close-shop').addEventListener('click', () => {
-  shopModal.style.display = 'none';
-  gameoverModal.style.display = 'flex';
-  cashElem.textContent = Math.floor(totalCash);
-});
-document.getElementById('open-achievements').addEventListener('click', () => {
-  gameoverModal.style.display = 'none';
-  buildAchievementsList();
-  achievementsModal.style.display = 'flex';
-});
-document.getElementById('close-achievements').addEventListener('click', () => {
-  achievementsModal.style.display = 'none';
-  gameoverModal.style.display = 'flex';
-});
-document.getElementById('play-again').addEventListener('click', () => {
-  gameoverModal.style.display = 'none';
-  startGame();
-});
-
-// Build the upgrade list in the shop
-function buildUpgradeList() {
-  upgradeListElem.innerHTML = '';
-  for (let key in upgrades) {
-    const upg = upgrades[key];
-    const li = document.createElement('li');
-    li.textContent = `${upg.name} (Level ${upg.level}) - Cost: ${upg.cost} `;
-    const btn = document.createElement('button');
-    btn.textContent = "Upgrade";
-    btn.dataset.key = key;
-    if (totalCash < upg.cost) btn.disabled = true;
-    li.appendChild(btn);
-    upgradeListElem.appendChild(li);
-  }
-}
-
-// Build the achievements list in the achievements modal
-function buildAchievementsList() {
-  achievementsListElem.innerHTML = '';
-  achievements.forEach(ach => {
-    const li = document.createElement('li');
-    li.textContent = `${ach.name} - ${ach.description}`;
-    li.className = ach.unlocked ? 'unlocked' : 'locked';
-    achievementsListElem.appendChild(li);
+// Initialize the game on page load
+function initGame() {
+  // Get references to UI elements
+  scoreElem = document.getElementById("score");
+  cashElem = document.getElementById("cash");
+  multiElem = document.getElementById("multiplier");
+  multiFillElem = document.getElementById("multiplierFill");
+  shopModal = document.getElementById("shopModal");
+  // Gem XP bar elements
+  document.querySelectorAll(".gem-bar").forEach(barElem => {
+    const type = barElem.classList[1];  // second class is gem type
+    gemBarElems[type] = {
+      levelText: barElem.querySelector(".gem-level"),
+      fill: barElem.querySelector(".xp-fill")
+    };
   });
-}
-
-// Handle purchase of an upgrade
-upgradeListElem.addEventListener('click', e => {
-  if (e.target.tagName === 'BUTTON' && e.target.dataset.key) {
-    const key = e.target.dataset.key;
-    const upg = upgrades[key];
-    if (upg && totalCash >= upg.cost) {
-      totalCash -= upg.cost;
-      upg.level += 1;
-      // Increase cost for next level (e.g., 1.5x)
-      upg.cost = Math.floor(upg.cost * 1.5);
-      // Persist new upgrade level and cash
-      savePersistentData();
-      // Refresh display
-      buildUpgradeList();
-      cashElem.textContent = Math.floor(totalCash);
+  // Shop items and event handlers
+  document.querySelectorAll(".shop-item").forEach(item => {
+    const type = item.dataset.type;
+    shopItemsElems[type] = {
+      levelSpan: item.querySelector(".up-level"),
+      costSpan: item.querySelector(".up-cost"),
+      element: item
+    };
+    item.addEventListener("click", () => purchaseUpgrade(type));
+  });
+  document.getElementById("closeShop").addEventListener("click", () => {
+    shopModal.classList.add("hidden");
+  });
+  document.getElementById("shopBtn").addEventListener("click", () => {
+    openShop();
+  });
+  document.getElementById("newGameBtn").addEventListener("click", () => {
+    startNewGame();
+  });
+  // Load persistent data (cash, upgrades, achievements) from localStorage
+  const savedCash = localStorage.getItem("cash");
+  cash = savedCash ? parseInt(savedCash, 10) : 0;
+  cashElem.textContent = cash;
+  for (let type of gemTypes) {
+    const savedUp = localStorage.getItem("upgrade_" + type);
+    upgradeLevels[type] = savedUp ? parseInt(savedUp, 10) : 0;
+  }
+  const savedAch = localStorage.getItem("achievements");
+  achievements = savedAch ? JSON.parse(savedAch) : { score1000: false, match4: false, match5: false, multi5: false };
+  // Generate initial board and ensure at least one move is available
+  board = generateBoard();
+  if (!hasMoves()) {
+    let attempts = 0;
+    while (!hasMoves() && attempts < 50) {
+      board = generateBoard();
+      attempts++;
     }
   }
-});
+  // Create board cells and attach event listeners
+  const boardDiv = document.getElementById("gameBoard");
+  boardDiv.innerHTML = "";
+  cellElements = Array.from({ length: rows }, () => Array(cols));
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const cell = document.createElement("div");
+      cell.className = "gem " + board[i][j];
+      cell.dataset.row = i;
+      cell.dataset.col = j;
+      cell.addEventListener("click", () => handleCellSelect(i, j));
+      cell.addEventListener("touchstart", e => {
+        e.preventDefault();
+        handleCellSelect(i, j);
+      }, { passive: false });
+      cellElements[i][j] = cell;
+      boardDiv.appendChild(cell);
+    }
+  }
+  // Initialize score, multiplier, and gem stats UI
+  score = 0;
+  scoreElem.textContent = score;
+  multiplier = 1;
+  multiElem.textContent = multiplier;
+  multiProgress = 0;
+  multiFillElem.style.width = "0%";
+  resetGemStats();
+}
 
-// On page load: load data and start the first game automatically
-loadPersistentData();
-updateMultipliers();
-startGame();
+// Start a new game (preserve persistent data but reset board and temporary stats)
+function startNewGame() {
+  selectedCell = null;
+  // Remove any selection highlight
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      cellElements[i][j].classList.remove("selected");
+    }
+  }
+  // Generate a new board and ensure a valid move exists
+  board = generateBoard();
+  if (!hasMoves()) {
+    let attempts = 0;
+    while (!hasMoves() && attempts < 50) {
+      board = generateBoard();
+      attempts++;
+    }
+  }
+  renderBoard();
+  // Reset score and multiplier
+  score = 0;
+  scoreElem.textContent = score;
+  multiplier = 1;
+  multiElem.textContent = multiplier;
+  multiProgress = 0;
+  multiFillElem.style.width = "0%";
+  // Reset gem XP/levels
+  resetGemStats();
+}
+
+// Open the shop modal and update upgrade info
+function openShop() {
+  for (let type of gemTypes) {
+    shopItemsElems[type].levelSpan.textContent = upgradeLevels[type];
+    const cost = 150 * Math.pow(2, upgradeLevels[type]);
+    shopItemsElems[type].costSpan.textContent = cost;
+  }
+  shopModal.classList.remove("hidden");
+}
+
+// Purchase an upgrade for a gem type if affordable
+function purchaseUpgrade(type) {
+  const level = upgradeLevels[type];
+  const cost = 150 * Math.pow(2, level);
+  if (cash < cost) {
+    alert("Not enough cash to purchase this upgrade!");
+    return;
+  }
+  // Deduct cash and increase upgrade level
+  cash -= cost;
+  upgradeLevels[type] += 1;
+  // Update display values
+  cashElem.textContent = cash;
+  shopItemsElems[type].levelSpan.textContent = upgradeLevels[type];
+  shopItemsElems[type].costSpan.textContent = 150 * Math.pow(2, upgradeLevels[type]);
+  // Save updated data
+  localStorage.setItem("cash", cash);
+  localStorage.setItem("upgrade_" + type, upgradeLevels[type]);
+}
+
+// Start the game on initial page load
+initGame();
