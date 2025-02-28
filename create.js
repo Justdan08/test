@@ -1,100 +1,108 @@
 // Get references to key elements
-const titleInput   = document.getElementById('titleInput');
-const h1Input      = document.getElementById('h1Input');
-const link1Text    = document.getElementById('link1Text');
-const link1Href    = document.getElementById('link1Href');
-const link2Text    = document.getElementById('link2Text');
-const link2Href    = document.getElementById('link2Href');
-const poolNameInput = document.getElementById('poolName');
-const newWordInput  = document.getElementById('newWord');
-const addWordBtn    = document.getElementById('addWordBtn');
-const wordsListUl   = document.getElementById('wordsList');
-const finishBtn     = document.getElementById('finishBtn');
-const outputModal   = document.getElementById('outputModal');
+const fileTitleInput = document.getElementById('fileTitle');
+const titleInput = document.getElementById('titleInput');
+const h1Input = document.getElementById('h1Input');
+const link1Option = document.getElementById('link1Option');
+const link1HrefInput = document.getElementById('link1Href');
+const link2Option = document.getElementById('link2Option');
+const link2HrefInput = document.getElementById('link2Href');
+const newWordInput = document.getElementById('newWord');
+const addWordBtn = document.getElementById('addWordBtn');
+const wordPoolDisplay = document.getElementById('wordPoolDisplay');
+const finishBtn = document.getElementById('finishBtn');
+const outputModal = document.getElementById('outputModal');
 const finalCodeTextarea = document.getElementById('finalCode');
-const downloadBtn   = document.getElementById('downloadBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 const closeModalBtn = document.getElementById('closeModal');
 
-// Function to add a new word to the list
+// Array to hold words for the pool
+let wordsArray = [];
+
+// Update the word pool display (formatted as "WORD", "WORD", "WORD", …)
+function updateWordPoolDisplay() {
+  const formatted = wordsArray.map(word => `"${word}"`).join(", ");
+  wordPoolDisplay.textContent = formatted;
+}
+
+// Add word button event: add word to the array and update display
 addWordBtn.addEventListener('click', () => {
   const word = newWordInput.value.trim();
-  if (word !== '') {
-    // Create list item with the word and a remove button
-    const li = document.createElement('li');
-    const span = document.createElement('span');
-    span.className = 'word-text';
-    span.textContent = word;
-    // Remove button for this word
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.textContent = 'Remove';
-    removeBtn.className = 'remove-btn';
-    // When remove is clicked, delete this word item
-    removeBtn.addEventListener('click', () => {
-      wordsListUl.removeChild(li);
-    });
-    // Assemble the list item and add to the list
-    li.appendChild(span);
-    li.appendChild(removeBtn);
-    wordsListUl.appendChild(li);
-    // Clear the input field for new words
-    newWordInput.value = '';
+  if (word !== "") {
+    wordsArray.push(word.toUpperCase());
+    updateWordPoolDisplay();
+    newWordInput.value = "";
     newWordInput.focus();
   }
 });
 
-// Function to finish and generate the HTML
+// Finish button event: generate the final HTML code with full structure
 finishBtn.addEventListener('click', () => {
-  // Collect values from inputs (use defaults if empty)
-  const pageTitle = titleInput.value.trim() || 'Word Search Puzzle';
-  const mainHeading = h1Input.value.trim() || 'Word Search Puzzle';
-  const nav1Text = link1Text.value.trim() || 'Previous Puzzle';
-  const nav1Href = link1Href.value.trim() || '#';
-  const nav2Text = link2Text.value.trim() || 'Next Puzzle';
-  const nav2Href = link2Href.value.trim() || '#';
-  const poolName = poolNameInput.value.trim() || 'Word Pool';
+  const pageTitle = titleInput.value.trim() || 'Marvel Word Search';
+  const h1Text = h1Input.value.trim() || 'Marvel';
+  
+  // For Link 1: use default href if input is empty
+  const link1DefaultHref = link1Option.selectedOptions[0].getAttribute('data-default-href');
+  const link1Text = link1Option.selectedOptions[0].textContent;
+  const link1Href = link1HrefInput.value.trim() || link1DefaultHref;
+  
+  // For Link 2: use default href if input is empty
+  const link2DefaultHref = link2Option.selectedOptions[0].getAttribute('data-default-href');
+  const link2Text = link2Option.selectedOptions[0].textContent;
+  const link2Href = link2HrefInput.value.trim() || link2DefaultHref;
+  
+  // Convert the words array to JSON string for the data-words attribute
+  const wordsJSON = JSON.stringify(wordsArray);
+  
+  // Construct the final HTML string (using your full template)
+  let htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageTitle}</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>${h1Text}</h1>
+  <div id="options-container"></div>
+  <div id="score">Score: 0</div>
+  <div id="timer">0:00</div>
+  <div id="combo-container">
+    <div id="combo-bar"></div>
+    <div id="combo-text">Combo: 1x</div>
+  </div>
+  <div id="wordsearch"></div>
+  <div id="word-list">
+    <div id="words"></div>
+    <button id="reset-button">Reset Game</button>
+    <div class="nav-links">
+      <a href="${link1Href}">${link1Text}</a>
+      <a href="${link2Href}">${link2Text}</a>
+    </div>
+  </div>
 
-  // Get all words from the list
-  const wordItems = wordsListUl.querySelectorAll('li .word-text');
-  let wordsArray = [];
-  wordItems.forEach(item => {
-    wordsArray.push(item.textContent);
-  });
+  <!-- Marvel word pool -->
+  <div id="word-pool" data-words='${wordsJSON}'></div>
 
-  // Construct the HTML string for the puzzle page
-  let htmlContent = "<!DOCTYPE html>\n<html>\n<head>\n";
-  htmlContent += "  <meta charset=\"UTF-8\" />\n";
-  htmlContent += "  <title>" + pageTitle + "</title>\n";
-  htmlContent += "  <link rel=\"stylesheet\" href=\"style.css\" />\n";
-  htmlContent += "</head>\n<body>\n\n";
-  htmlContent += "  <h1>" + mainHeading + "</h1>\n";
-  htmlContent += "  <div class=\"nav-links\">\n";
-  htmlContent += "    <a href=\"" + nav1Href + "\">" + nav1Text + "</a>\n";
-  htmlContent += "    <a href=\"" + nav2Href + "\">" + nav2Text + "</a>\n";
-  htmlContent += "  </div>\n\n";
-  htmlContent += "  <h2>" + poolName + "</h2>\n";
-  htmlContent += "  <ul class=\"word-pool\">\n";
-  // Add each word as a list item
-  wordsArray.forEach(word => {
-    htmlContent += "    <li>" + word + "</li>\n";
-  });
-  htmlContent += "  </ul>\n\n";
-  htmlContent += "</body>\n</html>";
+  <script src="script.js"></script>
 
-  // Show the generated HTML in the modal textarea
+</body>
+</html>`;
+  
+  // Display the generated HTML in the modal textarea
   finalCodeTextarea.value = htmlContent;
-  // Display the popup modal
   outputModal.style.display = 'flex';
 });
 
-// Download the generated HTML as a file
+// Download the generated HTML file using the File Title field (or default filename)
 downloadBtn.addEventListener('click', () => {
   const content = finalCodeTextarea.value;
   const blob = new Blob([content], { type: "text/html" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
+  const fileTitle = fileTitleInput.value.trim() || "word-search-puzzle.html";
   a.href = url;
-  a.download = "word-search-puzzle.html";
+  a.download = fileTitle;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
