@@ -1,0 +1,180 @@
+/* Basic page styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background: #f9f9f9;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+p {
+  text-align: center;
+  color: #555;
+}
+
+/* Form styling */
+form {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 15px 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+form h2 {
+  margin-top: 20px;
+  font-size: 1.1em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 0.9em;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+input[type="text"]:focus {
+  outline: none;
+  border-color: #888;
+}
+.word-input-area {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+.word-input-area input[type="text"] {
+  flex: 1;
+}
+.word-input-area button {
+  flex: 0 0 auto;
+}
+
+/* Word list styling */
+#wordsList {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 5px;
+}
+#wordsList li {
+  background: #efefef;
+  padding: 5px 8px;
+  margin: 5px 0;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#wordsList li .word-text {
+  /* The span containing the word text */
+}
+#wordsList li .remove-btn {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+#wordsList li .remove-btn:hover {
+  background: #c0392b;
+}
+
+/* Finish button */
+#finishBtn {
+  display: block;
+  width: 100%;
+  margin: 20px 0 0;
+  padding: 10px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+#finishBtn:hover {
+  background: #2980b9;
+}
+
+/* Modal styles */
+.modal {
+  display: none; /* Hidden by default; shown when active */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  /* Center content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 5px;
+}
+.modal-content h2 {
+  margin-top: 0;
+}
+#finalCode {
+  width: 100%;
+  height: 300px;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 0.9em;
+  white-space: pre;
+  margin: 10px 0;
+}
+.modal-buttons {
+  text-align: right;
+}
+.modal-buttons button {
+  margin-left: 5px;
+  padding: 8px 12px;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+#downloadBtn {
+  background: #2ecc71;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+#downloadBtn:hover {
+  background: #27ae60;
+}
+#closeModal {
+  background: #ccc;
+  border: none;
+  border-radius: 4px;
+}
+#closeModal:hover {
+  background: #b3b3b3;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .word-input-area {
+    flex-direction: column;
+  }
+  .word-input-area button {
+    width: 100%;
+    margin-top: 5px;
+  }
+  #finishBtn {
+    font-size: 0.9em;
+  }
+}
