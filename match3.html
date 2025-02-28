@@ -20,65 +20,37 @@
       </div>
     </div>
     <div id="gemBarsContainer">
-      <div class="gem-bar ruby">
-        <div class="gem-label"><span class="gem-name">Ruby</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar">
-          <div class="xp-fill"></div>
-        </div>
-      </div>
-      <div class="gem-bar sapphire">
-        <div class="gem-label"><span class="gem-name">Sapphire</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar">
-          <div class="xp-fill"></div>
-        </div>
-      </div>
-      <div class="gem-bar emerald">
-        <div class="gem-label"><span class="gem-name">Emerald</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar">
-          <div class="xp-fill"></div>
-        </div>
-      </div>
-      <div class="gem-bar amber">
-        <div class="gem-label"><span class="gem-name">Amber</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar">
-          <div class="xp-fill"></div>
-        </div>
-      </div>
-      <div class="gem-bar amethyst">
-        <div class="gem-label"><span class="gem-name">Amethyst</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar">
-          <div class="xp-fill"></div>
-        </div>
-      </div>
-      <div class="gem-bar diamond">
-        <div class="gem-label"><span class="gem-name">Diamond</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar">
-          <div class="xp-fill"></div>
-        </div>
-      </div>
+      <!-- Gem Level Bars -->
+      <div class="gem-bar ruby"><span class="gem-name">Ruby</span> Lvl <span class="gem-level">1</span></div>
+      <div class="gem-bar sapphire"><span class="gem-name">Sapphire</span> Lvl <span class="gem-level">1</span></div>
+      <div class="gem-bar emerald"><span class="gem-name">Emerald</span> Lvl <span class="gem-level">1</span></div>
+      <div class="gem-bar amber"><span class="gem-name">Amber</span> Lvl <span class="gem-level">1</span></div>
+      <div class="gem-bar amethyst"><span class="gem-name">Amethyst</span> Lvl <span class="gem-level">1</span></div>
+      <div class="gem-bar diamond"><span class="gem-name">Diamond</span> Lvl <span class="gem-level">1</span></div>
     </div>
     <div id="buttons">
       <button id="newGameBtn">New Game</button>
       <button id="shopBtn">Shop</button>
     </div>
   </div>
-  <div id="gameBoard"></div>
+
+  <div id="gameBoard"></div>  <!-- SINGLE GAME BOARD -->
+
   <div id="shopModal" class="hidden">
     <div id="shopContent">
       <h2>Shop</h2>
       <ul id="shopItems">
-        <li class="shop-item" data-type="ruby">Ruby Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
-        <li class="shop-item" data-type="sapphire">Sapphire Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
-        <li class="shop-item" data-type="emerald">Emerald Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
-        <li class="shop-item" data-type="amber">Amber Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
-        <li class="shop-item" data-type="amethyst">Amethyst Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
-        <li class="shop-item" data-type="diamond">Diamond Upgrade (Lvl <span class="up-level"></span>): Cost $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="ruby">Ruby Upgrade - Cost: $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="sapphire">Sapphire Upgrade - Cost: $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="emerald">Emerald Upgrade - Cost: $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="amber">Amber Upgrade - Cost: $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="amethyst">Amethyst Upgrade - Cost: $<span class="up-cost"></span></li>
+        <li class="shop-item" data-type="diamond">Diamond Upgrade - Cost: $<span class="up-cost"></span></li>
       </ul>
       <button id="closeShop">Close</button>
     </div>
   </div>
-  <div id="gameBoard"></div>
 
-  <script src="game.js"></script>
+  <script src="game.js"></script> <!-- Ensuring script loads last -->
 </body>
 </html>
