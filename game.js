@@ -14,8 +14,8 @@ const GAME_TIME = 180;        // 3 minutes in seconds
 // --------------------------
 // Game State Variables
 // --------------------------
-let board = [];            // 2D array holding gem type names (e.g. "ruby")
-let cellElements = [];     // 2D array of DOM elements for each cell
+let board = [];            // 2D array holding gem type names (e.g., "ruby")
+let cellElements = [];     // 2D array of DOM elements for each board cell
 let score = 0;
 let multiplier = 1;
 let multiProgress = 0;     // Count toward next multiplier increase
@@ -37,7 +37,7 @@ let scoreElem, cashElem, multiElem, multiFillElem, timerElem;
 let gameBoardElem;
 let shopModal, gameOverModal;
 let finalScoreElem, earnedCashElem;
-let gemBarElems = {};      // For each gem type's XP bar in the header
+let gemBarElems = {};      // For each gem type's XP bar (from header)
 let shopItemsElems = {};   // For shop upgrade items
 
 // --------------------------
@@ -98,14 +98,13 @@ function generateBoard() {
     }
   }
 }
-
 function renderBoard() {
-  // Render board into the gameBoard element
+  // Render board into the gameBoard element based on board array
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const typeName = board[i][j];
       cellElements[i][j].className = "gem " + typeName;
-      // Ensure each cell has an inner element "shape" for custom styling
+      // Ensure each cell has a child with class "shape" for custom styling
       if (!cellElements[i][j].querySelector(".shape")) {
         const shape = document.createElement("div");
         shape.className = "shape";
@@ -204,7 +203,7 @@ async function processMatches() {
   while (true) {
     let matches = findMatches();
     if (matches.length === 0) break;
-    // Record positions for falling animation
+    // Record current top positions for falling animation
     let oldPositions = {};
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
@@ -339,10 +338,10 @@ function animateSwap(cell1, cell2) {
 async function attemptSwap(r1, c1, r2, c2) {
   if (animating) return false;
   if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
-  // Tentative swap in data
+  // Tentative swap in board data
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   if (findMatches().length === 0) {
-    // No match, swap back
+    // No match: swap back
     [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
     return false;
   }
@@ -418,10 +417,32 @@ function handleTouchEnd() {
 // --------------------------
 // Timer & End Game Functions
 // --------------------------
+function startTimer() {
+  clearInterval(timerInterval);
+  timeRemaining = GAME_TIME;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    updateTimerDisplay();
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      endGame();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timeRemaining / 60);
+  const seconds = timeRemaining % 60;
+  timerElem.textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 function endGame() {
   clearInterval(timerInterval);
   const earned = Math.floor(score * 0.02);
-  cash += earned;
+  if (earned > 0) {
+    cash += earned;
+  }
   finalScoreElem.textContent = score;
   earnedCashElem.textContent = earned;
   cashElem.textContent = cash;
@@ -431,12 +452,17 @@ function endGame() {
 
 function startNewGame() {
   clearInterval(timerInterval);
-  selectedCell = null;
+  shopModal.classList.add("hidden");
+  gameOverModal.classList.add("hidden");
+  if (selectedCell) {
+    cellElements[selectedCell.row][selectedCell.col].classList.remove("selected");
+    selectedCell = null;
+  }
   score = 0;
   multiplier = 1;
   multiProgress = 0;
-  scoreElem.textContent = "0";
-  multiElem.textContent = "1";
+  scoreElem.textContent = 0;
+  multiElem.textContent = 1;
   multiFillElem.style.width = "0%";
   resetGemStats();
   board = generateBoard();
@@ -513,11 +539,11 @@ window.addEventListener("load", () => {
   finalScoreElem = document.getElementById("finalScore");
   earnedCashElem = document.getElementById("earnedCash");
 
-  document.querySelectorAll(".gem-bar").forEach(barElem => {
-    const type = barElem.classList[1];
+  document.querySelectorAll(".gem-bar").forEach(bar => {
+    const type = bar.classList[1];
     gemBarElems[type] = {
-      levelText: barElem.querySelector(".gem-level"),
-      fill: barElem.querySelector(".xp-fill")
+      levelText: bar.querySelector(".gem-level"),
+      fill: bar.querySelector(".xp-fill")
     };
   });
 
@@ -530,13 +556,15 @@ window.addEventListener("load", () => {
     item.addEventListener("click", () => purchaseUpgrade(type));
   });
 
-  document.getElementById("closeShop").addEventListener("click", () => {
-    shopModal.classList.add("hidden");
-  });
-  document.getElementById("shopBtn").addEventListener("click", openShop);
+  // Check if shopBtn exists before adding event listener
+  const shopBtn = document.getElementById("shopBtn");
+  if (shopBtn) {
+    shopBtn.addEventListener("click", openShop);
+  }
+
   document.getElementById("newGameBtn").addEventListener("click", startNewGame);
   document.getElementById("restartBtn").addEventListener("click", startNewGame);
-
+  
   // Add shop button to game over modal if not already present
   const gameOverContent = document.getElementById("gameOverContent");
   if (gameOverContent && !document.getElementById("shopBtnModal")) {
