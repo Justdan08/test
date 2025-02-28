@@ -74,7 +74,7 @@ body {
   height: 100%;
   width: 0%;
 }
-/* XP bar fill colors */
+/* XP bar fill colors per gem type */
 .gem-bar.ruby .xp-fill { background: #e74c3c; }
 .gem-bar.sapphire .xp-fill { background: #3498db; }
 .gem-bar.emerald .xp-fill { background: #2ecc71; }
