@@ -27,7 +27,7 @@ let achievements = {};
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
 
-// Track touch movement for mobile drag-to-swap
+// Touch dragging for mobile
 let touchStartCell = null;
 
 // --------------------------
@@ -37,26 +37,6 @@ let scoreElem, cashElem, multiElem, multiFillElem, timerElem;
 let shopModal;
 let shopItemsElems = {};
 let gemBarElems = {};
-
-// --------------------------
-// Persistence Utilities
-// --------------------------
-function savePersistentData() {
-  localStorage.setItem("cash", cash);
-  for (let type of gemTypes) {
-    localStorage.setItem("upgrade_" + type, upgradeLevels[type]);
-  }
-  localStorage.setItem("achievements", JSON.stringify(achievements));
-}
-
-function loadPersistentData() {
-  cash = parseInt(localStorage.getItem("cash")) || 0;
-  for (let type of gemTypes) {
-    upgradeLevels[type] = parseInt(localStorage.getItem("upgrade_" + type)) || 0;
-  }
-  let savedAch = localStorage.getItem("achievements");
-  achievements = savedAch ? JSON.parse(savedAch) : { score1000: false, match4: false, match5: false, multi5: false };
-}
 
 // --------------------------
 // Timer Functions
@@ -112,15 +92,44 @@ function renderBoard() {
   }
 }
 
+// --------------------------
+// Gem Swapping Functions
+// --------------------------
 function attemptSwap(r1, c1, r2, c2) {
+  if (!isValidSwap(r1, c1, r2, c2)) return false;
+
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
-  let matches = findMatches();
-  if (matches.length === 0) {
-    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
-    return false;
-  }
   renderBoard();
   return true;
+}
+
+function isValidSwap(r1, c1, r2, c2) {
+  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1; // Must be adjacent
+}
+
+// --------------------------
+// Click-to-Swap for PC
+// --------------------------
+function handleCellSelect(row, col) {
+  if (selectedCell === null) {
+    selectedCell = { row, col };
+    cellElements[row][col].classList.add("selected");
+  } else {
+    const prev = selectedCell;
+    if (prev.row === row && prev.col === col) {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = null;
+      return;
+    }
+    if (attemptSwap(prev.row, prev.col, row, col)) {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = null;
+    } else {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = { row, col };
+      cellElements[row][col].classList.add("selected");
+    }
+  }
 }
 
 // --------------------------
@@ -143,11 +152,8 @@ function handleTouchMove(e) {
   const row = parseInt(targetCell.dataset.row);
   const col = parseInt(targetCell.dataset.col);
 
-  if (
-    Math.abs(touchStartCell.row - row) + Math.abs(touchStartCell.col - col) === 1
-  ) {
-    attemptSwap(touchStartCell.row, touchStartCell.col, row, col);
-    touchStartCell = null; // Reset after swap
+  if (attemptSwap(touchStartCell.row, touchStartCell.col, row, col)) {
+    touchStartCell = null;
   }
 }
 
@@ -187,8 +193,8 @@ function initGame() {
     }
   }
 
-  boardDiv.addEventListener("touchstart", handleTouchStart);
-  boardDiv.addEventListener("touchmove", handleTouchMove);
+  boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
+  boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
   boardDiv.addEventListener("touchend", handleTouchEnd);
 
   startTimer();
