@@ -7,9 +7,13 @@ const rows = 8;
 const cols = 8;
 const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
 const BASE_POINT = 10;
+<<<<<<< HEAD
 const LEVEL_UP_XP = 100;
 const MULTI_THRESHOLD = 20; // e.g., every 20 gem level-ups increases global multiplier
 const GAME_TIME = 180;      // 3 minutes in seconds
+=======
+const GAME_TIME = 180; // 3 minutes (180 seconds)
+>>>>>>> parent of b900e9a (Update game.js)
 
 // --------------------------
 // Game State Variables
@@ -17,6 +21,7 @@ const GAME_TIME = 180;      // 3 minutes in seconds
 let board = [];            // 2D array holding gem type names (e.g., "ruby")
 let cellElements = [];     // 2D array of DOM elements for each board cell
 let score = 0;
+<<<<<<< HEAD
 let multiplier = 1;
 let multiProgress = 0;     // Count toward next multiplier increase
 let cash = 0;
@@ -28,21 +33,33 @@ let timerInterval = null;
 let animating = false;     // Flag to prevent overlapping animations
 
 // For mobile drag
+=======
+let selectedCell = null;
+let timeRemaining = GAME_TIME;
+let timerInterval = null;
+
+// Touch dragging for mobile
+>>>>>>> parent of b900e9a (Update game.js)
 let touchStartCell = null;
 
 // --------------------------
 // DOM Element References
 // --------------------------
+<<<<<<< HEAD
 let scoreElem, timerElem, cashElem, multiElem, multiFillElem;
 let gameBoardElem;
 let shopModal, gameOverModal;
 let finalScoreElem, earnedCashElem;
 let gemBarElems = {};      // For each gem type's XP bar (from header)
 let shopItemsElems = {};   // For shop upgrade items
+=======
+let scoreElem, timerElem, gameBoardElem;
+>>>>>>> parent of b900e9a (Update game.js)
 
 // --------------------------
-// Persistence Utilities
+// Timer Functions
 // --------------------------
+<<<<<<< HEAD
 function savePersistentData() {
   localStorage.setItem("cash", cash);
   for (let type of gemTypes) {
@@ -60,6 +77,8 @@ function loadPersistentData() {
 // --------------------------
 // Timer Functions
 // --------------------------
+=======
+>>>>>>> parent of b900e9a (Update game.js)
 function startTimer() {
   clearInterval(timerInterval);
   timeRemaining = GAME_TIME;
@@ -75,6 +94,7 @@ function startTimer() {
 }
 
 function updateTimerDisplay() {
+<<<<<<< HEAD
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
   timerElem.textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -82,12 +102,20 @@ function updateTimerDisplay() {
 
 // --------------------------
 // Board Generation & Rendering
+=======
+  timerElem.textContent = `Time Left: ${Math.floor(timeRemaining / 60)}:${(timeRemaining % 60).toString().padStart(2, "0")}`;
+}
+
+// --------------------------
+// Game Functions
+>>>>>>> parent of b900e9a (Update game.js)
 // --------------------------
 function generateBoard() {
   board = Array.from({ length: rows }, () => Array(cols).fill(null));
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
+<<<<<<< HEAD
       // Avoid immediate horizontal triple
       if (j >= 2 && board[i][j-1] === board[i][j-2]) {
         available = available.filter(type => type !== board[i][j-1]);
@@ -432,23 +460,40 @@ function startNewGame() {
   }
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.innerHTML = "";
+=======
+      board[i][j] = available[Math.floor(Math.random() * available.length)];
+    }
+  }
+}
+
+function renderBoard() {
+  gameBoardElem.innerHTML = "";
+>>>>>>> parent of b900e9a (Update game.js)
   cellElements = Array.from({ length: rows }, () => Array(cols));
+
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const cell = document.createElement("div");
-      const typeIndex = board[i][j];
-      const typeName = gemTypes[typeIndex];
-      cell.className = "gem " + typeName;
+      cell.className = `gem ${board[i][j]}`;
       cell.dataset.row = i;
       cell.dataset.col = j;
+<<<<<<< HEAD
       const shape = document.createElement("div");
       shape.className = "shape";
       cell.appendChild(shape);
+=======
+
+      const shape = document.createElement("div");
+      shape.className = "shape";
+      cell.appendChild(shape);
+
+>>>>>>> parent of b900e9a (Update game.js)
       cell.addEventListener("click", () => handleCellSelect(i, j));
+      gameBoardElem.appendChild(cell);
       cellElements[i][j] = cell;
-      boardDiv.appendChild(cell);
     }
   }
+<<<<<<< HEAD
   startTimer();
   renderBoard();
 }
@@ -462,10 +507,28 @@ function openShop() {
     const cost = 150 * Math.pow(2, level);
     shopItemsElems[type].levelSpan.textContent = level;
     shopItemsElems[type].costSpan.textContent = cost;
-  }
-  shopModal.classList.remove("hidden");
+=======
 }
 
+// --------------------------
+// Match Detection & Clearing
+// --------------------------
+function findMatches() {
+  let matches = [];
+
+  // Check horizontal matches
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols - 2; j++) {
+      if (board[i][j] && board[i][j] === board[i][j + 1] && board[i][j] === board[i][j + 2]) {
+        matches.push({ row: i, col: j });
+        matches.push({ row: i, col: j + 1 });
+        matches.push({ row: i, col: j + 2 });
+      }
+    }
+>>>>>>> parent of b900e9a (Update game.js)
+  }
+
+<<<<<<< HEAD
 function purchaseUpgrade(type) {
   const currentLevel = upgradeLevels[type] || 0;
   const cost = 150 * Math.pow(2, currentLevel);
@@ -533,3 +596,144 @@ window.addEventListener("load", () => {
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
   boardDiv.addEventListener("touchend", handleTouchEnd);
 });
+=======
+  // Check vertical matches
+  for (let j = 0; j < cols; j++) {
+    for (let i = 0; i < rows - 2; i++) {
+      if (board[i][j] && board[i][j] === board[i + 1][j] && board[i][j] === board[i + 2][j]) {
+        matches.push({ row: i, col: j });
+        matches.push({ row: i + 1, col: j });
+        matches.push({ row: i + 2, col: j });
+      }
+    }
+  }
+
+  return matches;
+}
+
+function clearMatches() {
+  let matches = findMatches();
+  if (matches.length === 0) return false;
+
+  matches.forEach(({ row, col }) => {
+    board[row][col] = null;
+    cellElements[row][col].classList.add("disappearing");
+  });
+
+  score += matches.length * BASE_POINT;
+  scoreElem.textContent = score;
+
+  setTimeout(() => {
+    applyGravity();
+  }, 200);
+
+  return true;
+}
+
+// --------------------------
+// Applying Gravity
+// --------------------------
+function applyGravity() {
+  for (let j = 0; j < cols; j++) {
+    let emptySpots = 0;
+    for (let i = rows - 1; i >= 0; i--) {
+      if (board[i][j] === null) {
+        emptySpots++;
+      } else if (emptySpots > 0) {
+        board[i + emptySpots][j] = board[i][j];
+        board[i][j] = null;
+      }
+    }
+  }
+  fillEmptySpaces();
+}
+
+// --------------------------
+// Spawning New Gems
+// --------------------------
+function fillEmptySpaces() {
+  for (let j = 0; j < cols; j++) {
+    for (let i = 0; i < rows; i++) {
+      if (board[i][j] === null) {
+        board[i][j] = gemTypes[Math.floor(Math.random() * gemTypes.length)];
+      }
+    }
+  }
+  renderBoard();
+  setTimeout(() => {
+    if (clearMatches()) {
+      setTimeout(applyGravity, 300);
+    }
+  }, 200);
+}
+
+// --------------------------
+// Swap Handling
+// --------------------------
+async function attemptSwap(r1, c1, r2, c2) {
+  if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
+
+  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+  renderBoard();
+
+  setTimeout(() => {
+    if (!clearMatches()) {
+      [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+      renderBoard();
+    }
+  }, 300);
+
+  return true;
+}
+
+// --------------------------
+// Click-to-Swap for PC
+// --------------------------
+function handleCellSelect(row, col) {
+  if (selectedCell === null) {
+    selectedCell = { row, col };
+    cellElements[row][col].classList.add("selected");
+  } else {
+    const prev = selectedCell;
+    if (prev.row === row && prev.col === col) {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = null;
+      return;
+    }
+    if (attemptSwap(prev.row, prev.col, row, col)) {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = null;
+    } else {
+      cellElements[prev.row][prev.col].classList.remove("selected");
+      selectedCell = { row, col };
+      cellElements[row][col].classList.add("selected");
+    }
+  }
+}
+
+// --------------------------
+// Game Initialization
+// --------------------------
+function initGame() {
+  scoreElem = document.getElementById("score");
+  timerElem = document.getElementById("timer");
+  gameBoardElem = document.getElementById("gameBoard");
+
+  generateBoard();
+  renderBoard();
+  startTimer();
+}
+
+// --------------------------
+// End Game
+// --------------------------
+function endGame() {
+  alert(`Game Over! Final Score: ${score}`);
+  startNewGame();
+}
+
+// --------------------------
+// Initialize on Page Load
+// --------------------------
+window.addEventListener("load", initGame);
+>>>>>>> parent of b900e9a (Update game.js)
