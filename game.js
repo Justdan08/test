@@ -587,4 +587,3 @@ window.addEventListener("load", () => {
   boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
   boardDiv.addEventListener("touchend", handleTouchEnd);
-});
