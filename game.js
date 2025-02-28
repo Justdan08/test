@@ -93,10 +93,36 @@ function renderBoard() {
 }
 
 // --------------------------
-// Gem Swapping Functions
+// Smooth Swap & Fall Animation
 // --------------------------
-function attemptSwap(r1, c1, r2, c2) {
+function animateSwap(cell1, cell2) {
+  return new Promise(resolve => {
+    cell1.style.transition = "transform 0.2s ease-in-out";
+    cell2.style.transition = "transform 0.2s ease-in-out";
+
+    const rect1 = cell1.getBoundingClientRect();
+    const rect2 = cell2.getBoundingClientRect();
+
+    cell1.style.transform = `translate(${rect2.left - rect1.left}px, ${rect2.top - rect1.top}px)`;
+    cell2.style.transform = `translate(${rect1.left - rect2.left}px, ${rect1.top - rect2.top}px)`;
+
+    setTimeout(() => {
+      cell1.style.transition = "";
+      cell2.style.transition = "";
+      cell1.style.transform = "";
+      cell2.style.transform = "";
+      resolve();
+    }, 200);
+  });
+}
+
+async function attemptSwap(r1, c1, r2, c2) {
   if (!isValidSwap(r1, c1, r2, c2)) return false;
+
+  let cell1 = cellElements[r1][c1];
+  let cell2 = cellElements[r2][c2];
+
+  await animateSwap(cell1, cell2);
 
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   renderBoard();
@@ -104,7 +130,7 @@ function attemptSwap(r1, c1, r2, c2) {
 }
 
 function isValidSwap(r1, c1, r2, c2) {
-  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1; // Must be adjacent
+  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
 }
 
 // --------------------------
@@ -199,27 +225,6 @@ function initGame() {
 
   startTimer();
   renderBoard();
-}
-
-// --------------------------
-// Ending the Game
-// --------------------------
-function endGame() {
-  alert(`Game Over! Final Score: ${score}`);
-  startNewGame();
-}
-
-// --------------------------
-// Starting the Game
-// --------------------------
-function startNewGame() {
-  score = 0;
-  scoreElem.textContent = score;
-  multiplier = 1;
-  multiElem.textContent = multiplier;
-  multiFillElem.style.width = "0%";
-  startTimer();
-  initGame();
 }
 
 // --------------------------
