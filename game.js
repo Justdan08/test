@@ -1,4 +1,4 @@
-<script>
+
 // Complete JavaScript implementation
 const GEM_TYPES = ['Ruby', 'Sapphire', 'Emerald', 'Topaz', 'Diamond'];
 const BOARD_SIZE = 9;
@@ -351,4 +351,3 @@ function startGame() {
 
 // Start the game when loaded
 window.onload = startGame;
-</script>
