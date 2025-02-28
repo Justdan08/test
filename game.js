@@ -8,24 +8,24 @@ const cols = 8;
 const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
 const BASE_POINT = 10;
 const LEVEL_UP_XP = 100;
-const MULTI_THRESHOLD = 20; // Increase global multiplier every 20 gem level-ups
-const GAME_TIME = 180;      // 3 minutes in seconds
+const MULTI_THRESHOLD = 20;   // Total gem level-ups to increase global multiplier
+const GAME_TIME = 180;        // 3 minutes in seconds
 
 // --------------------------
 // Game State Variables
 // --------------------------
-let board = [];            // 2D array holding gem type names (e.g., "ruby")
-let cellElements = [];     // 2D array of DOM elements for each cell
+let board = [];            // 2D array holding gem type strings (e.g., "ruby")
+let cellElements = [];     // 2D array of DOM elements for each board cell
 let score = 0;
 let multiplier = 1;
 let multiProgress = 0;     // Count toward next multiplier increase
 let cash = 0;
 let selectedCell = null;   // For click-to-swap { row, col }
 let gemStats = {};         // Per-game gem XP and level, e.g., gemStats["ruby"] = { level: 0, xp: 0 }
-let upgradeLevels = {};    // Permanent upgrades for each gem type (persisted)
+let upgradeLevels = {};    // Persistent upgrades for each gem type (persisted)
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
-let animating = false;     // Prevent overlapping animations
+let animating = false;     // Flag to prevent overlapping animations
 
 // For mobile drag
 let touchStartCell = null;
@@ -86,9 +86,11 @@ function generateBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
+      // Avoid immediate horizontal triple
       if (j >= 2 && board[i][j-1] === board[i][j-2]) {
         available = available.filter(type => type !== board[i][j-1]);
       }
+      // Avoid immediate vertical triple
       if (i >= 2 && board[i-1][j] === board[i-2][j]) {
         available = available.filter(type => type !== board[i-1][j]);
       }
@@ -97,9 +99,9 @@ function generateBoard() {
   }
 }
 function renderBoard() {
+  // Render board using stored gem type strings
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // Since board[i][j] is already a string, use it directly.
       const typeName = board[i][j];
       cellElements[i][j].className = "gem " + typeName;
       if (!cellElements[i][j].querySelector(".shape")) {
@@ -143,6 +145,7 @@ function animateFalling(oldPositions) {
 // --------------------------
 function findMatches() {
   let toRemove = Array.from({ length: rows }, () => Array(cols).fill(false));
+  // Horizontal matches
   for (let i = 0; i < rows; i++) {
     let runLength = 1;
     for (let j = 1; j < cols; j++) {
@@ -163,6 +166,7 @@ function findMatches() {
       }
     }
   }
+  // Vertical matches
   for (let j = 0; j < cols; j++) {
     let runLength = 1;
     for (let i = 1; i < rows; i++) {
@@ -193,7 +197,6 @@ function findMatches() {
   }
   return matches;
 }
-
 async function processMatches() {
   while (true) {
     let matches = findMatches();
@@ -204,6 +207,7 @@ async function processMatches() {
         oldPositions[`${i},${j}`] = cellElements[i][j].offsetTop;
       }
     }
+    // Animate removal of matched gems
     let removalPromises = matches.map(pos => animateRemoval(cellElements[pos.r][pos.c]));
     await Promise.all(removalPromises);
     matches.forEach(pos => {
@@ -220,7 +224,6 @@ async function processMatches() {
     shuffleBoard();
   }
 }
-
 function dropGems() {
   for (let j = 0; j < cols; j++) {
     let writeRow = rows - 1;
@@ -235,7 +238,6 @@ function dropGems() {
     }
   }
 }
-
 function fillEmptySpaces() {
   for (let j = 0; j < cols; j++) {
     for (let i = 0; i < rows; i++) {
@@ -245,7 +247,6 @@ function fillEmptySpaces() {
     }
   }
 }
-
 function hasMoves() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
@@ -269,7 +270,6 @@ function hasMoves() {
   }
   return false;
 }
-
 function shuffleBoard() {
   let gems = [];
   for (let i = 0; i < rows; i++) {
@@ -288,21 +288,6 @@ function shuffleBoard() {
     }
   }
   renderBoard();
-}
-
-// --------------------------
-// Animation for Removal
-// --------------------------
-async function animateRemoval(cell) {
-  return new Promise(resolve => {
-    cell.style.transition = "all 0.3s ease-in-out";
-    cell.style.opacity = "0";
-    cell.style.transform = "scale(0)";
-    setTimeout(() => {
-      cell.style.transition = "";
-      resolve();
-    }, 300);
-  });
 }
 
 // --------------------------
@@ -325,7 +310,6 @@ function animateSwap(cell1, cell2) {
     }, 200);
   });
 }
-
 async function attemptSwap(r1, c1, r2, c2) {
   if (animating) return false;
   if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
@@ -368,7 +352,6 @@ function handleCellSelect(row, col) {
     }
   }
 }
-
 function handleTouchStart(e) {
   if (animating) return;
   e.preventDefault();
@@ -378,7 +361,6 @@ function handleTouchStart(e) {
   const c = parseInt(cellElem.dataset.col);
   touchStartCell = { row: r, col: c };
 }
-
 function handleTouchMove(e) {
   if (!touchStartCell) return;
   e.preventDefault();
@@ -398,7 +380,6 @@ function handleTouchMove(e) {
     }
   }
 }
-
 function handleTouchEnd() {
   touchStartCell = null;
 }
@@ -427,9 +408,7 @@ function updateTimerDisplay() {
 function endGame() {
   clearInterval(timerInterval);
   const earned = Math.floor(score * 0.02);
-  if (earned > 0) {
-    cash += earned;
-  }
+  if (earned > 0) cash += earned;
   finalScoreElem.textContent = score;
   earnedCashElem.textContent = earned;
   cashElem.textContent = cash;
@@ -438,7 +417,7 @@ function endGame() {
 }
 
 // --------------------------
-// Start New Game
+// Start New Game Function
 // --------------------------
 function startNewGame() {
   clearInterval(timerInterval);
@@ -469,8 +448,7 @@ function startNewGame() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const cell = document.createElement("div");
-      // Use board[i][j] directly as typeName since generateBoard produces strings.
-      const typeName = board[i][j];
+      const typeName = board[i][j]; // board stores string values now
       cell.className = "gem " + typeName;
       cell.dataset.row = i;
       cell.dataset.col = j;
@@ -514,7 +492,7 @@ function purchaseUpgrade(type) {
 }
 
 // --------------------------
-// Reset Gem Stats
+// Reset Gem Stats (Defined Once)
 // --------------------------
 function resetGemStats() {
   gemStats = {};
