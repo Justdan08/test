@@ -62,14 +62,16 @@ body {
   grid-template-rows: repeat(8, 60px);
   grid-gap: 2px;
   padding: 2px;
-  margin: 20px auto;  /* Ensure Centering */
+  margin: 20px auto;
   background: #333;
   width: fit-content;
-  touch-action: none;  /* Allow touch dragging */
+  touch-action: none;
 }
-
 /* --------------------------
    Gem Styling Fixes
+-------------------------- */
+/* --------------------------
+   Gem Styling & Animations
 -------------------------- */
 .gem {
   position: relative;
@@ -79,14 +81,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease-in-out;
-  touch-action: none;  /* Prevents touch glitches */
+  transition: transform 0.2s ease-in-out; /* Smooth Swap Animation */
 }
 
-/* Fix: Remove border-radius to allow different shapes */
 .gem .shape {
   width: 90%;
   height: 90%;
+}
+
+/* Swap Animation */
+.gem.swapping {
+  animation: swapAnim 0.2s ease-in-out;
+}
+
+@keyframes swapAnim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 /* Unique shapes */
