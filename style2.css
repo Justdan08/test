@@ -1,4 +1,6 @@
-/* Global & Body */
+/* --------------------------
+   Global & Reset Styles
+-------------------------- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,20 +10,21 @@ body {
   font-family: Arial, sans-serif;
   background: #222;
   color: #fff;
+  text-align: center;
 }
-/* Header and Info */
+
+/* --------------------------
+   Header & UI Elements
+-------------------------- */
 #header {
   max-width: 520px;
   margin: 10px auto;
-  text-align: center;
+  padding: 0 10px;
 }
 #infoTop {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
-}
-#infoTop div {
-  padding: 0 10px;
 }
 #multiplierContainer {
   margin: 10px auto;
@@ -45,17 +48,20 @@ body {
   width: 0%;
 }
 #gemBarsContainer {
-  margin-top: 10px;
-  padding: 0 10px;
+  margin: 10px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 .gem-bar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin: 4px 0;
 }
 .gem-label {
-  font-size: 0.9em;
+  font-size: 0.85em;
+  margin-bottom: 2px;
 }
 .xp-bar {
   background: #444;
@@ -68,14 +74,38 @@ body {
   height: 100%;
   width: 0%;
 }
-/* Gem XP bar fill colors by type */
+/* XP bar fill colors per gem type */
 .gem-bar.ruby .xp-fill { background: #e74c3c; }
 .gem-bar.sapphire .xp-fill { background: #3498db; }
 .gem-bar.emerald .xp-fill { background: #2ecc71; }
 .gem-bar.amber .xp-fill { background: #f1c40f; }
 .gem-bar.amethyst .xp-fill { background: #9b59b6; }
 .gem-bar.diamond .xp-fill { background: #fff; }
-/* Game board and gems */
+
+/* --------------------------
+   Buttons
+-------------------------- */
+#buttons {
+  margin-top: 10px;
+}
+#buttons button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  background: #007BFF;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+#buttons button:hover {
+  background: #005FBB;
+}
+
+/* --------------------------
+   Game Board
+-------------------------- */
 #gameBoard {
   display: grid;
   grid-template-columns: repeat(8, 60px);
@@ -85,8 +115,12 @@ body {
   margin: 20px auto;
   background: #333;
   width: fit-content;
-  touch-action: none; /* allow touch dragging without scroll */
+  touch-action: none;
 }
+
+/* --------------------------
+   Gem Styling & Animations
+-------------------------- */
 .gem {
   position: relative;
   width: 60px;
@@ -128,11 +162,16 @@ body {
 .gem.selected {
   box-shadow: 0 0 0 3px #fff;
 }
-/* Shop and Game Over modals */
+
+/* --------------------------
+   Shop Modal
+-------------------------- */
 #shopModal, #gameOverModal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
@@ -171,7 +210,10 @@ body {
   margin: 10px auto 0;
   padding: 5px 15px;
 }
-/* Responsive adjustments */
+
+/* --------------------------
+   Responsive Adjustments
+-------------------------- */
 @media (max-width: 400px) {
   #gameBoard {
     grid-template-columns: repeat(8, 40px);
