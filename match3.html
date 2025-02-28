@@ -1,31 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match 3 Game</title>
-    <link rel="stylesheet" href="style2.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Match 3 Game</title>
+  <link rel="stylesheet" href="style2.css" />
 </head>
 <body>
-
-    <!-- Scoreboard -->
-    <div class="score-container">
-        <div id="score">Score: 0</div>
-        <div id="timer">Time: 10:00</div>
+  <!-- Top bar with score, cash, and timer -->
+  <div class="topbar">
+    <div class="score-cash">
+      Score: <span id="score">0</span><br />
+      Cash: $<span id="cash">0</span>
     </div>
-
-    <!-- Game Board -->
-    <div id="board"></div>
-
-    <!-- Multiplier Display -->
-    <div id="multiplier">Multiplier: x1
-        <div id="multiplier-bar"></div>
+    <div class="timer">
+      Time: <span id="timer">5:00</span>
     </div>
+  </div>
 
-    <!-- Game Over Screen -->
-    <div id="game-over" style="display: none;"></div>
+  <!-- Level and XP bar -->
+  <div class="level-bar">
+    Level: <span id="level">1</span>
+    <div class="xp-bar">
+      <div class="xp-progress"></div>
+    </div>
+  </div>
 
-    <script src="game.js"></script>
+  <!-- Game board -->
+  <div class="board" id="board"></div>
 
+  <!-- Game Over Modal -->
+  <div id="gameover-modal" class="modal">
+    <div class="modal-content">
+      <h2>Game Over</h2>
+      <p id="final-score"></p>
+      <p id="final-level"></p>
+      <p id="cash-earned"></p>
+      <p id="achievements-earned"></p>
+      <div class="modal-buttons">
+        <button id="open-shop">Shop</button>
+        <button id="open-achievements">Achievements</button>
+        <button id="play-again">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Modal -->
+  <div id="shop-modal" class="modal">
+    <div class="modal-content">
+      <h2>Shop - Upgrades</h2>
+      <ul id="upgrade-list"><!-- Upgrade items injected here --></ul>
+      <button id="close-shop">Close</button>
+    </div>
+  </div>
+
+  <!-- Achievements Modal -->
+  <div id="achievements-modal" class="modal">
+    <div class="modal-content">
+      <h2>Achievements</h2>
+      <ul id="achievements-list"><!-- Achievements list injected here --></ul>
+      <button id="close-achievements">Close</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
 </body>
 </html>
