@@ -35,6 +35,27 @@ addWordBtn.addEventListener('click', () => {
   }
 });
 
+// When drop-down selection changes, check for "Once more with feeling!"
+link1Option.addEventListener('change', function() {
+  if (link1Option.value === "once") {
+    link1HrefInput.value = "puzzle1.HTML";
+    link1HrefInput.disabled = true;
+  } else {
+    link1HrefInput.disabled = false;
+    link1HrefInput.value = "";
+  }
+});
+
+link2Option.addEventListener('change', function() {
+  if (link2Option.value === "once") {
+    link2HrefInput.value = "puzzle1.HTML";
+    link2HrefInput.disabled = true;
+  } else {
+    link2HrefInput.disabled = false;
+    link2HrefInput.value = "";
+  }
+});
+
 // Finish button event: generate the final HTML code with full structure
 finishBtn.addEventListener('click', () => {
   const pageTitle = titleInput.value.trim() || 'Marvel Word Search';
