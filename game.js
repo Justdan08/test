@@ -7,17 +7,17 @@ const rows = 8;
 const cols = 8;
 const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
 const BASE_POINT = 10;      // Base point value for each gem
-const LEVEL_UP_XP = 100;    // XP required for a gem type to level up (per game)
+const LEVEL_UP_XP = 100;    // XP needed for a gem type to level up (per game)
 const MULTI_THRESHOLD = gemTypes.length; // Global multiplier increases after this many gem level-ups
 
 // --------------------------
 // Game State Variables
 // --------------------------
-let board = [];            // 2D array of numbers (each number is an index into gemTypes)
+let board = [];            // 2D array of gem type names (e.g. "ruby")
 let cellElements = [];     // 2D array of DOM elements for each board cell
 let score = 0;
 let multiplier = 1;
-let multiProgress = 0;     // Count of gem level-ups toward next global multiplier increase
+let multiProgress = 0;     // Count of gem level-ups toward next multiplier increase
 let cash = 0;
 let selectedCell = null;   // { row, col }
 let gemStats = {};         // Temporary per-game XP and level for each gem type, e.g. gemStats["ruby"] = { level: 0, xp: 0 }
@@ -67,24 +67,21 @@ function resetGemStats() {
   }
 }
 
-// Generate a new board with random gems (stored as numeric indices), avoiding initial matches
+// Generate a new board with random gems (stored as type names), avoiding initial matches
 function generateBoard() {
   let newBoard = Array.from({ length: rows }, () => Array(cols).fill(null));
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      let available = [];
-      for (let k = 0; k < gemTypes.length; k++) {
-        available.push(k);
-      }
+      let available = gemTypes.slice();
       // Avoid horizontal triple
       if (j >= 2 && newBoard[i][j-1] === newBoard[i][j-2]) {
         const avoid = newBoard[i][j-1];
-        available = available.filter(x => x !== avoid);
+        available = available.filter(type => type !== avoid);
       }
       // Avoid vertical triple
       if (i >= 2 && newBoard[i-1][j] === newBoard[i-2][j]) {
         const avoid = newBoard[i-1][j];
-        available = available.filter(x => x !== avoid);
+        available = available.filter(type => type !== avoid);
       }
       const randIndex = Math.floor(Math.random() * available.length);
       newBoard[i][j] = available[randIndex];
@@ -189,7 +186,7 @@ function findMatches() {
   return removals;
 }
 
-// Apply gravity: drop gems down to fill empty spaces
+// Apply gravity: drop gems to fill empty spaces
 function dropGems() {
   for (let j = 0; j < cols; j++) {
     let writeRow = rows - 1;
@@ -210,7 +207,7 @@ function fillEmptySpaces() {
   for (let j = 0; j < cols; j++) {
     for (let i = 0; i < rows; i++) {
       if (board[i][j] === null) {
-        board[i][j] = Math.floor(Math.random() * gemTypes.length);
+        board[i][j] = gemTypes[Math.floor(Math.random() * gemTypes.length)];
       }
     }
   }
@@ -241,7 +238,7 @@ function hasMoves() {
   return false;
 }
 
-// Shuffle board if no moves remain
+// Shuffle the board if no moves remain
 function shuffleBoard() {
   let gems = [];
   for (let i = 0; i < rows; i++) {
@@ -266,49 +263,44 @@ function shuffleBoard() {
 function renderBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // Assign class "gem gem-X" where X is the numeric index
-      cellElements[i][j].className = "gem gem-" + board[i][j];
+      // Use the gem type name directly for the class
+      cellElements[i][j].className = "gem " + board[i][j];
     }
   }
 }
 
-// Attempt to swap two gems and process cascades if a match occurs
+// Attempt to swap two gems and process matches and cascades
 function attemptSwap(r1, c1, r2, c2) {
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   let matches = findMatches();
   if (matches.length === 0) {
-    // No match: swap back
+    // Swap back if no match
     [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
     return false;
   }
-  // Process all matches
+  // Process cascades
   while (true) {
     let toRemove = findMatches();
     if (toRemove.length === 0) break;
     let removedByType = {};
     for (let pos of toRemove) {
-      let gemIndex = board[pos.r][pos.c];
-      let type = gemTypes[gemIndex];
+      let type = board[pos.r][pos.c];
       removedByType[type] = (removedByType[type] || 0) + 1;
       board[pos.r][pos.c] = null;
     }
-    // Award points, cash, and XP for each gem type removed
+    // Award points, cash, and XP per gem type removed
     for (let type in removedByType) {
       const count = removedByType[type];
       const currentLevel = gemStats[type].level;
       const gemValue = BASE_POINT + 5 * currentLevel;
       score += gemValue * count * multiplier;
       cash += count;
-      // XP gain (affected by permanent upgrade for this gem type)
       const xpGain = 10 * count * (1 + (upgradeLevels[type] || 0));
       gemStats[type].xp += xpGain;
-      // Level up if XP exceeds threshold
       while (gemStats[type].xp >= LEVEL_UP_XP) {
         gemStats[type].xp -= LEVEL_UP_XP;
         gemStats[type].level += 1;
-        // Update the gem's XP bar UI
         gemBarElems[type].levelText.textContent = gemStats[type].level + 1;
-        // Increment global multiplier progress
         multiProgress++;
         if (multiProgress >= MULTI_THRESHOLD) {
           multiProgress -= MULTI_THRESHOLD;
@@ -338,7 +330,7 @@ function attemptSwap(r1, c1, r2, c2) {
   return true;
 }
 
-// Handle user selecting a cell (click or tap)
+// Handle cell selection (click/tap)
 function handleCellSelect(row, col) {
   if (selectedCell === null) {
     selectedCell = { row, col };
@@ -370,6 +362,7 @@ function initGame() {
   multiElem = document.getElementById("multiplier");
   multiFillElem = document.getElementById("multiplierFill");
   shopModal = document.getElementById("shopModal");
+  
   // Initialize gem XP bar elements from header
   document.querySelectorAll(".gem-bar").forEach(barElem => {
     let type = barElem.classList[1]; // e.g., "ruby"
@@ -378,6 +371,7 @@ function initGame() {
       fill: barElem.querySelector(".xp-fill")
     };
   });
+  
   // Set up shop item event listeners
   document.querySelectorAll(".shop-item").forEach(item => {
     const type = item.dataset.type;
@@ -397,10 +391,12 @@ function initGame() {
   document.getElementById("newGameBtn").addEventListener("click", () => {
     startNewGame();
   });
+  
   cashElem.textContent = cash;
   scoreElem.textContent = score;
   multiElem.textContent = multiplier;
   multiFillElem.style.width = "0%";
+  
   resetGemStats();
   board = generateBoard();
   if (!hasMoves()) {
@@ -410,13 +406,14 @@ function initGame() {
       attempts++;
     }
   }
+  
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.innerHTML = "";
   cellElements = Array.from({ length: rows }, () => Array(cols));
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const cell = document.createElement("div");
-      cell.className = "gem gem-" + board[i][j];
+      cell.className = "gem " + board[i][j];
       cell.dataset.row = i;
       cell.dataset.col = j;
       cell.addEventListener("click", () => handleCellSelect(i, j));
@@ -429,10 +426,10 @@ function initGame() {
     }
   }
   score = 0;
-  multiplier = 1;
-  multiProgress = 0;
   scoreElem.textContent = score;
+  multiplier = 1;
   multiElem.textContent = multiplier;
+  multiProgress = 0;
   multiFillElem.style.width = "0%";
 }
 
@@ -489,6 +486,6 @@ function purchaseUpgrade(type) {
 }
 
 // --------------------------
-// Initialize the game on page load
+// Initialize on Page Load
 // --------------------------
 initGame();
