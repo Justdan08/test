@@ -263,8 +263,14 @@ function shuffleBoard() {
 function renderBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // Set class "gem" plus the gem type (e.g., "ruby")
+      // Set the outer cell class to "gem" plus the gem type (e.g., "ruby")
       cellElements[i][j].className = "gem " + board[i][j];
+      // Ensure a child element with class "shape" exists
+      if (!cellElements[i][j].querySelector(".shape")) {
+        const shape = document.createElement("div");
+        shape.className = "shape";
+        cellElements[i][j].appendChild(shape);
+      }
     }
   }
 }
@@ -274,11 +280,9 @@ function attemptSwap(r1, c1, r2, c2) {
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   let matches = findMatches();
   if (matches.length === 0) {
-    // Swap back if no match
     [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
     return false;
   }
-  // Process cascades
   while (true) {
     let toRemove = findMatches();
     if (toRemove.length === 0) break;
@@ -288,7 +292,6 @@ function attemptSwap(r1, c1, r2, c2) {
       removedByType[type] = (removedByType[type] || 0) + 1;
       board[pos.r][pos.c] = null;
     }
-    // Award points, cash, and XP per gem type removed
     for (let type in removedByType) {
       const count = removedByType[type];
       const currentLevel = gemStats[type].level;
@@ -363,7 +366,6 @@ function initGame() {
   multiFillElem = document.getElementById("multiplierFill");
   shopModal = document.getElementById("shopModal");
   
-  // Initialize gem XP bar elements from header
   document.querySelectorAll(".gem-bar").forEach(barElem => {
     let type = barElem.classList[1]; // e.g., "ruby"
     gemBarElems[type] = {
@@ -372,7 +374,6 @@ function initGame() {
     };
   });
   
-  // Set up shop item event listeners
   document.querySelectorAll(".shop-item").forEach(item => {
     const type = item.dataset.type;
     shopItemsElems[type] = {
@@ -416,6 +417,10 @@ function initGame() {
       cell.className = "gem " + board[i][j];
       cell.dataset.row = i;
       cell.dataset.col = j;
+      // Create inner shape element for custom styling
+      const shape = document.createElement("div");
+      shape.className = "shape";
+      cell.appendChild(shape);
       cell.addEventListener("click", () => handleCellSelect(i, j));
       cell.addEventListener("touchstart", e => {
         e.preventDefault();
