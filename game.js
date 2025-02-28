@@ -106,17 +106,27 @@ async function attemptSwap(r1, c1, r2, c2) {
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   const initialMatches = findMatches();
 
-  if (initialMatches.length === 0) {
-    // Invalid swap - animate back
+ if (initialMatches.length === 0) {
     animating = true;
     const cell1 = cellElements[r1][c1];
     const cell2 = cellElements[r2][c2];
+    
+    await animateSwap(cell1, cell2);
+    board = originalBoard;
+    renderBoard();
+    animating = false;
+    return false;
+  }
+    animating = true;
+  const cell1 = cellElements[r1][c1];
+  const cell2 = cellElements[r2][c2];
+  
   await animateSwap(cell1, cell2);
-  renderBoard();
   await processMatches();
   animating = false;
   return true;
 }
+
 
 async function processMatches() {
   while (true) {
@@ -163,6 +173,47 @@ async function processMatches() {
     fillEmptySpaces();
     await Promise.all(fallAnimations);
     renderBoard();
+    // Update scoring and multipliers
+    let removedByType = {};
+    for (let pos of toRemove) {
+      let gemIndex = board[pos.r][pos.c];
+      if (gemIndex === null) continue;
+      let typeName = gemTypes[gemIndex];
+      removedByType[typeName] = (removedByType[typeName] || 0) + 1;
+    }
+
+    for (let type in removedByType) {
+      const count = removedByType[type];
+      const currentLevel = gemStats[type].level;
+      const gemValue = BASE_POINT + 5 * currentLevel;
+      score += gemValue * count * multiplier;
+      
+      const xpGain = 10 * count * (1 + (upgradeLevels[type] || 0));
+      gemStats[type].xp += xpGain;
+      
+      while (gemStats[type].xp >= LEVEL_UP_XP) {
+        gemStats[type].xp -= LEVEL_UP_XP;
+        gemStats[type].level += 1;
+        gemBarElems[type].levelText.textContent = gemStats[type].level + 1;
+        multiProgress += 1;
+        if (multiProgress >= MULTI_THRESHOLD) {
+          multiProgress -= MULTI_THRESHOLD;
+          multiplier += 1;
+          multiElem.textContent = multiplier;
+        }
+      }
+
+      const percentXP = Math.floor((gemStats[type].xp / LEVEL_UP_XP) * 100);
+      gemBarElems[type].fill.style.width = percentXP + "%";
+    }
+
+    scoreElem.textContent = score;
+    const percentMulti = Math.floor((multiProgress / MULTI_THRESHOLD) * 100);
+    multiFillElem.style.width = percentMulti + "%";
+  }
+
+  if (!hasMoves()) shuffleBoard();
+}
 // --------------------------
 // Modified Shop Handling
 // --------------------------
@@ -688,9 +739,9 @@ function purchaseUpgrade(type) {
   savePersistentData();
 }
 
-// Initialize game on page load
 window.addEventListener("load", () => {
   loadPersistentData();
+  
   // Get references to UI elements
   scoreElem = document.getElementById("score");
   cashElem = document.getElementById("cash");
@@ -701,7 +752,8 @@ window.addEventListener("load", () => {
   gameOverModal = document.getElementById("gameOverModal");
   finalScoreElem = document.getElementById("finalScore");
   earnedCashElem = document.getElementById("earnedCash");
-  // Gem XP bars (level text and fill elements)
+
+  // Gem XP bars
   document.querySelectorAll(".gem-bar").forEach(barElem => {
     const type = barElem.classList[1];
     gemBarElems[type] = {
@@ -709,16 +761,20 @@ window.addEventListener("load", () => {
       fill: barElem.querySelector(".xp-fill")
     };
   });
-  // Shop items elements (level and cost spans)
+
+  // Shop items
   document.querySelectorAll(".shop-item").forEach(item => {
     const type = item.dataset.type;
     shopItemsElems[type] = {
       levelSpan: item.querySelector(".up-level"),
       costSpan: item.querySelector(".up-cost")
     };
-     // Modified shop button handling
+    item.addEventListener("click", () => purchaseUpgrade(type));
+  });
+
+  // Modified shop button handling
   document.getElementById("shopBtn").addEventListener("click", openShop);
-  document.getElementById("shopBtn").style.display = "none"; // Hide by default
+  document.getElementById("shopBtn").style.display = "none";
 
   // Add shop button to game over modal
   const gameOverContent = document.getElementById("gameOverContent");
@@ -729,15 +785,10 @@ window.addEventListener("load", () => {
     openShop();
   });
   gameOverContent.insertBefore(shopButton, document.getElementById("restartBtn"));
-});
-    item.addEventListener("click", () => purchaseUpgrade(type));
-  });
+
   // Button event listeners
   document.getElementById("closeShop").addEventListener("click", () => {
     shopModal.classList.add("hidden");
-  });
-  document.getElementById("shopBtn").addEventListener("click", () => {
-    openShop();
   });
   document.getElementById("newGameBtn").addEventListener("click", () => {
     startNewGame();
@@ -745,9 +796,11 @@ window.addEventListener("load", () => {
   document.getElementById("restartBtn").addEventListener("click", () => {
     startNewGame();
   });
+
   // Start the first game
   startNewGame();
-  // Set up touch event handlers for mobile drag-to-swap
+
+  // Touch event handlers
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
