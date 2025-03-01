@@ -76,6 +76,20 @@
             word-wrap: break-word; /* Older browser support */
             white-space: normal; /* Allows text to wrap */
         }
+                #modalText {
+            width: 100%;
+            height: 200px; /* Set initial height */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: none; /* Prevents manual resizing */
+            overflow-y: auto; /* Enables scrolling when text overflows */
+            background-color: #f8f8f8; /* Light grey background */
+            white-space: pre-wrap; /* Ensures text wrapping */
+            word-wrap: break-word;
+        }
         
         pre {
             white-space: pre-wrap; /* Allows text wrapping */
@@ -156,13 +170,15 @@
     <button id="generateBtn" tabindex="14">Generate</button>
 
     <!-- Modal Structure -->
+    <!-- Modal Structure -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Finalized Notes</h2>
-            <pre id="modalText"></pre>
+            <textarea id="modalText" readonly></textarea>
         </div>
     </div>
+
 
     <script>
         function isValidDate(dateString) {
@@ -184,40 +200,45 @@
         }
 
         function generateText() {
-            const fields = {
-                "Caller Name": document.getElementById("callerName").value,
-                "Phone": document.getElementById("phone").value,
-                "Patient Name": document.getElementById("patientName").value,
-                "Date of Birth": document.getElementById("dob").value,
-                "Treatment Type": document.getElementById("treatment").value,
-                "Additional Information": document.getElementById("additionalInfo").value,
-                "Substances Used": document.getElementById("substances").value,
-                "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
-                "Prior Treatment": document.getElementById("priorTreatment").value,
-                "Medical Issues": document.getElementById("medicalIssues").value,
-                "Legal Issues": document.getElementById("legalIssues").value,
-                "Insurance Type": document.getElementById("insurance").value,
-                "Patient Address": document.getElementById("address").value
-            };
-
-            const dobInput = fields["Date of Birth"];
-            if (dobInput.trim() !== "") {
-                if (isValidDate(dobInput)) {
-                    fields["Date of Birth"] = formatDate(dobInput);
-                } else {
-                    alert("Invalid date format. Please enter as MMDDYYYY.");
-                    return;
-                }
+        const fields = {
+            "Caller Name": document.getElementById("callerName").value,
+            "Phone": document.getElementById("phone").value,
+            "Patient Name": document.getElementById("patientName").value,
+            "Date of Birth": document.getElementById("dob").value,
+            "Treatment Type": document.getElementById("treatment").value,
+            "Additional Information": document.getElementById("additionalInfo").value,
+            "Substances Used": document.getElementById("substances").value,
+            "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
+            "Prior Treatment": document.getElementById("priorTreatment").value,
+            "Medical Issues": document.getElementById("medicalIssues").value,
+            "Legal Issues": document.getElementById("legalIssues").value,
+            "Insurance Type": document.getElementById("insurance").value,
+            "Patient Address": document.getElementById("address").value
+        };
+    
+        const dobInput = fields["Date of Birth"];
+        if (dobInput.trim() !== "") {
+            if (isValidDate(dobInput)) {
+                fields["Date of Birth"] = formatDate(dobInput);
+            } else {
+                alert("Invalid date format. Please enter as MMDDYYYY.");
+                return;
             }
-
-            const formattedText = Object.entries(fields)
-                .filter(([_, value]) => value.trim() !== "")
-                .map(([key, value]) => `${key}: ${value}`)
-                .join("\n");
-
-            document.getElementById("modalText").textContent = formattedText;
-            document.getElementById("myModal").style.display = "block";
         }
+    
+        const formattedText = Object.entries(fields)
+            .filter(([_, value]) => value.trim() !== "")
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("\n");
+    
+        const modalText = document.getElementById("modalText");
+        modalText.value = formattedText;
+        modalText.style.height = "auto"; // Reset height
+        modalText.style.height = modalText.scrollHeight + "px"; // Adjust height dynamically
+    
+        document.getElementById("myModal").style.display = "block";
+    }
+
 
         document.getElementById("generateBtn").addEventListener("click", generateText);
         document.querySelector(".close").addEventListener("click", () => document.getElementById("myModal").style.display = "none");
