@@ -7,21 +7,21 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f5; /* Light grey background */
-            color: #333; /* Dark grey text */
+            background-color: #f0f0f5;
+            color: #333;
             max-width: 600px;
             margin: auto;
             padding: 20px;
         }
         h2 {
-            color: #003366; /* Dark blue heading */
+            color: #003366;
             text-align: center;
         }
         label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
-            color: #003366; /* Dark blue labels */
+            color: #003366;
         }
         input, select, textarea {
             width: 100%;
@@ -32,17 +32,17 @@
             box-sizing: border-box;
         }
         textarea {
-            height: 90px; /* 3x the height of regular input fields */
+            height: 90px;
         }
         input:focus, select:focus, textarea:focus {
-            border-color: #003366; /* Dark blue border on focus */
+            border-color: #003366;
             outline: none;
         }
         button {
             margin-top: 15px;
             padding: 10px;
             width: 100%;
-            background-color: #003366; /* Dark blue button */
+            background-color: #003366;
             color: white;
             border: none;
             border-radius: 5px;
@@ -50,7 +50,7 @@
             font-size: 16px;
         }
         button:hover {
-            background-color: #002244; /* Darker blue on hover */
+            background-color: #002244;
         }
         /* Modal styles */
         .modal {
@@ -64,36 +64,14 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
-       .modal-content {
+        .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
+            margin: 10% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
             max-width: 600px;
             border-radius: 5px;
-            overflow-wrap: break-word; /* Ensures long words break correctly */
-            word-wrap: break-word; /* Older browser support */
-            white-space: normal; /* Allows text to wrap */
-        }
-                #modalText {
-            width: 100%;
-            height: 200px; /* Set initial height */
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            resize: none; /* Prevents manual resizing */
-            overflow-y: auto; /* Enables scrolling when text overflows */
-            background-color: #f8f8f8; /* Light grey background */
-            white-space: pre-wrap; /* Ensures text wrapping */
-            word-wrap: break-word;
-        }
-        
-        pre {
-            white-space: pre-wrap; /* Allows text wrapping */
-            word-wrap: break-word;
         }
         .close {
             color: #aaa;
@@ -107,9 +85,19 @@
             text-decoration: none;
             cursor: pointer;
         }
-        .error {
-            color: red;
-            font-size: 0.9em;
+        /* Expanding text area inside modal */
+        #modalText {
+            width: 100%;
+            min-height: 50px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: none;
+            background-color: #f8f8f8;
+            white-space: pre-wrap;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -134,14 +122,8 @@
     <input type="text" id="treatment" tabindex="5">
 
     <label for="additionalInfo">Additional Information:</label>
-    <textarea id="additionalInfo" tabindex="6" oninput="autoExpand(this)"></textarea>
+    <textarea id="additionalInfo" tabindex="6"></textarea>
 
-<script>
-    function autoExpand(textarea) {
-        textarea.style.height = "90px"; // Reset to default size
-        textarea.style.height = textarea.scrollHeight + "px"; // Expand dynamically
-    }
-</script>
     <label for="substances">Substances Used:</label>
     <input type="text" id="substances" tabindex="7">
 
@@ -170,7 +152,6 @@
     <button id="generateBtn" tabindex="14">Generate</button>
 
     <!-- Modal Structure -->
-    <!-- Modal Structure -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -178,7 +159,6 @@
             <textarea id="modalText" readonly></textarea>
         </div>
     </div>
-
 
     <script>
         function isValidDate(dateString) {
@@ -200,53 +180,47 @@
         }
 
         function generateText() {
-        const fields = {
-            "Caller Name": document.getElementById("callerName").value,
-            "Phone": document.getElementById("phone").value,
-            "Patient Name": document.getElementById("patientName").value,
-            "Date of Birth": document.getElementById("dob").value,
-            "Treatment Type": document.getElementById("treatment").value,
-            "Additional Information": document.getElementById("additionalInfo").value,
-            "Substances Used": document.getElementById("substances").value,
-            "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
-            "Prior Treatment": document.getElementById("priorTreatment").value,
-            "Medical Issues": document.getElementById("medicalIssues").value,
-            "Legal Issues": document.getElementById("legalIssues").value,
-            "Insurance Type": document.getElementById("insurance").value,
-            "Patient Address": document.getElementById("address").value
-        };
-    
-        const dobInput = fields["Date of Birth"];
-        if (dobInput.trim() !== "") {
-            if (isValidDate(dobInput)) {
-                fields["Date of Birth"] = formatDate(dobInput);
-            } else {
-                alert("Invalid date format. Please enter as MMDDYYYY.");
-                return;
-            }
-        }
-    
-        const formattedText = Object.entries(fields)
-            .filter(([_, value]) => value.trim() !== "")
-            .map(([key, value]) => `${key}: ${value}`)
-            .join("\n");
-    
-        const modalText = document.getElementById("modalText");
-        modalText.value = formattedText;
-        modalText.style.height = "auto"; // Reset height
-        modalText.style.height = modalText.scrollHeight + "px"; // Adjust height dynamically
-    
-        document.getElementById("myModal").style.display = "block";
-    }
+            const fields = {
+                "Caller Name": document.getElementById("callerName").value,
+                "Phone": document.getElementById("phone").value,
+                "Patient Name": document.getElementById("patientName").value,
+                "Date of Birth": document.getElementById("dob").value,
+                "Treatment Type": document.getElementById("treatment").value,
+                "Additional Information": document.getElementById("additionalInfo").value,
+                "Substances Used": document.getElementById("substances").value,
+                "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
+                "Prior Treatment": document.getElementById("priorTreatment").value,
+                "Medical Issues": document.getElementById("medicalIssues").value,
+                "Legal Issues": document.getElementById("legalIssues").value,
+                "Insurance Type": document.getElementById("insurance").value,
+                "Patient Address": document.getElementById("address").value
+            };
 
+            const dobInput = fields["Date of Birth"];
+            if (dobInput.trim() !== "") {
+                if (isValidDate(dobInput)) {
+                    fields["Date of Birth"] = formatDate(dobInput);
+                } else {
+                    alert("Invalid date format. Please enter as MMDDYYYY.");
+                    return;
+                }
+            }
+
+            const formattedText = Object.entries(fields)
+                .filter(([_, value]) => value.trim() !== "")
+                .map(([key, value]) => `${key}: ${value}`)
+                .join("\n");
+
+            const modalText = document.getElementById("modalText");
+            modalText.value = formattedText;
+            modalText.style.height = "auto";
+            modalText.style.height = modalText.scrollHeight + "px";
+
+            document.getElementById("myModal").style.display = "block";
+        }
 
         document.getElementById("generateBtn").addEventListener("click", generateText);
         document.querySelector(".close").addEventListener("click", () => document.getElementById("myModal").style.display = "none");
-        window.addEventListener("click", (event) => {
-            if (event.target === document.getElementById("myModal")) {
-                document.getElementById("myModal").style.display = "none";
-            }
-        });
     </script>
 
 </body>
