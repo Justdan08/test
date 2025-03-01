@@ -31,6 +31,9 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
+        textarea {
+            height: 90px; /* 3x the height of regular input fields */
+        }
         input:focus, select:focus, textarea:focus {
             border-color: #003366; /* Dark blue border on focus */
             outline: none;
@@ -108,32 +111,35 @@
     <label for="treatment">Treatment Type:</label>
     <input type="text" id="treatment" tabindex="5">
 
+    <label for="additionalInfo">Additional Information:</label>
+    <textarea id="additionalInfo" tabindex="6"></textarea>
+
     <label for="substances">Substances Used:</label>
-    <input type="text" id="substances" tabindex="6">
+    <input type="text" id="substances" tabindex="7">
 
     <label for="mentalHealth">Mental Health Diagnosis:</label>
-    <input type="text" id="mentalHealth" tabindex="7">
+    <input type="text" id="mentalHealth" tabindex="8">
 
     <label for="priorTreatment">Prior Treatment:</label>
-    <select id="priorTreatment" tabindex="8">
+    <select id="priorTreatment" tabindex="9">
         <option value="">(Select)</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
     </select>
 
     <label for="medicalIssues">Medical Issues:</label>
-    <input type="text" id="medicalIssues" tabindex="9">
+    <input type="text" id="medicalIssues" tabindex="10">
 
     <label for="legalIssues">Legal Issues:</label>
-    <input type="text" id="legalIssues" tabindex="10">
+    <input type="text" id="legalIssues" tabindex="11">
 
     <label for="insurance">Insurance Type:</label>
-    <input type="text" id="insurance" tabindex="11">
+    <input type="text" id="insurance" tabindex="12">
 
     <label for="address">Patient Address:</label>
-    <textarea id="address" tabindex="12"></textarea>
+    <textarea id="address" tabindex="13"></textarea>
 
-    <button id="generateBtn" tabindex="13">Generate</button>
+    <button id="generateBtn" tabindex="14">Generate</button>
 
     <!-- Modal Structure -->
     <div id="myModal" class="modal">
@@ -145,7 +151,6 @@
     </div>
 
     <script>
-        // Function to validate and format the date
         function isValidDate(dateString) {
             if (!/^\d{8}$/.test(dateString)) return false;
             const month = parseInt(dateString.slice(0, 2), 10);
@@ -164,7 +169,6 @@
             return `${month}/${day}/${year}`;
         }
 
-        // Function to generate and display the notes in the modal
         function generateText() {
             const fields = {
                 "Caller Name": document.getElementById("callerName").value,
@@ -172,6 +176,7 @@
                 "Patient Name": document.getElementById("patientName").value,
                 "Date of Birth": document.getElementById("dob").value,
                 "Treatment Type": document.getElementById("treatment").value,
+                "Additional Information": document.getElementById("additionalInfo").value,
                 "Substances Used": document.getElementById("substances").value,
                 "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
                 "Prior Treatment": document.getElementById("priorTreatment").value,
@@ -181,7 +186,6 @@
                 "Patient Address": document.getElementById("address").value
             };
 
-            // Validate and format Date of Birth
             const dobInput = fields["Date of Birth"];
             if (dobInput.trim() !== "") {
                 if (isValidDate(dobInput)) {
@@ -192,30 +196,18 @@
                 }
             }
 
-            // Filter out blank fields and format the text
             const formattedText = Object.entries(fields)
                 .filter(([_, value]) => value.trim() !== "")
                 .map(([key, value]) => `${key}: ${value}`)
                 .join("\n");
 
-            // Display the formatted text in the modal
             document.getElementById("modalText").textContent = formattedText;
-
-            // Show the modal
-            const modal = document.getElementById("myModal");
-            modal.style.display = "block";
+            document.getElementById("myModal").style.display = "block";
         }
 
-        // Event listener for the Generate button
         document.getElementById("generateBtn").addEventListener("click", generateText);
-
-        // Event listener for closing the modal
-        document.querySelector(".close").addEventListener("click", function() {
-            document.getElementById("myModal").style.display = "none";
-        });
-
-        // Close the modal when clicking outside of it
-        window.addEventListener("click", function(event) {
+        document.querySelector(".close").addEventListener("click", () => document.getElementById("myModal").style.display = "none");
+        window.addEventListener("click", (event) => {
             if (event.target === document.getElementById("myModal")) {
                 document.getElementById("myModal").style.display = "none";
             }
