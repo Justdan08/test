@@ -49,14 +49,38 @@
         button:hover {
             background-color: #002244; /* Darker blue on hover */
         }
-        .output {
-            margin-top: 20px;
-            white-space: pre-wrap;
-            background-color: #ffffff; /* White background for output */
-            padding: 15px;
-            border: 1px solid #ccc;
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
         .error {
             color: red;
@@ -109,26 +133,27 @@
     <label for="address">Patient Address:</label>
     <textarea id="address" tabindex="12"></textarea>
 
-    <button onclick="generateText()" tabindex="13">Generate & Copy</button>
+    <button id="generateBtn" tabindex="13">Generate</button>
 
-    <div class="output" id="outputText"></div>
+    <!-- Modal Structure -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Finalized Notes</h2>
+            <pre id="modalText"></pre>
+        </div>
+    </div>
 
     <script>
+        // Function to validate and format the date
         function isValidDate(dateString) {
-            // Check if the input matches MMDDYYYY format
             if (!/^\d{8}$/.test(dateString)) return false;
-
             const month = parseInt(dateString.slice(0, 2), 10);
             const day = parseInt(dateString.slice(2, 4), 10);
             const year = parseInt(dateString.slice(4), 10);
-
-            // Check month range
             if (month < 1 || month > 12) return false;
-
-            // Check day range based on month
             const daysInMonth = [31, (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
             if (day < 1 || day > daysInMonth[month - 1]) return false;
-
             return true;
         }
 
@@ -139,6 +164,7 @@
             return `${month}/${day}/${year}`;
         }
 
+        // Function to generate and display the notes in the modal
         function generateText() {
             const fields = {
                 "Caller Name": document.getElementById("callerName").value,
@@ -148,23 +174,6 @@
                 "Treatment Type": document.getElementById("treatment").value,
                 "Substances Used": document.getElementById("substances").value,
                 "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
-                "Prior Treatment": document.getElementById("priorTreatment").value,
-                "Medical Issues": document.getElementById("medicalIssues").value,
-                "Legal Issues": document.getElementById("legalIssues").value,
-                "Insurance Type": document.getElementById("insurance").value,
-                "Patient Address": document.getElementById("address").value
-            };
-
-            // Validate and format Date of Birth
-            const dobInput = fields["Date of Birth"];
-            const dobError = document.getElementById("dobError");
-            if (dobInput.trim() !== "") {
-                if (isValidDate(dobInput)) {
-                    fields["Date of Birth"] = formatDate(dobInput);
-                    dobError.textContent = "";
-                } else {
-                    dobError.textContent = "Invalid date format. Please enter as MMDDYYYY.";
-                    return;
-
+                "Prior
 ::contentReference[oaicite:0]{index=0}
  
