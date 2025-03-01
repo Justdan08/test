@@ -86,11 +86,9 @@ function generateBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
-      // Avoid immediate horizontal triple
       if (j >= 2 && board[i][j-1] === board[i][j-2]) {
         available = available.filter(type => type !== board[i][j-1]);
       }
-      // Avoid immediate vertical triple
       if (i >= 2 && board[i-1][j] === board[i-2][j]) {
         available = available.filter(type => type !== board[i-1][j]);
       }
@@ -124,7 +122,7 @@ function animateFalling(oldPositions) {
       const diff = oldTop - newTop;
       if (diff !== 0) {
         cell.style.transform = `translateY(${diff}px)`;
-        cell.offsetHeight; // Force reflow
+        cell.offsetHeight;
         cell.style.transition = "transform 0.3s ease-out";
         cell.style.transform = "";
       }
@@ -444,7 +442,7 @@ function startNewGame() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const cell = document.createElement("div");
-      const typeName = board[i][j]; // board stores string values now
+      const typeName = board[i][j]; // board stores gem type strings
       cell.className = "gem " + typeName;
       cell.dataset.row = i;
       cell.dataset.col = j;
