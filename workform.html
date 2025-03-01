@@ -7,38 +7,56 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 500px;
+            background-color: #f0f0f5; /* Light grey background for contrast */
+            color: #333; /* Dark grey text for readability */
+            max-width: 600px;
             margin: auto;
             padding: 20px;
+        }
+        h2 {
+            color: #003366; /* Dark blue heading */
+            text-align: center;
         }
         label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
+            color: #003366; /* Dark blue labels */
         }
         input, select, textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #003366; /* Dark blue border on focus */
+            outline: none;
         }
         button {
             margin-top: 15px;
             padding: 10px;
             width: 100%;
-            background: #007BFF;
+            background-color: #003366; /* Dark blue button */
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
         button:hover {
-            background: #0056b3;
+            background-color: #002244; /* Darker blue on hover */
         }
         .output {
             margin-top: 20px;
             white-space: pre-wrap;
-            background: #f4f4f4;
-            padding: 10px;
+            background-color: #ffffff; /* White background for output */
+            padding: 15px;
             border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -96,6 +114,7 @@
                 "Caller Name": document.getElementById("callerName").value,
                 "Phone": document.getElementById("phone").value,
                 "Patient Name": document.getElementById("patientName").value,
+                "Date of Birth": document.getElementById("dob").value
                 "Treatment Type": document.getElementById("treatment").value,
                 "Substances Used": document.getElementById("substances").value,
                 "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
@@ -104,7 +123,6 @@
                 "Legal Issues": document.getElementById("legalIssues").value,
                 "Insurance Type": document.getElementById("insurance").value,
                 "Patient Address": document.getElementById("address").value,
-                "Date of Birth": document.getElementById("dob").value
             };
 
             // Filter out blank fields
