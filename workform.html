@@ -7,8 +7,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f5; /* Light grey background for contrast */
-            color: #333; /* Dark grey text for readability */
+            background-color: #f0f0f5; /* Light grey background */
+            color: #333; /* Dark grey text */
             max-width: 600px;
             margin: auto;
             padding: 20px;
@@ -58,6 +58,10 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -73,74 +77,75 @@
     <label for="patientName">Patient Name (if different):</label>
     <input type="text" id="patientName" tabindex="3">
 
+    <label for="dob">Date of Birth (MMDDYYYY):</label>
+    <input type="text" id="dob" tabindex="4" placeholder="MMDDYYYY">
+    <div class="error" id="dobError"></div>
+
     <label for="treatment">Treatment Type:</label>
-    <input type="text" id="treatment" tabindex="4">
+    <input type="text" id="treatment" tabindex="5">
 
     <label for="substances">Substances Used:</label>
-    <input type="text" id="substances" tabindex="5">
+    <input type="text" id="substances" tabindex="6">
 
     <label for="mentalHealth">Mental Health Diagnosis:</label>
-    <input type="text" id="mentalHealth" tabindex="6">
+    <input type="text" id="mentalHealth" tabindex="7">
 
     <label for="priorTreatment">Prior Treatment:</label>
-    <select id="priorTreatment" tabindex="7">
+    <select id="priorTreatment" tabindex="8">
         <option value="">(Select)</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
     </select>
 
     <label for="medicalIssues">Medical Issues:</label>
-    <input type="text" id="medicalIssues" tabindex="8">
+    <input type="text" id="medicalIssues" tabindex="9">
 
     <label for="legalIssues">Legal Issues:</label>
-    <input type="text" id="legalIssues" tabindex="9">
+    <input type="text" id="legalIssues" tabindex="10">
 
     <label for="insurance">Insurance Type:</label>
-    <input type="text" id="insurance" tabindex="10">
+    <input type="text" id="insurance" tabindex="11">
 
     <label for="address">Patient Address:</label>
-    <textarea id="address" tabindex="11"></textarea>
-
-    <label for="dob">Date of Birth:</label>
-    <input type="date" id="dob" tabindex="12">
+    <textarea id="address" tabindex="12"></textarea>
 
     <button onclick="generateText()" tabindex="13">Generate & Copy</button>
 
     <div class="output" id="outputText"></div>
 
     <script>
+        function isValidDate(dateString) {
+            // Check if the input matches MMDDYYYY format
+            if (!/^\d{8}$/.test(dateString)) return false;
+
+            const month = parseInt(dateString.slice(0, 2), 10);
+            const day = parseInt(dateString.slice(2, 4), 10);
+            const year = parseInt(dateString.slice(4), 10);
+
+            // Check month range
+            if (month < 1 || month > 12) return false;
+
+            // Check day range based on month
+            const daysInMonth = [31, (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (day < 1 || day > daysInMonth[month - 1]) return false;
+
+            return true;
+        }
+
+        function formatDate(dateString) {
+            const month = dateString.slice(0, 2);
+            const day = dateString.slice(2, 4);
+            const year = dateString.slice(4);
+            return `${month}/${day}/${year}`;
+        }
+
         function generateText() {
             const fields = {
                 "Caller Name": document.getElementById("callerName").value,
                 "Phone": document.getElementById("phone").value,
                 "Patient Name": document.getElementById("patientName").value,
-                "Date of Birth": document.getElementById("dob").value
+                "Date of Birth": document.getElementById("dob").value,
                 "Treatment Type": document.getElementById("treatment").value,
-                "Substances Used": document.getElementById("substances").value,
-                "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
-                "Prior Treatment": document.getElementById("priorTreatment").value,
-                "Medical Issues": document.getElementById("medicalIssues").value,
-                "Legal Issues": document.getElementById("legalIssues").value,
-                "Insurance Type": document.getElementById("insurance").value,
-                "Patient Address": document.getElementById("address").value,
-            };
-
-            // Filter out blank fields
-            const formattedText = Object.entries(fields)
-                .filter(([_, value]) => value.trim() !== "") // Remove empty values
-                .map(([key, value]) => `${key}: ${value}`) // Format key-value pairs
-                .join("\n");
-
-            document.getElementById("outputText").textContent = formattedText;
-
-            // Copy to clipboard
-            navigator.clipboard.writeText(formattedText).then(() => {
-                alert("Text copied to clipboard!");
-            }).catch(err => {
-                console.error("Failed to copy text:", err);
-            });
-        }
-    </script>
-
-</body>
-</html>
+                "Substances Used": document.getElementBy
+::contentReference[oaicite:10]{index=10}
+ 
