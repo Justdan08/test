@@ -88,7 +88,8 @@
         /* Expanding text area inside modal */
         #modalText {
             width: 100%;
-            min-height: 50px;
+            min-height: 100px;
+            max-height: 400px; /* Ensures it doesn't take up the whole screen */
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -97,7 +98,7 @@
             resize: none;
             background-color: #f8f8f8;
             white-space: pre-wrap;
-            overflow: hidden;
+            overflow-y: auto; /* Enables scrolling if text overflows */
         }
     </style>
 </head>
@@ -195,16 +196,6 @@
                 "Insurance Type": document.getElementById("insurance").value,
                 "Patient Address": document.getElementById("address").value
             };
-
-            const dobInput = fields["Date of Birth"];
-            if (dobInput.trim() !== "") {
-                if (isValidDate(dobInput)) {
-                    fields["Date of Birth"] = formatDate(dobInput);
-                } else {
-                    alert("Invalid date format. Please enter as MMDDYYYY.");
-                    return;
-                }
-            }
 
             const formattedText = Object.entries(fields)
                 .filter(([_, value]) => value.trim() !== "")
