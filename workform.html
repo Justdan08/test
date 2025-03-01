@@ -61,35 +61,32 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
             background-color: rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 10% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
+            width: 90%;
+            height: 90vh; /* Make it nearly full screen */
             border-radius: 5px;
+            display: flex;
+            flex-direction: column;
         }
         .close {
-            color: #aaa;
-            float: right;
+            align-self: flex-end;
             font-size: 28px;
             font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
             cursor: pointer;
         }
-        /* Expanding text area inside modal */
+        /* Full-screen textarea inside modal */
         #modalText {
+            flex-grow: 1; /* Make textarea take up all available space */
             width: 100%;
-            min-height: 100px;
-            max-height: 400px; /* Ensures it doesn't take up the whole screen */
+            height: 100%; /* Full screen height */
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -98,7 +95,7 @@
             resize: none;
             background-color: #f8f8f8;
             white-space: pre-wrap;
-            overflow-y: auto; /* Enables scrolling if text overflows */
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -204,10 +201,7 @@
 
             const modalText = document.getElementById("modalText");
             modalText.value = formattedText;
-            modalText.style.height = "auto";
-            modalText.style.height = modalText.scrollHeight + "px";
-
-            document.getElementById("myModal").style.display = "block";
+            document.getElementById("myModal").style.display = "flex";
         }
 
         document.getElementById("generateBtn").addEventListener("click", generateText);
