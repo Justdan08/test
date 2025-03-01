@@ -64,7 +64,7 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
-        .modal-content {
+       .modal-content {
             background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
@@ -72,6 +72,14 @@
             width: 80%;
             max-width: 600px;
             border-radius: 5px;
+            overflow-wrap: break-word; /* Ensures long words break correctly */
+            word-wrap: break-word; /* Older browser support */
+            white-space: normal; /* Allows text to wrap */
+        }
+        
+        pre {
+            white-space: pre-wrap; /* Allows text wrapping */
+            word-wrap: break-word;
         }
         .close {
             color: #aaa;
