@@ -112,8 +112,14 @@
     <input type="text" id="treatment" tabindex="5">
 
     <label for="additionalInfo">Additional Information:</label>
-    <textarea id="additionalInfo" tabindex="6"></textarea>
+    <textarea id="additionalInfo" tabindex="6" oninput="autoExpand(this)"></textarea>
 
+<script>
+    function autoExpand(textarea) {
+        textarea.style.height = "90px"; // Reset to default size
+        textarea.style.height = textarea.scrollHeight + "px"; // Expand dynamically
+    }
+</script>
     <label for="substances">Substances Used:</label>
     <input type="text" id="substances" tabindex="7">
 
