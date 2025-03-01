@@ -146,6 +146,25 @@
                 "Patient Name": document.getElementById("patientName").value,
                 "Date of Birth": document.getElementById("dob").value,
                 "Treatment Type": document.getElementById("treatment").value,
-                "Substances Used": document.getElementBy
-::contentReference[oaicite:10]{index=10}
+                "Substances Used": document.getElementById("substances").value,
+                "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
+                "Prior Treatment": document.getElementById("priorTreatment").value,
+                "Medical Issues": document.getElementById("medicalIssues").value,
+                "Legal Issues": document.getElementById("legalIssues").value,
+                "Insurance Type": document.getElementById("insurance").value,
+                "Patient Address": document.getElementById("address").value
+            };
+
+            // Validate and format Date of Birth
+            const dobInput = fields["Date of Birth"];
+            const dobError = document.getElementById("dobError");
+            if (dobInput.trim() !== "") {
+                if (isValidDate(dobInput)) {
+                    fields["Date of Birth"] = formatDate(dobInput);
+                    dobError.textContent = "";
+                } else {
+                    dobError.textContent = "Invalid date format. Please enter as MMDDYYYY.";
+                    return;
+
+::contentReference[oaicite:0]{index=0}
  
