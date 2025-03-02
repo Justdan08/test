@@ -74,12 +74,11 @@ body {
   height: 100%;
   width: 0%;
 }
-/* XP bar fill colors */
+/* XP bar fill colors per gem type */
 .gem-bar.ruby .xp-fill { background: #e74c3c; }
 .gem-bar.sapphire .xp-fill { background: #3498db; }
 .gem-bar.emerald .xp-fill { background: #2ecc71; }
-.gem-bar.amber .xp-fill { background: #f1c40f; }
-.gem-bar.amethyst .xp-fill { background: #9b59b6; }
+.gem-bar.topaz .xp-fill { background: #f39c12; }
 .gem-bar.diamond .xp-fill { background: #fff; }
 
 /* --------------------------
@@ -136,19 +135,16 @@ body {
   width: 90%;
   height: 90%;
 }
-.gem.ruby .shape { background: #e74c3c; }
+/* Distinct styles for each gem type */
+.gem.ruby .shape { background: #e74c3c; border-radius: 50%; }
 .gem.sapphire .shape { background: #3498db; border-radius: 50%; }
 .gem.emerald .shape {
   background: #2ecc71;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
-.gem.amber .shape {
-  background: #f1c40f;
+.gem.topaz .shape {
+  background: #f39c12;
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-.gem.amethyst .shape {
-  background: #9b59b6;
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
 }
 .gem.diamond .shape {
   background: #fff;
