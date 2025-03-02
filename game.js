@@ -5,11 +5,11 @@
 // --------------------------
 const rows = 8;
 const cols = 8;
-const gemTypes = ["ruby", "sapphire", "emerald", "amber", "amethyst", "diamond"];
-const BASE_POINT = 10;
-const LEVEL_UP_XP = 100;
-const MULTI_THRESHOLD = 20; // Increase global multiplier every 20 gem level-ups
-const GAME_TIME = 180;      // 3 minutes in seconds
+const gemTypes = ["ruby", "sapphire", "emerald", "topaz", "diamond"];
+const BASE_POINT = 1;         // Base point per gem
+const LEVEL_UP_XP = 100;      // XP threshold for gem leveling
+const MULTI_THRESHOLD = 20;   // Total gem level-ups for multiplier increase
+const GAME_TIME = 180;        // Game time in seconds (3 minutes)
 
 // --------------------------
 // Game State Variables
@@ -25,7 +25,7 @@ let gemStats = {};         // Per-game gem XP and level, e.g., gemStats["ruby"] 
 let upgradeLevels = {};    // Permanent upgrades for each gem type (persisted)
 let timeRemaining = GAME_TIME;
 let timerInterval = null;
-let animating = false;     // Prevent overlapping animations
+let animating = false;     // Flag to prevent overlapping animations
 
 // For mobile drag
 let touchStartCell = null;
@@ -86,9 +86,11 @@ function generateBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let available = gemTypes.slice();
+      // Avoid immediate horizontal triple
       if (j >= 2 && board[i][j-1] === board[i][j-2]) {
         available = available.filter(type => type !== board[i][j-1]);
       }
+      // Avoid immediate vertical triple
       if (i >= 2 && board[i-1][j] === board[i-2][j]) {
         available = available.filter(type => type !== board[i-1][j]);
       }
@@ -142,6 +144,7 @@ function animateFalling(oldPositions) {
 // --------------------------
 function findMatches() {
   let toRemove = Array.from({ length: rows }, () => Array(cols).fill(false));
+  // Horizontal matches
   for (let i = 0; i < rows; i++) {
     let runLength = 1;
     for (let j = 1; j < cols; j++) {
@@ -162,6 +165,7 @@ function findMatches() {
       }
     }
   }
+  // Vertical matches
   for (let j = 0; j < cols; j++) {
     let runLength = 1;
     for (let i = 1; i < rows; i++) {
@@ -207,7 +211,12 @@ async function processMatches() {
     matches.forEach(pos => {
       board[pos.r][pos.c] = null;
     });
-    score += matches.length * BASE_POINT;
+    // Calculate score with multipliers: if match size == 3 => base, 4 => 1.5x, 5+ => 2x.
+    let matchSize = matches.length;
+    let scoreMultiplier = 1;
+    if (matchSize === 4) scoreMultiplier = 1.5;
+    else if (matchSize >= 5) scoreMultiplier = 2;
+    score += matchSize * BASE_POINT * scoreMultiplier;
     scoreElem.textContent = score;
     dropGems();
     fillEmptySpaces();
@@ -442,7 +451,7 @@ function startNewGame() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       const cell = document.createElement("div");
-      const typeName = board[i][j]; // board stores gem type strings
+      const typeName = board[i][j];
       cell.className = "gem " + typeName;
       cell.dataset.row = i;
       cell.dataset.col = j;
@@ -504,8 +513,6 @@ function resetGemStats() {
 // --------------------------
 window.addEventListener("load", () => {
   loadPersistentData();
-  
-  // Get references to UI elements
   scoreElem = document.getElementById("score");
   cashElem = document.getElementById("cash");
   timerElem = document.getElementById("timer");
@@ -515,7 +522,7 @@ window.addEventListener("load", () => {
   gameOverModal = document.getElementById("gameOverModal");
   finalScoreElem = document.getElementById("finalScore");
   earnedCashElem = document.getElementById("earnedCash");
-  
+
   document.querySelectorAll(".gem-bar").forEach(bar => {
     const type = bar.classList[1];
     gemBarElems[type] = {
@@ -523,7 +530,7 @@ window.addEventListener("load", () => {
       fill: bar.querySelector(".xp-fill")
     };
   });
-  
+
   document.querySelectorAll(".shop-item").forEach(item => {
     const type = item.dataset.type;
     shopItemsElems[type] = {
@@ -532,15 +539,15 @@ window.addEventListener("load", () => {
     };
     item.addEventListener("click", () => purchaseUpgrade(type));
   });
-  
+
   const shopBtn = document.getElementById("shopBtn");
   if (shopBtn) {
     shopBtn.addEventListener("click", openShop);
   }
-  
+
   document.getElementById("newGameBtn").addEventListener("click", startNewGame);
   document.getElementById("restartBtn").addEventListener("click", startNewGame);
-  
+
   const gameOverContent = document.getElementById("gameOverContent");
   if (gameOverContent && !document.getElementById("shopBtnModal")) {
     const shopButton = document.createElement("button");
@@ -552,9 +559,9 @@ window.addEventListener("load", () => {
     });
     gameOverContent.insertBefore(shopButton, document.getElementById("restartBtn"));
   }
-  
+
   startNewGame();
-  
+
   const boardDiv = document.getElementById("gameBoard");
   boardDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
   boardDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
