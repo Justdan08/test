@@ -1,92 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Match 3 Game</title>
-  <link rel="stylesheet" href="style2.css" />
-  <!-- Optional: include a favicon to remove warnings -->
-  <!-- <link rel="icon" href="favicon.png" /> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gemstone Match 3</title>
+    <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-  <div id="header">
-    <div id="infoTop">
-      <div id="scoreDisplay">Score: <span id="score">0</span></div>
-      <div id="cashDisplay">Cash: $<span id="cash">0</span></div>
-      <div id="timer">Time Left: 3:00</div>
+    <div id="timer">03:00</div>
+    <div id="score-display">Score: 0</div>
+    <div class="xp-bar-container" id="xp-bars"></div>
+    <div id="multiplier-bar"><div id="multiplier-progress"></div></div>
+    
+    <div id="game-container">
+        <div id="board"></div>
     </div>
-    <div id="multiplierContainer">
-      <div id="multiplierLabel">Multiplier: x<span id="multiplier">1</span></div>
-      <div id="multiplierBar" class="xp-bar">
-        <div id="multiplierFill" class="xp-fill"></div>
-      </div>
-    </div>
-    <div id="gemBarsContainer">
-      <!-- Five Gem XP Bars -->
-      <div class="gem-bar ruby">
-        <div class="gem-label"><span class="gem-name">Ruby</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar"><div class="xp-fill"></div></div>
-      </div>
-      <div class="gem-bar sapphire">
-        <div class="gem-label"><span class="gem-name">Sapphire</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar"><div class="xp-fill"></div></div>
-      </div>
-      <div class="gem-bar emerald">
-        <div class="gem-label"><span class="gem-name">Emerald</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar"><div class="xp-fill"></div></div>
-      </div>
-      <div class="gem-bar topaz">
-        <div class="gem-label"><span class="gem-name">Topaz</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar"><div class="xp-fill"></div></div>
-      </div>
-      <div class="gem-bar diamond">
-        <div class="gem-label"><span class="gem-name">Diamond</span> Lvl <span class="gem-level">1</span></div>
-        <div class="xp-bar"><div class="xp-fill"></div></div>
-      </div>
-    </div>
-    <div id="buttons">
-      <button id="newGameBtn">New Game</button>
-      <button id="shopBtn">Shop</button>
-    </div>
-  </div>
 
-  <div id="gameBoard"></div>
-
-  <!-- Game Over Modal -->
-  <div id="gameOverModal" class="hidden">
-    <div id="gameOverContent">
-      <h2>Game Over</h2>
-      <p>Final Score: <span id="finalScore">0</span></p>
-      <p>Cash Earned: $<span id="earnedCash">0</span></p>
-      <button id="restartBtn">Restart</button>
+    <div id="game-over-modal" class="modal">
+        <h2>Game Over!</h2>
+        <p>Score: <span id="final-score">0</span></p>
+        <p>Money Earned: $<span id="money-earned">0</span></p>
+        <button onclick="startGame()">Play Again</button>
     </div>
-  </div>
 
-  <!-- Shop Modal (appears after game over) -->
-  <div id="shopModal" class="hidden">
-    <div id="shopContent">
-      <h2>Shop</h2>
-      <ul id="shopItems">
-        <li class="shop-item" data-type="ruby">
-          Ruby Upgrade (Lvl <span class="up-level">0</span>): Cost $<span class="up-cost">150</span>
-        </li>
-        <li class="shop-item" data-type="sapphire">
-          Sapphire Upgrade (Lvl <span class="up-level">0</span>): Cost $<span class="up-cost">150</span>
-        </li>
-        <li class="shop-item" data-type="emerald">
-          Emerald Upgrade (Lvl <span class="up-level">0</span>): Cost $<span class="up-cost">150</span>
-        </li>
-        <li class="shop-item" data-type="topaz">
-          Topaz Upgrade (Lvl <span class="up-level">0</span>): Cost $<span class="up-cost">150</span>
-        </li>
-        <li class="shop-item" data-type="diamond">
-          Diamond Upgrade (Lvl <span class="up-level">0</span>): Cost $<span class="up-cost">150</span>
-        </li>
-      </ul>
-      <button id="closeShop">Close</button>
-    </div>
-  </div>
-
-  <script src="game.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
