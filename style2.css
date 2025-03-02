@@ -1,221 +1,167 @@
-/* --------------------------
-   Global & Reset Styles
--------------------------- */
+:root {
+    --dark-blue: #2c3e50;
+    --medium-blue: #3498db;
+    --soft-blue: #ecf0f1;
+    --cell-size: 60px;
+    --game-border-radius: 15px;
+}
+
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
+
 body {
-  font-family: Arial, sans-serif;
-  background: #222;
-  color: #fff;
-  text-align: center;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--soft-blue);
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    touch-action: none;
+    min-height: 100vh;
 }
 
-/* --------------------------
-   Header & UI Elements
--------------------------- */
-#header {
-  max-width: 520px;
-  margin: 10px auto;
-  padding: 0 10px;
-}
-#infoTop {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-#multiplierContainer {
-  margin: 10px auto;
-}
-#multiplierLabel {
-  margin-bottom: 4px;
-  font-size: 1.1em;
-}
-#multiplierBar {
-  background: #444;
-  width: 80%;
-  max-width: 300px;
-  height: 10px;
-  margin: 0 auto;
-  border-radius: 5px;
-  overflow: hidden;
-}
-#multiplierFill {
-  background: #0f0;
-  height: 100%;
-  width: 0%;
-}
-#gemBarsContainer {
-  margin: 10px auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
-.gem-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.gem-label {
-  font-size: 0.85em;
-  margin-bottom: 2px;
-}
-.xp-bar {
-  background: #444;
-  width: 100px;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.xp-fill {
-  height: 100%;
-  width: 0%;
-}
-/* XP bar fill colors per gem type */
-.gem-bar.ruby .xp-fill { background: #e74c3c; }
-.gem-bar.sapphire .xp-fill { background: #3498db; }
-.gem-bar.emerald .xp-fill { background: #2ecc71; }
-.gem-bar.topaz .xp-fill { background: #f39c12; }
-.gem-bar.diamond .xp-fill { background: #fff; }
-
-/* --------------------------
-   Buttons
--------------------------- */
-#buttons {
-  margin-top: 10px;
-}
-#buttons button {
-  padding: 8px 16px;
-  margin: 0 5px;
-  font-size: 1em;
-  border: none;
-  border-radius: 5px;
-  background: #007BFF;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-#buttons button:hover {
-  background: #005FBB;
+#game-container {
+    background: var(--medium-blue);
+    padding: 15px;
+    border-radius: var(--game-border-radius);
+    border: 4px solid var(--dark-blue);
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    margin-top: 20px;
 }
 
-/* --------------------------
-   Game Board
--------------------------- */
-#gameBoard {
-  display: grid;
-  grid-template-columns: repeat(8, 60px);
-  grid-template-rows: repeat(8, 60px);
-  grid-gap: 2px;
-  padding: 2px;
-  margin: 20px auto;
-  background: #333;
-  width: fit-content;
-  touch-action: none;
+#board {
+    display: grid;
+    grid-template-columns: repeat(9, var(--cell-size));
+    gap: 2px;
 }
 
-/* --------------------------
-   Gem Styling & Animations
--------------------------- */
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
 .gem {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease-in-out;
-  touch-action: none;
-}
-.gem .shape {
-  width: 90%;
-  height: 90%;
-}
-/* Distinct styles for each gem type */
-.gem.ruby .shape { background: #e74c3c; border-radius: 50%; }
-.gem.sapphire .shape { background: #3498db; border-radius: 50%; }
-.gem.emerald .shape {
-  background: #2ecc71;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-.gem.topaz .shape {
-  background: #f39c12;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-.gem.diamond .shape {
-  background: #fff;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
-.gem.selected {
-  box-shadow: 0 0 0 3px #fff;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 8px;
 }
 
-/* --------------------------
-   Shop & Game Over Modals
--------------------------- */
-#shopModal, #gameOverModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-.hidden { display: none !important; }
-#shopContent, #gameOverContent {
-  background: #fff;
-  color: #000;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-}
-#shopContent h2, #gameOverContent h2 {
-  text-align: center;
-  margin-top: 0;
-}
-#shopItems {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0;
-}
-.shop-item {
-  padding: 5px 0;
-  cursor: pointer;
-}
-.shop-item:hover {
-  background: #eee;
-}
-#closeShop, #restartBtn {
-  display: block;
-  margin: 10px auto 0;
-  padding: 5px 15px;
+.Ruby { background: #e74c3c; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+.Sapphire { background: #2980b9; clip-path: circle(45% at 50% 50%); }
+.Emerald { background: #2ecc71; clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); }
+.Topaz { background: #f1c40f; clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%); }
+.Diamond { background: #9b59b6; clip-path: polygon(50% 0%, 100% 25%, 50% 100%, 0% 25%); }
+
+.gem.matched {
+    animation: matchAnimation 0.4s ease-out forwards;
 }
 
-/* --------------------------
-   Responsive Adjustments
--------------------------- */
+@keyframes matchAnimation {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+#score-display {
+    font-size: 28px;
+    color: var(--dark-blue);
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.xp-bar-container {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.xp-bar {
+    height: 20px;
+    width: 100px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.xp-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#multiplier-bar {
+    width: 100%;
+    max-width: 500px;
+    height: 12px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+#multiplier-progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+    transition: width 0.3s ease;
+}
+
+#timer {
+    font-size: 32px;
+    color: var(--dark-blue);
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: var(--game-border-radius);
+    box-shadow: 0 0 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    text-align: center;
+}
+
+.modal button {
+    background: var(--medium-blue);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+@media (max-width: 600px) {
+    :root { --cell-size: 50px; }
+    #game-container { padding: 10px; }
+    .xp-bar { width: 80px; height: 18px; }
+}
+
 @media (max-width: 400px) {
-  #gameBoard {
-    grid-template-columns: repeat(8, 40px);
-    grid-template-rows: repeat(8, 40px);
-  }
-  .gem {
-    width: 40px;
-    height: 40px;
-  }
-  #multiplierBar {
-    width: 90%;
-  }
-  .xp-bar {
-    width: 80px;
-  }
+    :root { --cell-size: 45px; }
+    #timer { font-size: 24px; }
 }
