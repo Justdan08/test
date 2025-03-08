@@ -13,14 +13,15 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* Grid */
+/* Wordsearch Grid */
 #wordsearch {
   display: grid;
   gap: 2px;
   margin: 20px auto; /* Center horizontally */
-  max-width: 95%;
   justify-content: center; /* Center grid columns */
   grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
+  max-width: 100%; /* Ensure it fits within the screen */
+  width: 100%; /* Full width */
 }
 
 .cell {
@@ -32,28 +33,17 @@ h1 {
   justify-content: center;
   background-color: white;
   user-select: none;
-  }
+}
 
 .cell.selected {
   background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
-}
-
-/* Fade-in animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px); /* Optional slight vertical movement */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Word List */
 #word-list {
   margin: 10px;
   font-size: 16px;
+  max-width: 100%; /* Ensure word list doesn't overflow */
 }
 
 #word-list div {
@@ -65,70 +55,43 @@ h1 {
   color: #888;
 }
 
-/* Updated CSS */
-.container {
-  display: flex;
-  gap: 30px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
-}
-
-.left-panel {
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.right-panel {
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  height: fit-content;
-}
-
-#words {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-#words div {
-  font-size: 1.1em;
-  padding: 4px 0;
-  white-space: nowrap;
-}
-
-.nav-links {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 20px;
-}
-
 /* Desktop Layout */
 @media (min-width: 901px) {
+  #wordsearch {
+    grid-template-columns: repeat(15, 5vw); /* Adjust for desktop size */
+    max-width: 90vw; /* Adjust max-width to be smaller than full screen */
+    margin: 0 auto; /* Center the grid */
+  }
+
   #word-list {
-    height: calc(100vh - 160px);
+    margin: 20px auto;
+    padding: 10px;
+    width: 80%; /* Control the word list width */
+    height: calc(100vh - 200px); /* Allow word list to adjust in height */
     overflow-y: auto;
+  }
+
+  #timer, #score {
+    font-size: 18px;
+    padding: 8px 12px;
+  }
+
+  /* Adjust Combo Bar */
+  #combo-container {
+    top: 20px;
+    width: 200px;
   }
 }
 
-/* Mobile Layout */
 /* Mobile Optimization */
 @media (max-width: 600px) {
   #wordsearch {
     grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
-    margin: 10px auto; /* Reduce top and bottom margin */
   }
 
   #word-list {
-    margin: 10px auto; /* Reduce margin around the words box */
-    padding: 5px 10px; /* Decrease vertical padding, keep horizontal padding */
+    margin: 10px auto;
+    padding: 5px 10px;
     width: 90%; /* Make the words box wider */
   }
 
@@ -177,107 +140,106 @@ h1 {
     overflow-y: visible; /* Remove scroll */
   }
 }
+
 /* Hide options menu initially */
 .hidden {
-    display: none;
+  display: none;
 }
 
 /* Style for options container */
 #options-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
 }
 
 /* Style for the menu button */
 #options-button {
-    background: #4984B8;
-    color: white;
-    font-size: 18px;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+  background: #4984B8;
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 /* Style for the menu */
 #options-menu {
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    margin-top: 5px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  margin-top: 5px;
 }
 
 /* Dark mode adjustments */
 .dark-mode #options-menu {
-    background: #222;
-    color: #fff;
+  background: #222;
+  color: #fff;
 }
 
-/* style.css */
 .dark-mode {
-    background-color: #1a1a1a;
-    color: #ffffff;
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
 .dark-mode .cell {
-    background-color: #2d2d2d;
-    border-color: #444;
-    color: #fff;
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #fff;
 }
 
 .dark-mode #words-box {
-    border-color: #666;
-    background-color: #333;
+  border-color: #666;
+  background-color: #333;
 }
 
 .dark-mode .puzzle-link,
 .dark-mode .nav-links a {
-    color: #88b7ff;
+  color: #88b7ff;
 }
 
 .dark-mode #combo-container,
 .dark-mode #timer {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
 }
 
 .dark-mode #reset-button {
-    background-color: #4a6da7;
-    color: #fff;
+  background-color: #4a6da7;
+  color: #fff;
 }
 
 .dark-mode .highlight-style {
-    background-color: rgba(136, 183, 255, 0.3) !important;
+  background-color: rgba(136, 183, 255, 0.3) !important;
 }
 
 /* Word Found Styles */
 .original-style {
-    text-decoration: line-through;
-    color: #888;
+  text-decoration: line-through;
+  color: #888;
 }
 
-/* Add these to your CSS */
 .bold-style {
-    font-weight: 900 !important;
-    text-decoration: line-through;
+  font-weight: 900 !important;
+  text-decoration: line-through;
 }
 
 .highlight-style {
-    background-color: rgba(73, 132, 184, 0.5) !important;
-    color: inherit !important;
+  background-color: rgba(73, 132, 184, 0.5) !important;
+  color: inherit !important;
 }
 
 .original-style {
-    text-decoration: line-through;
-    color: #888;
+  text-decoration: line-through;
+  color: #888;
 }
 
 .dark-mode .original-style {
-    color: #aaa !important;
+  color: #aaa !important;
 }
 
 /* Buttons & Links */
