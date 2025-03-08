@@ -1,65 +1,63 @@
 /* General Styles */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: 'Georgia', serif;
   background-color: white;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 0 10px;
+  margin: 0;
+  padding: 10px;
 }
 
 h1 {
-  font-size: 4vw;
+  font-size: 24px;
   color: #333;
-  margin-bottom: 1vh;
+  margin-bottom: 10px;
 }
 
-/* Wordsearch Grid */
+/* Grid */
 #wordsearch {
   display: grid;
-  gap: 0.5vw;
-  grid-template-columns: repeat(15, 4.5vw); /* Adjusted for smaller grid */
-  max-width: 90vw;
-  margin: 2vh 0;
+  gap: 2px;
+  margin: 20px auto; /* Center horizontally */
+  max-width: 95%;
+  justify-content: center; /* Center grid columns */
+  grid-template-columns: repeat(15, minmax(20px, 40px)); /* Flexible sizing */
 }
 
 .cell {
   aspect-ratio: 1;
   border: 1px solid black;
-  font-size: 1.8vw; /* Reduced font size */
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: white;
   user-select: none;
-}
+  }
 
 .cell.selected {
-  background-color: rgba(73, 132, 184, 0.5);
+  background-color: rgba(73, 132, 184, 0.5); /* #4984B8 with 50% opacity */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px); /* Optional slight vertical movement */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Word List */
 #word-list {
-  width: 90vw;
-  max-height: 25vh; /* Reduced the height for a more compact word list */
-  overflow-y: auto;
-  margin-top: 1.5vh;
-  font-size: 1.8vw; /* Adjusted font size */
+  margin: 10px;
+  font-size: 16px;
 }
 
 #word-list div {
-  margin: 0.5vh 0;
+  margin: 5px;
 }
 
 .found {
@@ -67,233 +65,219 @@ h1 {
   color: #888;
 }
 
-/* Buttons */
-#reset-button {
-  margin: 1.5vh auto;
-  padding: 1vh 2vw;
-  background-color: #4984B8;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.8vw; /* Adjusted button font size */
+/* Updated CSS */
+.container {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
 }
 
-#reset-button:hover {
-  background-color: #3b6a8b;
+.left-panel {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Navigation Links */
-.nav-links a {
-  margin: 1vh 0;
-  color: #4984B8;
-  text-decoration: none;
-  font-size: 1.8vw;
+.right-panel {
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  height: fit-content;
 }
 
-.nav-links a:hover {
-  text-decoration: underline;
+#words {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* Combo Bar */
-#combo-container {
-  position: fixed;
-  top: 2vh;
-  left: 2vw;
-  width: auto;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 1vh 2vw;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+#words div {
+  font-size: 1.1em;
+  padding: 4px 0;
+  white-space: nowrap;
 }
 
-#combo-bar {
-  height: 1vh;
-  background-color: #4CAF50;
-  width: 0%;
-  transition: width 0.5s ease;
-}
-
-#combo-text {
-  font-size: 2vw;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 1vh;
-}
-
-/* Timer */
-#timer {
-  position: fixed;
-  top: 2vh;
-  right: 2vw;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 1vh 2vw;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  font-size: 2vw;
-}
-
-/* Mobile Optimization */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 5vw;
-  }
-
-  #wordsearch {
-    grid-template-columns: repeat(15, 6vw); /* Adjust grid for mobile */
-  }
-
-  .cell {
-    font-size: 3.5vw;
-  }
-
-  #word-list {
-    font-size: 3.5vw;
-    max-height: 35vh;
-  }
-
-  #reset-button {
-    font-size: 3.5vw;
-    padding: 2vh 4vw;
-  }
-
-  .nav-links a {
-    font-size: 3.5vw;
-  }
-
-  #combo-container, #timer {
-    font-size: 3.5vw;
-    padding: 2vh 4vw;
-  }
+.nav-links {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px;
 }
 
 /* Desktop Layout */
 @media (min-width: 901px) {
-  #wordsearch {
-    grid-template-columns: repeat(15, 4.5vw); /* Adjust grid for desktop */
-    max-width: 85vw; /* Ensure it fits better on large screens */
-    margin: 2vh auto;
-  }
-
   #word-list {
-    margin: 20px auto;
-    padding: 8px;
-    width: 80%;
-    height: calc(40vh - 100px); /* Allow word list to fit nicely */
+    height: calc(100vh - 160px);
     overflow-y: auto;
-  }
-
-  #timer, #score {
-    font-size: 18px;
-    padding: 8px 12px;
-  }
-
-  /* Combo Bar */
-  #combo-container {
-    top: 20px;
-    width: 200px;
   }
 }
 
+/* Mobile Layout */
+/* Mobile Optimization */
+@media (max-width: 600px) {
+  #wordsearch {
+    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
+    margin: 10px auto; /* Reduce top and bottom margin */
+  }
+
+  #word-list {
+    margin: 10px auto; /* Reduce margin around the words box */
+    padding: 5px 10px; /* Decrease vertical padding, keep horizontal padding */
+    width: 90%; /* Make the words box wider */
+  }
+
+  #words {
+    gap: 4px; /* Slightly reduce gap between words */
+  }
+
+  #words div {
+    font-size: 1em; /* Revert to original font size */
+    padding: 2px 0; /* Reduce vertical padding between words */
+  }
+
+  .nav-links {
+    margin-top: 10px; /* Reduce space above navigation links */
+  }
+
+  /* Adjust combo bar for mobile */
+  #combo-container {
+    top: 50px; /* Move higher on mobile */
+    width: 150px; /* Smaller width for mobile */
+  }
+
+  #combo-text {
+    font-size: 12px; /* Smaller text for mobile */
+  }
+
+  /* Reduce overall padding on the body */
+  body {
+    padding: 5px;
+  }
+
+  /* Adjust the layout of the puzzle and words box */
+  .container {
+    flex-direction: column;
+    gap: 10px; /* Reduce gap between puzzle and words box */
+  }
+
+  .right-panel {
+    order: -1; /* Keep words box above the puzzle */
+    margin-bottom: 10px; /* Add a small gap below the words box */
+  }
+
+  /* Remove scroll functionality from the words box */
+  #words {
+    max-height: none; /* Remove height limit */
+    overflow-y: visible; /* Remove scroll */
+  }
+}
 /* Hide options menu initially */
 .hidden {
-  display: none;
+    display: none;
 }
 
 /* Style for options container */
 #options-container {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
 }
 
 /* Style for the menu button */
 #options-button {
-  background: #4984B8;
-  color: white;
-  font-size: 18px;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+    background: #4984B8;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 /* Style for the menu */
 #options-menu {
-  background: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  margin-top: 5px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
 }
 
 /* Dark mode adjustments */
 .dark-mode #options-menu {
-  background: #222;
-  color: #fff;
+    background: #222;
+    color: #fff;
 }
 
+/* style.css */
 .dark-mode {
-  background-color: #1a1a1a;
-  color: #ffffff;
+    background-color: #1a1a1a;
+    color: #ffffff;
 }
 
 .dark-mode .cell {
-  background-color: #2d2d2d;
-  border-color: #444;
-  color: #fff;
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
 }
 
 .dark-mode #words-box {
-  border-color: #666;
-  background-color: #333;
+    border-color: #666;
+    background-color: #333;
 }
 
 .dark-mode .puzzle-link,
 .dark-mode .nav-links a {
-  color: #88b7ff;
+    color: #88b7ff;
 }
 
 .dark-mode #combo-container,
 .dark-mode #timer {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
 }
 
 .dark-mode #reset-button {
-  background-color: #4a6da7;
-  color: #fff;
+    background-color: #4a6da7;
+    color: #fff;
 }
 
 .dark-mode .highlight-style {
-  background-color: rgba(136, 183, 255, 0.3) !important;
+    background-color: rgba(136, 183, 255, 0.3) !important;
 }
 
 /* Word Found Styles */
 .original-style {
-  text-decoration: line-through;
-  color: #888;
+    text-decoration: line-through;
+    color: #888;
 }
 
+/* Add these to your CSS */
 .bold-style {
-  font-weight: 900 !important;
-  text-decoration: line-through;
+    font-weight: 900 !important;
+    text-decoration: line-through;
 }
 
 .highlight-style {
-  background-color: rgba(73, 132, 184, 0.5) !important;
-  color: inherit !important;
+    background-color: rgba(73, 132, 184, 0.5) !important;
+    color: inherit !important;
 }
 
 .original-style {
-  text-decoration: line-through;
-  color: #888;
+    text-decoration: line-through;
+    color: #888;
 }
 
 .dark-mode .original-style {
-  color: #aaa !important;
+    color: #aaa !important;
 }
 
 /* Buttons & Links */
@@ -364,4 +348,56 @@ h1 {
   font-weight: bold;
   text-align: center;
   margin-top: 5px;
+}
+
+/* Desktop Styles (min-width: 601px) */
+@media (min-width: 601px) {
+  #words {
+    width: 70% !important; /* Tighten words box */
+    margin: 20px auto !important;
+  }
+
+  #words div {
+    font-size: 1.1em !important; /* Increase font size */
+    padding: 2px !important;
+  }
+
+  #wordsearch {
+    max-width: 600px; /* Limit grid size */
+  }
+
+  .cell {
+    font-size: 16px; /* Larger letters */
+  }
+}
+
+/* Mobile Optimization */
+@media (max-width: 600px) {
+  #wordsearch {
+    grid-template-columns: repeat(15, 6vw); /* Smaller cells for mobile */
+  }
+
+  body {
+    padding: 5px; /* Reduce padding on small screens */
+  }
+
+  .cell {
+    font-size: 12px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Adjust combo bar for mobile */
+  #combo-container {
+    top: 50px; /* Move higher on mobile */
+    width: 150px; /* Smaller width for mobile */
+  }
+
+  #combo-text {
+    font-size: 12px; /* Smaller text for mobile */
+  }
 }
