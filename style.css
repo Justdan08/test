@@ -1,31 +1,43 @@
 /* General Styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Georgia', serif;
   background-color: white;
   text-align: center;
-  margin: 0;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 0 10px;
 }
 
 h1 {
-  font-size: 5vw;
+  font-size: 4vw;
   color: #333;
-  margin-bottom: 2vh;
+  margin-bottom: 1vh;
 }
 
 /* Wordsearch Grid */
 #wordsearch {
   display: grid;
-  gap: 1vw;
-  grid-template-columns: repeat(15, 6vw); /* Adjusted for responsiveness */
-  max-width: 90vw; /* Ensure it doesn't exceed viewport width */
+  gap: 0.5vw;
+  grid-template-columns: repeat(15, 4.5vw); /* Adjusted for smaller grid */
+  max-width: 90vw;
   margin: 2vh 0;
 }
 
 .cell {
   aspect-ratio: 1;
   border: 1px solid black;
-  font-size: 2vw;
+  font-size: 1.8vw; /* Reduced font size */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,14 +52,14 @@ h1 {
 /* Word List */
 #word-list {
   width: 90vw;
-  max-height: 30vh;
+  max-height: 25vh; /* Reduced the height for a more compact word list */
   overflow-y: auto;
-  margin-top: 2vh;
-  font-size: 2vw;
+  margin-top: 1.5vh;
+  font-size: 1.8vw; /* Adjusted font size */
 }
 
 #word-list div {
-  margin: 1vh 0;
+  margin: 0.5vh 0;
 }
 
 .found {
@@ -57,14 +69,14 @@ h1 {
 
 /* Buttons */
 #reset-button {
-  margin: 2vh auto;
+  margin: 1.5vh auto;
   padding: 1vh 2vw;
   background-color: #4984B8;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 2vw;
+  font-size: 1.8vw; /* Adjusted button font size */
 }
 
 #reset-button:hover {
@@ -76,7 +88,7 @@ h1 {
   margin: 1vh 0;
   color: #4984B8;
   text-decoration: none;
-  font-size: 2vw;
+  font-size: 1.8vw;
 }
 
 .nav-links a:hover {
@@ -124,33 +136,33 @@ h1 {
 /* Mobile Optimization */
 @media (max-width: 600px) {
   h1 {
-    font-size: 6vw;
+    font-size: 5vw;
   }
 
   #wordsearch {
-    grid-template-columns: repeat(15, 8vw); /* Adjust grid for mobile */
+    grid-template-columns: repeat(15, 6vw); /* Adjust grid for mobile */
   }
 
   .cell {
-    font-size: 4vw;
+    font-size: 3.5vw;
   }
 
   #word-list {
-    font-size: 4vw;
-    max-height: 40vh;
+    font-size: 3.5vw;
+    max-height: 35vh;
   }
 
   #reset-button {
-    font-size: 4vw;
+    font-size: 3.5vw;
     padding: 2vh 4vw;
   }
 
   .nav-links a {
-    font-size: 4vw;
+    font-size: 3.5vw;
   }
 
   #combo-container, #timer {
-    font-size: 4vw;
+    font-size: 3.5vw;
     padding: 2vh 4vw;
   }
 }
@@ -158,16 +170,16 @@ h1 {
 /* Desktop Layout */
 @media (min-width: 901px) {
   #wordsearch {
-    grid-template-columns: repeat(15, 5vw); /* Adjust grid for desktop */
-    max-width: 90vw;
-    margin: 0 auto;
+    grid-template-columns: repeat(15, 4.5vw); /* Adjust grid for desktop */
+    max-width: 85vw; /* Ensure it fits better on large screens */
+    margin: 2vh auto;
   }
 
   #word-list {
     margin: 20px auto;
-    padding: 10px;
+    padding: 8px;
     width: 80%;
-    height: calc(100vh - 200px);
+    height: calc(40vh - 100px); /* Allow word list to fit nicely */
     overflow-y: auto;
   }
 
