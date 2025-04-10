@@ -150,9 +150,10 @@
   <label for="address">Patient Address:</label>
   <textarea id="address" tabindex="13"></textarea>
 
-  <button id="generateBtn" tabindex="14">Generate</button>
-  <button class="reset-btn" onclick="resetForm()">Reset Form</button>
+  <!-- Bottom Buttons -->
+  <button id="generateBtn" class="reset-btn">Generate Form</button>
   <button class="reset-btn" onclick="viewLog()">View Log</button>
+  <button class="reset-btn" onclick="resetForm()">Reset Form</button>
   <button class="reset-btn" onclick="showResetConfirmation()">Reset Log</button>
 
   <!-- Form Output Modal -->
@@ -260,15 +261,7 @@
       document.getElementById("myModal").style.display = "flex";
     }
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = "none";
-    }
-
-    function viewLog() {
-      const log = document.getElementById("logStorage").value.trim();
-      document.getElementById("logDisplay").value = log || "Log is currently empty.";
-      document.getElementById("logModal").style.display = "flex";
-    }
+    document.getElementById("generateBtn").addEventListener("click", generateText);
 
     document.getElementById("addToLogBtn").addEventListener("click", function () {
       const log = document.getElementById("logStorage");
@@ -283,6 +276,12 @@
       closeModal("myModal");
     });
 
+    function viewLog() {
+      const log = document.getElementById("logStorage").value.trim();
+      document.getElementById("logDisplay").value = log || "Log is currently empty.";
+      document.getElementById("logModal").style.display = "flex";
+    }
+
     function showResetConfirmation() {
       document.getElementById("confirmResetModal").style.display = "flex";
     }
@@ -291,6 +290,10 @@
       document.getElementById("logStorage").value = "";
       closeModal("confirmResetModal");
       alert("Log has been cleared.");
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = "none";
     }
   </script>
 
