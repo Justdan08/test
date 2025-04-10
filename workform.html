@@ -1,265 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inquiry Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f5;
-            color: #333;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-        }
-        h2 {
-            color: #003366;
-            text-align: center;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-            color: #003366;
-        }
-        input, select, textarea, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 90px;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #003366;
-            outline: none;
-        }
-        button {
-            background-color: #003366;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #002244;
-        }
-        .reset-btn {
-            background-color: #003366;
-        }
-        .reset-btn:hover {
-            background-color: #002244;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inquiry Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f5;
+      color: #333;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h2 {
+      color: #003366;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      color: #003366;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 90px;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #003366;
+      outline: none;
+    }
+    button {
+      background-color: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #002244;
+    }
 
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 700px;
-            height: 90vh;
-            border-radius: 5px;
-            display: flex;
-            flex-direction: column;
-        }
-        .close {
-            align-self: flex-end;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        #modalText {
-            flex-grow: 1;
-            width: 100%;
-            height: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            resize: none;
-            background-color: #f8f8f8;
-            white-space: pre-wrap;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-        #addToLogBtn {
-            margin-top: 10px;
-        }
-    </style>
+    .reset-btn {
+      background-color: #003366;
+      margin-top: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 700px;
+      height: 90vh;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+    }
+    .close {
+      align-self: flex-end;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #modalText {
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      resize: none;
+      background-color: #f8f8f8;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    #addToLogBtn {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
-    <h2>Inquiry Form</h2>
+  <h2>Inquiry Form</h2>
 
-    <!-- Reset Button at the Top -->
-    <button class="reset-btn" onclick="resetForm()">Reset Form</button>
+  <label for="callerName">Caller Name:</label>
+  <input type="text" id="callerName" tabindex="1">
 
-    <label for="callerName">Caller Name:</label>
-    <input type="text" id="callerName" tabindex="1">
+  <label for="phone">Phone Number:</label>
+  <input type="text" id="phone" tabindex="2">
 
-    <label for="phone">Phone Number:</label>
-    <input type="text" id="phone" tabindex="2">
+  <label for="patientName">Patient Name (if different):</label>
+  <input type="text" id="patientName" tabindex="3">
 
-    <label for="patientName">Patient Name (if different):</label>
-    <input type="text" id="patientName" tabindex="3">
+  <label for="dob">Date of Birth (MMDDYYYY):</label>
+  <input type="text" id="dob" tabindex="4" placeholder="MMDDYYYY">
 
-    <label for="dob">Date of Birth (MMDDYYYY):</label>
-    <input type="text" id="dob" tabindex="4" placeholder="MMDDYYYY">
+  <label for="treatment">Treatment Type:</label>
+  <input type="text" id="treatment" tabindex="5">
 
-    <label for="treatment">Treatment Type:</label>
-    <input type="text" id="treatment" tabindex="5">
+  <label for="additionalInfo">Additional Information:</label>
+  <textarea id="additionalInfo" tabindex="6"></textarea>
 
-    <label for="additionalInfo">Additional Information:</label>
-    <textarea id="additionalInfo" tabindex="6"></textarea>
+  <label for="substances">Substances Used:</label>
+  <input type="text" id="substances" tabindex="7">
 
-    <label for="substances">Substances Used:</label>
-    <input type="text" id="substances" tabindex="7">
+  <label for="mentalHealth">Mental Health Diagnosis:</label>
+  <input type="text" id="mentalHealth" tabindex="8">
 
-    <label for="mentalHealth">Mental Health Diagnosis:</label>
-    <input type="text" id="mentalHealth" tabindex="8">
+  <label for="priorTreatment">Prior Treatment:</label>
+  <select id="priorTreatment" tabindex="9">
+    <option value="">(Select)</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-    <label for="priorTreatment">Prior Treatment:</label>
-    <select id="priorTreatment" tabindex="9">
-        <option value="">(Select)</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select>
+  <label for="medicalIssues">Medical Issues:</label>
+  <input type="text" id="medicalIssues" tabindex="10">
 
-    <label for="medicalIssues">Medical Issues:</label>
-    <input type="text" id="medicalIssues" tabindex="10">
+  <label for="legalIssues">Legal Issues:</label>
+  <input type="text" id="legalIssues" tabindex="11">
 
-    <label for="legalIssues">Legal Issues:</label>
-    <input type="text" id="legalIssues" tabindex="11">
+  <label for="insurance">Insurance Type:</label>
+  <input type="text" id="insurance" tabindex="12">
 
-    <label for="insurance">Insurance Type:</label>
-    <input type="text" id="insurance" tabindex="12">
+  <label for="address">Patient Address:</label>
+  <textarea id="address" tabindex="13"></textarea>
 
-    <label for="address">Patient Address:</label>
-    <textarea id="address" tabindex="13"></textarea>
+  <button id="generateBtn" tabindex="14">Generate</button>
 
-    <button id="generateBtn" tabindex="14">Generate</button>
+  <!-- Reset and Log Buttons -->
+  <button class="reset-btn" onclick="resetForm()">Reset Form</button>
+  <button class="reset-btn" onclick="viewLog()">View Log</button>
 
-    <!-- Reset Button at the Bottom -->
-    <button class="reset-btn" onclick="resetForm()">Reset Form</button>
-
-    <!-- Main Modal -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Finalized Notes</h2>
-            <textarea id="modalText" readonly></textarea>
-            <button id="addToLogBtn">Add to Log</button>
-            <textarea id="logStorage" style="display: none;"></textarea>
-        </div>
+  <!-- Main Modal -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Finalized Notes</h2>
+      <textarea id="modalText" readonly></textarea>
+      <button id="addToLogBtn">Add to Log</button>
     </div>
+  </div>
 
-    <!-- Name Input Modal -->
-    <div id="nameModal" class="modal" style="display: flex;">
-        <div class="modal-content" style="max-width: 400px; height: auto;">
-            <h2>Please enter your name</h2>
-            <input type="text" id="userNameInput" placeholder="Your name">
-            <button onclick="submitUserName()">Submit</button>
-        </div>
+  <!-- Log Viewer Modal -->
+  <div id="logModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLog()">&times;</span>
+      <h2>Saved Log</h2>
+      <textarea id="logDisplay" readonly style="flex-grow:1;"></textarea>
     </div>
+  </div>
 
-    <script>
-        let userName = "";
+  <!-- Name Modal -->
+  <div id="nameModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="max-width: 400px; height: auto;">
+      <h2>Please enter your name</h2>
+      <input type="text" id="userNameInput" placeholder="Your name">
+      <button onclick="submitUserName()">Submit</button>
+    </div>
+  </div>
 
-        function submitUserName() {
-            const input = document.getElementById("userNameInput").value.trim();
-            if (input !== "") {
-                userName = input;
-                document.getElementById("nameModal").style.display = "none";
-            } else {
-                alert("Please enter your name before continuing.");
-            }
+  <!-- Hidden log storage -->
+  <textarea id="logStorage" style="display:none;"></textarea>
+
+  <script>
+    let userName = "";
+
+    function submitUserName() {
+      const input = document.getElementById("userNameInput").value.trim();
+      if (input !== "") {
+        userName = input;
+        document.getElementById("nameModal").style.display = "none";
+      } else {
+        alert("Please enter your name before continuing.");
+      }
+    }
+
+    function resetForm() {
+      document.querySelectorAll("input, textarea, select").forEach(field => {
+        if (field.tagName === "SELECT") {
+          field.selectedIndex = 0;
+        } else {
+          field.value = "";
         }
+      });
+    }
 
-        function resetForm() {
-            document.querySelectorAll("input, textarea, select").forEach(field => {
-                if (field.tagName === "SELECT") {
-                    field.selectedIndex = 0;
-                } else {
-                    field.value = "";
-                }
-            });
-        }
+    function generateText() {
+      const now = new Date();
+      const timeCreated = now.toLocaleString();
 
-        function generateText() {
-            const now = new Date();
-            const timeCreated = now.toLocaleString();
+      const fields = {
+        "Caller Name": document.getElementById("callerName").value,
+        "Phone": document.getElementById("phone").value,
+        "Patient Name": document.getElementById("patientName").value,
+        "Date of Birth": document.getElementById("dob").value,
+        "Treatment Type": document.getElementById("treatment").value,
+        "Additional Information": document.getElementById("additionalInfo").value,
+        "Substances Used": document.getElementById("substances").value,
+        "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
+        "Prior Treatment": document.getElementById("priorTreatment").value,
+        "Medical Issues": document.getElementById("medicalIssues").value,
+        "Legal Issues": document.getElementById("legalIssues").value,
+        "Insurance Type": document.getElementById("insurance").value,
+        "Patient Address": document.getElementById("address").value
+      };
 
-            const fields = {
-                "Caller Name": document.getElementById("callerName").value,
-                "Phone": document.getElementById("phone").value,
-                "Patient Name": document.getElementById("patientName").value,
-                "Date of Birth": document.getElementById("dob").value,
-                "Treatment Type": document.getElementById("treatment").value,
-                "Additional Information": document.getElementById("additionalInfo").value,
-                "Substances Used": document.getElementById("substances").value,
-                "Mental Health Diagnosis": document.getElementById("mentalHealth").value,
-                "Prior Treatment": document.getElementById("priorTreatment").value,
-                "Medical Issues": document.getElementById("medicalIssues").value,
-                "Legal Issues": document.getElementById("legalIssues").value,
-                "Insurance Type": document.getElementById("insurance").value,
-                "Patient Address": document.getElementById("address").value
-            };
+      const formattedText = [
+        `Time Created: ${timeCreated}`,
+        `Created by: ${userName}`,
+        "",
+        ...Object.entries(fields)
+          .filter(([_, value]) => value.trim() !== "")
+          .map(([key, value]) => `${key}: ${value}`)
+      ].join("\n");
 
-            const formattedText = [
-                `Time Created: ${timeCreated}`,
-                `Created by: ${userName}`,
-                "",
-                ...Object.entries(fields)
-                    .filter(([_, value]) => value.trim() !== "")
-                    .map(([key, value]) => `${key}: ${value}`)
-            ].join("\n");
+      document.getElementById("modalText").value = formattedText;
+      document.getElementById("myModal").style.display = "flex";
+    }
 
-            const previousLog = document.getElementById("logStorage").value.trim();
-            const modalText = document.getElementById("modalText");
-            modalText.value = previousLog
-                ? `${previousLog}\n\n-----------------------------\n\n${formattedText}`
-                : formattedText;
+    document.getElementById("generateBtn").addEventListener("click", generateText);
 
-            document.getElementById("myModal").style.display = "flex";
-        }
+    document.querySelector(".close").addEventListener("click", () => {
+      document.getElementById("myModal").style.display = "none";
+    });
 
-        document.getElementById("generateBtn").addEventListener("click", generateText);
-        document.querySelector(".close").addEventListener("click", () => {
-            document.getElementById("myModal").style.display = "none";
-        });
+    document.getElementById("addToLogBtn").addEventListener("click", function () {
+      const currentEntry = document.getElementById("modalText").value.trim();
+      const log = document.getElementById("logStorage");
 
-        document.getElementById("addToLogBtn").addEventListener("click", function () {
-            const currentEntry = document.getElementById("modalText").value;
-            const log = document.getElementById("logStorage");
+      if (log.value.trim() !== "") {
+        log.value += `\n\n-----------------------------\n\n${currentEntry}`;
+      } else {
+        log.value = currentEntry;
+      }
 
-            if (log.value.trim() !== "") {
-                log.value += `\n\n-----------------------------\n\n${currentEntry.split('\n\n-----------------------------\n\n').pop()}`;
-            } else {
-                log.value = currentEntry;
-            }
+      document.getElementById("myModal").style.display = "none";
+    });
 
-            document.getElementById("myModal").style.display = "none";
-            resetForm();
-        });
-    </script>
+    function viewLog() {
+      const log = document.getElementById("logStorage").value.trim();
+      document.getElementById("logDisplay").value = log || "Log is currently empty.";
+      document.getElementById("logModal").style.display = "flex";
+    }
+
+    function closeLog() {
+      document.getElementById("logModal").style.display = "none";
+    }
+  </script>
 
 </body>
 </html>
