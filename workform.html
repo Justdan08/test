@@ -48,16 +48,14 @@
     button:hover {
       background-color: #002244;
     }
-
     .reset-btn {
-      background-color: #003366;
       margin-top: 10px;
     }
 
     .modal {
       display: none;
       position: fixed;
-      z-index: 1;
+      z-index: 10;
       left: 0;
       top: 0;
       width: 100%;
@@ -83,7 +81,7 @@
       font-weight: bold;
       cursor: pointer;
     }
-    #modalText {
+    #modalText, #logDisplay {
       flex-grow: 1;
       width: 100%;
       height: 100%;
@@ -98,8 +96,10 @@
       overflow-y: auto;
       margin-bottom: 10px;
     }
-    #addToLogBtn {
-      margin-top: 10px;
+    .confirmation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -151,15 +151,14 @@
   <textarea id="address" tabindex="13"></textarea>
 
   <button id="generateBtn" tabindex="14">Generate</button>
-
-  <!-- Reset and Log Buttons -->
   <button class="reset-btn" onclick="resetForm()">Reset Form</button>
   <button class="reset-btn" onclick="viewLog()">View Log</button>
+  <button class="reset-btn" onclick="showResetConfirmation()">Reset Log</button>
 
-  <!-- Main Modal -->
+  <!-- Form Output Modal -->
   <div id="myModal" class="modal">
     <div class="modal-content">
-      <span class="close">&times;</span>
+      <span class="close" onclick="closeModal('myModal')">&times;</span>
       <h2>Finalized Notes</h2>
       <textarea id="modalText" readonly></textarea>
       <button id="addToLogBtn">Add to Log</button>
@@ -169,9 +168,9 @@
   <!-- Log Viewer Modal -->
   <div id="logModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeLog()">&times;</span>
+      <span class="close" onclick="closeModal('logModal')">&times;</span>
       <h2>Saved Log</h2>
-      <textarea id="logDisplay" readonly style="flex-grow:1;"></textarea>
+      <textarea id="logDisplay" readonly></textarea>
     </div>
   </div>
 
@@ -184,11 +183,23 @@
     </div>
   </div>
 
-  <!-- Hidden log storage -->
-  <textarea id="logStorage" style="display:none;"></textarea>
+  <!-- Reset Confirmation Modal -->
+  <div id="confirmResetModal" class="modal">
+    <div class="modal-content" style="max-width: 400px; height: auto;">
+      <h2>Are you sure you want to reset the log?</h2>
+      <div class="confirmation-buttons">
+        <button onclick="confirmResetLog()">Yes</button>
+        <button onclick="closeModal('confirmResetModal')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Log Storage -->
+  <textarea id="logStorage" style="display: none;"></textarea>
 
   <script>
     let userName = "";
+    let lastGeneratedEntry = "";
 
     function submitUserName() {
       const input = document.getElementById("userNameInput").value.trim();
@@ -239,28 +250,19 @@
           .map(([key, value]) => `${key}: ${value}`)
       ].join("\n");
 
-      document.getElementById("modalText").value = formattedText;
+      lastGeneratedEntry = formattedText;
+
+      const previousLog = document.getElementById("logStorage").value.trim();
+      document.getElementById("modalText").value = previousLog
+        ? `${previousLog}\n\n-----------------------------\n\n${formattedText}`
+        : formattedText;
+
       document.getElementById("myModal").style.display = "flex";
     }
 
-    document.getElementById("generateBtn").addEventListener("click", generateText);
-
-    document.querySelector(".close").addEventListener("click", () => {
-      document.getElementById("myModal").style.display = "none";
-    });
-
-    document.getElementById("addToLogBtn").addEventListener("click", function () {
-      const currentEntry = document.getElementById("modalText").value.trim();
-      const log = document.getElementById("logStorage");
-
-      if (log.value.trim() !== "") {
-        log.value += `\n\n-----------------------------\n\n${currentEntry}`;
-      } else {
-        log.value = currentEntry;
-      }
-
-      document.getElementById("myModal").style.display = "none";
-    });
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = "none";
+    }
 
     function viewLog() {
       const log = document.getElementById("logStorage").value.trim();
@@ -268,8 +270,27 @@
       document.getElementById("logModal").style.display = "flex";
     }
 
-    function closeLog() {
-      document.getElementById("logModal").style.display = "none";
+    document.getElementById("addToLogBtn").addEventListener("click", function () {
+      const log = document.getElementById("logStorage");
+      const newEntry = lastGeneratedEntry;
+
+      if (log.value.trim() !== "") {
+        log.value += `\n\n-----------------------------\n\n${newEntry}`;
+      } else {
+        log.value = newEntry;
+      }
+
+      closeModal("myModal");
+    });
+
+    function showResetConfirmation() {
+      document.getElementById("confirmResetModal").style.display = "flex";
+    }
+
+    function confirmResetLog() {
+      document.getElementById("logStorage").value = "";
+      closeModal("confirmResetModal");
+      alert("Log has been cleared.");
     }
   </script>
 
