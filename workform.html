@@ -107,6 +107,9 @@
 
   <h2>Inquiry Form</h2>
 
+  <label for="program">Program:</label>
+  <input type="text" id="program" tabindex="0">
+
   <label for="callerName">Caller Name:</label>
   <input type="text" id="callerName" tabindex="1">
 
@@ -225,6 +228,7 @@
     function generateText() {
       const now = new Date();
       const timeCreated = now.toLocaleString();
+      const program = document.getElementById("program").value;
 
       const fields = {
         "Caller Name": document.getElementById("callerName").value,
@@ -245,6 +249,7 @@
       const formattedText = [
         `Time Created: ${timeCreated}`,
         `Created by: ${userName}`,
+        program ? `Program: ${program}` : "",
         "",
         ...Object.entries(fields)
           .filter(([_, value]) => value.trim() !== "")
