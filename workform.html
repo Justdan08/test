@@ -23,7 +23,7 @@
             margin-top: 10px;
             color: #003366;
         }
-        input, select, textarea {
+        input, select, textarea, button {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -39,13 +39,9 @@
             outline: none;
         }
         button {
-            margin-top: 15px;
-            padding: 10px;
-            width: 100%;
             background-color: #003366;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
         }
@@ -58,9 +54,10 @@
         .reset-btn:hover {
             background-color: #002244;
         }
+
         /* Modal styles */
         .modal {
-            display: none; /* Ensure modal is hidden by default */
+            display: none;
             position: fixed;
             z-index: 1;
             left: 0;
@@ -76,6 +73,7 @@
             padding: 20px;
             border: 1px solid #888;
             width: 90%;
+            max-width: 700px;
             height: 90vh;
             border-radius: 5px;
             display: flex;
@@ -87,7 +85,6 @@
             font-weight: bold;
             cursor: pointer;
         }
-        /* Full-screen textarea inside modal */
         #modalText {
             flex-grow: 1;
             width: 100%;
@@ -101,6 +98,10 @@
             background-color: #f8f8f8;
             white-space: pre-wrap;
             overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        #addToLogBtn {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -122,7 +123,6 @@
 
     <label for="dob">Date of Birth (MMDDYYYY):</label>
     <input type="text" id="dob" tabindex="4" placeholder="MMDDYYYY">
-    <div class="error" id="dobError"></div>
 
     <label for="treatment">Treatment Type:</label>
     <input type="text" id="treatment" tabindex="5">
@@ -160,27 +160,53 @@
     <!-- Reset Button at the Bottom -->
     <button class="reset-btn" onclick="resetForm()">Reset Form</button>
 
-    <!-- Modal Structure -->
+    <!-- Main Modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Finalized Notes</h2>
             <textarea id="modalText" readonly></textarea>
+            <button id="addToLogBtn">Add to Log</button>
+            <textarea id="logStorage" style="display: none;"></textarea>
+        </div>
+    </div>
+
+    <!-- Name Input Modal -->
+    <div id="nameModal" class="modal" style="display: flex;">
+        <div class="modal-content" style="max-width: 400px; height: auto;">
+            <h2>Please enter your name</h2>
+            <input type="text" id="userNameInput" placeholder="Your name">
+            <button onclick="submitUserName()">Submit</button>
         </div>
     </div>
 
     <script>
+        let userName = "";
+
+        function submitUserName() {
+            const input = document.getElementById("userNameInput").value.trim();
+            if (input !== "") {
+                userName = input;
+                document.getElementById("nameModal").style.display = "none";
+            } else {
+                alert("Please enter your name before continuing.");
+            }
+        }
+
         function resetForm() {
             document.querySelectorAll("input, textarea, select").forEach(field => {
                 if (field.tagName === "SELECT") {
-                    field.selectedIndex = 0; // Reset dropdowns
+                    field.selectedIndex = 0;
                 } else {
-                    field.value = ""; // Clear text fields
+                    field.value = "";
                 }
             });
         }
 
         function generateText() {
+            const now = new Date();
+            const timeCreated = now.toLocaleString();
+
             const fields = {
                 "Caller Name": document.getElementById("callerName").value,
                 "Phone": document.getElementById("phone").value,
@@ -197,13 +223,21 @@
                 "Patient Address": document.getElementById("address").value
             };
 
-            const formattedText = Object.entries(fields)
-                .filter(([_, value]) => value.trim() !== "")
-                .map(([key, value]) => `${key}: ${value}`)
-                .join("\n");
+            const formattedText = [
+                `Time Created: ${timeCreated}`,
+                `Created by: ${userName}`,
+                "",
+                ...Object.entries(fields)
+                    .filter(([_, value]) => value.trim() !== "")
+                    .map(([key, value]) => `${key}: ${value}`)
+            ].join("\n");
 
+            const previousLog = document.getElementById("logStorage").value.trim();
             const modalText = document.getElementById("modalText");
-            modalText.value = formattedText;
+            modalText.value = previousLog
+                ? `${previousLog}\n\n-----------------------------\n\n${formattedText}`
+                : formattedText;
+
             document.getElementById("myModal").style.display = "flex";
         }
 
@@ -212,6 +246,19 @@
             document.getElementById("myModal").style.display = "none";
         });
 
+        document.getElementById("addToLogBtn").addEventListener("click", function () {
+            const currentEntry = document.getElementById("modalText").value;
+            const log = document.getElementById("logStorage");
+
+            if (log.value.trim() !== "") {
+                log.value += `\n\n-----------------------------\n\n${currentEntry.split('\n\n-----------------------------\n\n').pop()}`;
+            } else {
+                log.value = currentEntry;
+            }
+
+            document.getElementById("myModal").style.display = "none";
+            resetForm();
+        });
     </script>
 
 </body>
