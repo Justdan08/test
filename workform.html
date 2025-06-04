@@ -178,15 +178,6 @@
     </div>
   </div>
 
-  <!-- Name Modal -->
-  <div id="nameModal" class="modal" style="display: flex;">
-    <div class="modal-content" style="max-width: 400px; height: auto;">
-      <h2>Please enter your name</h2>
-      <input type="text" id="userNameInput" placeholder="Your name">
-      <button onclick="submitUserName()">Submit</button>
-    </div>
-  </div>
-
   <!-- Reset Confirmation Modal -->
   <div id="confirmResetModal" class="modal">
     <div class="modal-content" style="max-width: 400px; height: auto;">
@@ -205,6 +196,20 @@
     let userName = "";
     let lastGeneratedEntry = "";
 
+    // Load log from localStorage when the page is loaded
+    window.onload = function() {
+      const savedLog = localStorage.getItem("logStorage");
+      if (savedLog) {
+        document.getElementById("logStorage").value = savedLog;
+      }
+    };
+
+    // Save log to localStorage when log is updated
+    function saveLog() {
+      const logContent = document.getElementById("logStorage").value;
+      localStorage.setItem("logStorage", logContent);
+    }
+
     function submitUserName() {
       const input = document.getElementById("userNameInput").value.trim();
       if (input !== "") {
@@ -215,18 +220,17 @@
       }
     }
 
-     function resetForm() {
-    document.querySelectorAll("input, textarea, select").forEach(field => {
-      if (field.id !== "logStorage" && field.id !== "modalText" && field.id !== "logDisplay") {
-        if (field.tagName === "SELECT") {
-          field.selectedIndex = 0;
-        } else {
-          field.value = "";
+    function resetForm() {
+      document.querySelectorAll("input, textarea, select").forEach(field => {
+        if (field.id !== "logStorage" && field.id !== "modalText" && field.id !== "logDisplay") {
+          if (field.tagName === "SELECT") {
+            field.selectedIndex = 0;
+          } else {
+            field.value = "";
+          }
         }
-      }
-    });
-  }
-
+      });
+    }
 
     function generateText() {
       const now = new Date();
@@ -281,6 +285,8 @@
         log.value = newEntry;
       }
 
+      // Save log to localStorage
+      saveLog();
       closeModal("myModal");
     });
 
@@ -296,6 +302,8 @@
 
     function confirmResetLog() {
       document.getElementById("logStorage").value = "";
+      // Clear log from localStorage
+      localStorage.removeItem("logStorage");
       closeModal("confirmResetModal");
       alert("Log has been cleared.");
     }
